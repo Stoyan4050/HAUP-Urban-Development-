@@ -1,0 +1,89 @@
+/* Tags */
+
+body {
+    background-color: gray;
+    display: flex; 
+    flex-flow: column; 
+    position: absolute; 
+    top: 0; 
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+}
+
+label {
+    display: table-cell;
+    text-align: left;
+    font-size: 1vw;
+}
+
+a {
+    font-size: 0.6vw;
+}
+
+/* IDs */
+
+#header {
+    text-align: center; 
+}
+
+#title-container {
+    display: inline-block;
+}
+
+#title {
+    background-color: white;
+    padding: 0 10px;
+    margin: 5vh 0 0 0;
+    border: solid;
+    border-color: black;
+    border-width: 5px;
+    font-size: 3vw;
+}
+
+#main {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#content-box {
+    background-color: white;
+    display: inline-block;
+    padding: 0 10px;
+    margin: 0;
+    border: solid;
+    border-color: black;
+    border-width: 5px;
+    text-align: center;
+}
+
+#page-name {
+    margin: 0.4vh 0 0 0;
+    font-size: 2.5vw;
+}
+
+#form-inputs-container {
+    display: table;
+    margin: auto;
+    border-collapse: separate;
+    border-spacing: 0 1.5vh;
+}
+
+#submit-button {
+    margin: 1.5vh 0;
+    font-size: 1.5vw;
+}
+
+/* Classes */
+
+.form-input-row {
+    display: table-row;
+}
+
+.input-field {
+    display: table-cell;
+    margin-left: 5px;
+    font-size: 1vw;
+}

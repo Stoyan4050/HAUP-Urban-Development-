@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Urban Development">
+        <meta name="author" content="Group 18A">
+        <title>Urban Development</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'urban_development/css/login_registration_page.css' %}">
+    </head>
+    <body>
+        <div id="header">
+            <div id="title-container">
+                <p id="title">
+                    Urban Development
+                </p>
+            </div>
+        </div>
+        <div id="main">
+            <div id="content-box">
+                <p id="page-name">
+                    {{ title }}
+                </p>
+                <form action="">
+                    <div id="form-inputs-container">
+                        {% for name, secured in inputs.items %}
+                            <div class="form-input-row">
+                                <label for="{{ name }}">
+                                    {{ name }}:
+                                </label>
+                                <input type="{% if secured %}password{% else %}text{% endif %}" placeholder="{{ name }}" class="input-field">
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {% for message, location in hyperlinks.items %}
+                            <a href="{{ location }}">
+                                {{ message }}
+                            </a>
+                            <br>
+                        {% endfor %}
+                    </div>
+                    <input type="submit" value='{{ button }}' id="submit-button">
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

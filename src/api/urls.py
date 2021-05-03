@@ -4,5 +4,6 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path('login/', views.login_page, name='login_page'),
+    path('register/', views.registration_page, name='registration_page'),
     path('', RedirectView.as_view(url='login/', permanent=True)),
 ]
