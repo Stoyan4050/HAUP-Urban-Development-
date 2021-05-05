@@ -7,7 +7,8 @@
         <title>Urban Development</title>
         {% load static %}
         <link rel="stylesheet" href="{% static 'urban_development/css/login_registration_page.css' %}">
-        <script type="text/javascript" src="{% static 'urban_development/js/login_registration_page.js' %}"></script>
+        {% block js-import %}
+        {% endblock %}
     </head>
     <body>
         <div id="header">
@@ -22,17 +23,19 @@
                 <p id="page-name">
                     {{ title }}
                 </p>
-                <form method="POST">
+                <form action="{{ action }}" method="POST">
                     {% csrf_token %}
                     <table>
                         {% load widget_tweaks %}
+                        {% block form-error %}
+                        {% endblock %}
                         {% for field in form %}
                         <tr>
                             <td>
                                 {{ field.label_tag }}
                             </td>
                             <td>
-                                {% render_field field onchange="change()" onfocus="gainFocus()" onfocusout="loseFocus()" %}
+                                {% render_field field oninput="change()" onfocus="gainFocus()" onfocusout="loseFocus()" %}
                             </td>
                         </tr>
                         <tr class="hidden-row">
@@ -40,20 +43,8 @@
                                 {{ field.help_text }}
                             </td>
                         </tr>
-                        {% if field.errors %}
-                        <tr class="error-message">
-                            <td colspan="2">
-                                {{ field.errors.0 }}
-                            </td>
-                        </tr>
-                        <tr class="hidden-row">
-                        </tr>
-                        {% else %}
-                        <tr class="hidden-row">
-                        </tr>
-                        <tr class="blank-row">
-                        </tr>
-                        {% endif %}
+                        {% block input-error %}
+                        {% endblock %}
                         {% endfor %}
                     </table>
                     <div>

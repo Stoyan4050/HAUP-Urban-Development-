@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Custom
-    'api.apps.ApiConfig',
-    'widget_tweaks',
+    "api.apps.ApiConfig",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
@@ -79,13 +79,13 @@ WSGI_APPLICATION = 'urban_development.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'projects_UrbanDevelopment',
-        'USER': 'pu_49FOHyY4bHHjZ',
-        'PASSWORD': 'm6xM6F9pVl94',
-        'HOST': 'projects-db.ewi.tudelft.nl',
-        'PORT': '3306',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "projects_UrbanDevelopment",
+        "USER": "pu_49FOHyY4bHHjZ",
+        "PASSWORD": "m6xM6F9pVl94",
+        "HOST": "projects-db.ewi.tudelft.nl",
+        "PORT": "3306",
     }
 }
 
@@ -126,9 +126,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, "static"),
 )
 
 # Default primary key field type

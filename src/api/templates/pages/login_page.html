@@ -1,0 +1,28 @@
+{% extends "templates/login_registration_template.html" %}
+
+{% block js-import %}
+{% load static %}
+<script type="text/javascript" src="{% static 'urban_development/js/login_page.js' %}"></script>
+{% endblock %}
+
+{% block form-error %}
+{% if form.errors %}
+<tr class="error-message">
+    <td colspan="2">
+        Invalid username or password.
+    </td>
+</tr>
+<tr class="blank-row">
+</tr>
+{% else %}
+<tr class="hidden-row">
+</tr>
+<tr class="hidden-row">
+</tr>
+{% endif %}
+{% endblock %}
+
+{% block input-error %}
+<tr class="blank-row">
+</tr>
+{% endblock %}
