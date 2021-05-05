@@ -1,9 +1,9 @@
 function change() {
     let inputRow = window.event.target.parentNode.parentNode;
     let errorRow = inputRow.parentNode.firstElementChild;
-    let blankRow = errorRow.nextElementSiblingSibling;
+    let blankRow = errorRow.nextElementSibling;
     errorRow.className = "hidden-row";
-    blankRow.className = "blank-row";
+    blankRow.className = "hidden-row";
 }
 
 function gainFocus() {
