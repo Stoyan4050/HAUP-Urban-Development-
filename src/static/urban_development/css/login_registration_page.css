@@ -11,14 +11,29 @@ body {
     right: 0;
 }
 
+table {
+    border-collapse: collapse;
+}
+
 label {
     display: table-cell;
     text-align: left;
     font-size: 1vw;
 }
 
+input {
+    display: table-cell;
+    margin-left: 5px;
+    font-size: 1vw;
+}
+
 a {
     font-size: 0.6vw;
+}
+
+button {
+    margin: 1.5vh 0;
+    font-size: 1.5vw;
 }
 
 /* IDs */
@@ -60,30 +75,25 @@ a {
 }
 
 #page-name {
-    margin: 0.4vh 0 0 0;
+    margin: 0.4vh 0 1.5vh 0;
     font-size: 2.5vw;
-}
-
-#form-inputs-container {
-    display: table;
-    margin: auto;
-    border-collapse: separate;
-    border-spacing: 0 1.5vh;
-}
-
-#submit-button {
-    margin: 1.5vh 0;
-    font-size: 1.5vw;
 }
 
 /* Classes */
 
-.form-input-row {
-    display: table-row;
+.hidden-row {
+    display: none;
 }
 
-.input-field {
-    display: table-cell;
-    margin-left: 5px;
-    font-size: 1vw;
+.help-message {
+    font-size: 0.6vw;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.6vw;
+}
+
+.blank-row {
+    height: 1.5vh;
 }

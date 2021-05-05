@@ -7,6 +7,7 @@
         <title>Urban Development</title>
         {% load static %}
         <link rel="stylesheet" href="{% static 'urban_development/css/login_registration_page.css' %}">
+        <script type="text/javascript" src="{% static 'urban_development/js/login_registration_page.js' %}"></script>
     </head>
     <body>
         <div id="header">
@@ -21,26 +22,51 @@
                 <p id="page-name">
                     {{ title }}
                 </p>
-                <form action="">
-                    <div id="form-inputs-container">
-                        {% for name, secured in inputs.items %}
-                            <div class="form-input-row">
-                                <label for="{{ name }}">
-                                    {{ name }}:
-                                </label>
-                                <input type="{% if secured %}password{% else %}text{% endif %}" placeholder="{{ name }}" class="input-field">
-                            </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <table>
+                        {% load widget_tweaks %}
+                        {% for field in form %}
+                        <tr>
+                            <td>
+                                {{ field.label_tag }}
+                            </td>
+                            <td>
+                                {% render_field field onchange="change()" onfocus="gainFocus()" onfocusout="loseFocus()" %}
+                            </td>
+                        </tr>
+                        <tr class="hidden-row">
+                            <td colspan="2" class="{% if field.help_text %}help-message{% endif %}">
+                                {{ field.help_text }}
+                            </td>
+                        </tr>
+                        {% if field.errors %}
+                        <tr class="error-message">
+                            <td colspan="2">
+                                {{ field.errors.0 }}
+                            </td>
+                        </tr>
+                        <tr class="hidden-row">
+                        </tr>
+                        {% else %}
+                        <tr class="hidden-row">
+                        </tr>
+                        <tr class="blank-row">
+                        </tr>
+                        {% endif %}
                         {% endfor %}
-                    </div>
+                    </table>
                     <div>
                         {% for message, location in hyperlinks.items %}
-                            <a href="{{ location }}">
-                                {{ message }}
-                            </a>
-                            <br>
+                        <a href="{{ location }}">
+                            {{ message }}
+                        </a>
+                        <br>
                         {% endfor %}
                     </div>
-                    <input type="submit" value='{{ button }}' id="submit-button">
+                    <button type="submit">
+                        {{ button }}
+                    </button>
                 </form>
             </div>
         </div>
