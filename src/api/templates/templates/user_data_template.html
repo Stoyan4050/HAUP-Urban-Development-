@@ -6,7 +6,7 @@
         <meta name="author" content="Group 18A">
         <title>Urban Development</title>
         {% load static %}
-        <link rel="stylesheet" href="{% static 'urban_development/css/login_registration_page.css' %}">
+        <link rel="stylesheet" href="{% static 'urban_development/css/user_data_template.css' %}">
         {% block js-import %}
         {% endblock %}
     </head>
@@ -25,6 +25,7 @@
                 </p>
                 <form action="{{ action }}" method="POST">
                     {% csrf_token %}
+                    {% if form %}
                     <table>
                         {% load widget_tweaks %}
                         {% block form-error %}
@@ -47,7 +48,8 @@
                         {% endblock %}
                         {% endfor %}
                     </table>
-                    <div>
+                    {% endif %}
+                    <div id="hyperlinks-container">
                         {% for message, location in hyperlinks.items %}
                         <a href="{{ location }}">
                             {{ message }}
@@ -55,9 +57,11 @@
                         <br>
                         {% endfor %}
                     </div>
+                    {% if button %}
                     <button type="submit">
                         {{ button }}
                     </button>
+                    {% endif %}
                 </form>
             </div>
         </div>

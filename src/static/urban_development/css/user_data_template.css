@@ -32,7 +32,7 @@ a {
 }
 
 button {
-    margin: 1.5vh 0;
+    margin-bottom: 1.5vh;
     font-size: 1.5vw;
 }
 
@@ -77,6 +77,10 @@ button {
 #page-name {
     margin: 0.4vh 0 1.5vh 0;
     font-size: 2.5vw;
+}
+
+#hyperlinks-container {
+    margin-bottom: 1.5vh;
 }
 
 /* Classes */
