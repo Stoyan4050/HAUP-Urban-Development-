@@ -7,13 +7,17 @@ class AdminUser(UserAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         disabled_fields = set()
+
         if not request.user.is_superuser:
             disabled_fields.update({"is_staff", "is_superuser"})
+
         if obj is not None:
             disabled_fields.update({"email"})
+
         for field in disabled_fields:
             if field in form.base_fields:
                 form.base_fields[field].disabled = True
+
         return form
 
     model = User
