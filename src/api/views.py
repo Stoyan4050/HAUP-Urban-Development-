@@ -1,15 +1,15 @@
 from .forms import RegistrationForm, LoginForm, ChangePasswordForm
+from .models import User
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 
 def login_page(request):
     if request.method == "POST":
         form = LoginForm(data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get("username")
+            email = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
-            user = authenticate(request, username=username, password=password)
+            user = authenticate(request, username=email, password=password)
             if user is not None:
                 # login(request, user)
                 return redirect("urban_development:registration_page")
@@ -60,9 +60,9 @@ def change_password_page(request):
     if request.method == "POST":
         form = ChangePasswordForm(data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data["username"]
+            email = form.cleaned_data["email"]
             password = form.cleaned_data['password1']
-            user = User.objects.get(username=username)
+            user = User.objects.get(email=email)
             user.set_password(password)
             user.save()
             return redirect("urban_development:password_changed_page")

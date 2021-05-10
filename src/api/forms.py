@@ -1,17 +1,31 @@
+from .models import User
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.contrib.auth.models import User
+
+class LoginForm(AuthenticationForm):
+    class Meta:
+        model = User
+        fields = ("username", "password")
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs.update({"placeholder": "Email"})
+        self.fields["username"].widget.attrs.pop("autofocus", None)
+        self.fields["username"].label = "Email"
+        self.fields["password"].widget.attrs.update({"placeholder": "Password"})
+        self.fields["password"].widget.attrs.pop("autofocus", None)
+        self.fields["password"].label = "Password"
 
 class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ("username", "password1", "password2")
+        fields = ("email", "password1", "password2")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["username"].widget.attrs.update({"placeholder": "Username"})
-        self.fields["username"].widget.attrs.pop("autofocus", None)
-        self.fields["username"].label = "Username"
+        self.fields["email"].widget.attrs.update({"placeholder": "Email"})
+        self.fields["email"].widget.attrs.pop("autofocus", None)
+        self.fields["email"].label = "Email"
         self.fields["password1"].widget.attrs.update({"placeholder": "Password"})
         self.fields["password1"].widget.attrs.pop("autofocus", None)
         self.fields["password1"].label = "Password"
@@ -25,30 +39,16 @@ class RegistrationForm(UserCreationForm):
             user.save()
         return user
 
-class LoginForm(AuthenticationForm):
-    class Meta:
-        model = User
-        fields = ("username", "password")
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["username"].widget.attrs.update({"placeholder": "Username"})
-        self.fields["username"].widget.attrs.pop("autofocus", None)
-        self.fields["username"].label = "Username"
-        self.fields["password"].widget.attrs.update({"placeholder": "Password"})
-        self.fields["password"].widget.attrs.pop("autofocus", None)
-        self.fields["password"].label = "Password"
-
 class ChangePasswordForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ("username", "password1", "password2")
+        fields = ("email", "password1", "password2")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["username"].widget.attrs.update({"placeholder": "Username"})
-        self.fields["username"].widget.attrs.pop("autofocus", None)
-        self.fields["username"].label = "Username"
+        self.fields["email"].widget.attrs.update({"placeholder": "Email"})
+        self.fields["email"].widget.attrs.pop("autofocus", None)
+        self.fields["email"].label = "Email"
         self.fields["password1"].widget.attrs.update({"placeholder": "Password"})
         self.fields["password1"].widget.attrs.pop("autofocus", None)
         self.fields["password1"].label = "Password"
@@ -58,9 +58,9 @@ class ChangePasswordForm(UserCreationForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        username = cleaned_data.get("username")
+        email = cleaned_data.get("email")
         try:
-            User.objects.get(username=username)
+            User.objects.get(email=email)
         except User.DoesNotExist:
-            self.add_error("username", "An account with that username does not exist.")
+            self.add_error("email", "An account with that email does not exist.")
         return cleaned_data
