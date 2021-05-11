@@ -49,6 +49,7 @@
                         {% endfor %}
                     </table>
                     {% endif %}
+                    {% if hyperlinks %}
                     <div id="hyperlinks-container">
                         {% for message, location in hyperlinks.items %}
                         <a href="{{ location }}">
@@ -57,6 +58,7 @@
                         <br>
                         {% endfor %}
                     </div>
+                    {% endif %}
                     {% if button %}
                     <button type="submit">
                         {{ button }}

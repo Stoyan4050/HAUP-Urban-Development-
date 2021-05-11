@@ -12,6 +12,7 @@ body {
 }
 
 table {
+    margin-top: 1.2vh;
     border-collapse: collapse;
 }
 
@@ -32,7 +33,7 @@ a {
 }
 
 button {
-    margin-bottom: 1.5vh;
+    margin-bottom: 1.2vh;
     font-size: 1.5vw;
 }
 
@@ -75,12 +76,12 @@ button {
 }
 
 #page-name {
-    margin: 0.4vh 0 1.5vh 0;
+    margin: 0 0.4vh;
     font-size: 2.5vw;
 }
 
 #hyperlinks-container {
-    margin-bottom: 1.5vh;
+    margin-bottom: 1.2vh;
 }
 
 /* Classes */
@@ -99,5 +100,5 @@ button {
 }
 
 .blank-row {
-    height: 1.5vh;
+    height: 1.2vh;
 }

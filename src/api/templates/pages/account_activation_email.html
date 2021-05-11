@@ -1,0 +1,6 @@
+{% autoescape off %}
+Hello, {{ user.email }},
+
+Please use the following link to activate your Urban Development account:
+http://{{ domain }}{% url 'urban_development:activate_account_page' uidb64=uid token=token %}
+{% endautoescape %}

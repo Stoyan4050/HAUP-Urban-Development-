@@ -139,3 +139,10 @@ STATICFILES_DIRS = (
 
 
 AUTH_USER_MODEL = "api.User"
+
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "haup.urban.development@gmail.com"
+EMAIL_HOST_PASSWORD = "Group18A"
+EMAIL_PORT = 587
