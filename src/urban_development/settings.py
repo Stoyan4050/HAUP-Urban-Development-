@@ -136,3 +136,16 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+
+
+AUTH_USER_MODEL = "api.User"
+
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "haup.urban.development@gmail.com"
+EMAIL_HOST_PASSWORD = "Group18A"
+EMAIL_PORT = 587
+
+
+PASSWORD_RESET_TIMEOUT = 600
