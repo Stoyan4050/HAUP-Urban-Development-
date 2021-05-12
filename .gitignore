@@ -1,3 +1,7 @@
+# PyCharm Files
+**/.idea/
+**/.DS_Store
+
 # Visual Studio Code Files
-.vscode/
-__pycache__/
+**/.vscode/
+**/__pycache__/
