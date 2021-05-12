@@ -146,3 +146,6 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_HOST_USER = "haup.urban.development@gmail.com"
 EMAIL_HOST_PASSWORD = "Group18A"
 EMAIL_PORT = 587
+
+
+PASSWORD_RESET_TIMEOUT = 600

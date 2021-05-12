@@ -32,7 +32,7 @@ class User(AbstractUser):
     first_name = None
     last_name = None
     
-    email = models.EmailField(ugettext_lazy("Email"), unique=True, error_messages={"unique": "An account with that email already exists."})
+    email = models.EmailField(ugettext_lazy("Email address"), unique=True, error_messages={"unique": "An account with that email address already exists."})
     
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
