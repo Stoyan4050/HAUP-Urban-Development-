@@ -7,21 +7,25 @@ import pandas
 
 def extract_convert_to_esri():
     tg = TransformerGroup("epsg:4326", "epsg:28992")
-    col_list = ['item', 'geo', 'inception']
 
     # Change here the name of the input file
-    df = pandas.read_csv("./data_extraction/query.csv", names=col_list)
+    df = pandas.read_csv("./api/data_extraction/query.csv")
     points = df.geo.tolist()
-    years = df.inception.tolist()
-
     points.pop(0)
-    years.pop(0)
+
+    years = []
+    if 'inception' in df.columns:
+        years = df.inception.tolist()
+        years.pop(0)
+    else:
+        for i in range(len(points)):
+            years.append("2020")
 
     # Change the year of the map
-    year_map = 2010
+    year_map = 2020
 
     # Change here the name of the output file
-    f = open("./data_extraction/parks_tiles.txt", "a")
+    # f = open("./api/data_extraction/query_tiles.txt", "a")
 
     for location, year in zip(points, years):
         before_flip = location.split("(")[1][:-1]
@@ -44,17 +48,13 @@ def extract_convert_to_esri():
         url_result = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" \
                      + str(year_map) + "/MapServer/tile/11/" + str(y_esri) + "/" + str(x_esri)
 
-        if inception_year is None:
-            inception_year = 2020
+        Tile.objects.create_tile(url=url_result, label="park", year=inception_year)
 
-        tile = Tile(url=url_result, label="park", year=inception_year)
+        # f.write(url_result + " " + inception_year + "\n")
 
-        tile.save()
-
-        f.write(url_result + " " + inception_year + "\n")
-
-    f.close()
+    # f.close()
 
 
 if __name__ == '__main__':
+    # print(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
     extract_convert_to_esri()

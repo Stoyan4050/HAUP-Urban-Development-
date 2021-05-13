@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('url', models.CharField(max_length=200)),
                 ('label', models.CharField(max_length=50)),
-                ('year', models.IntegerField(max_length=4)),
+                ('year', models.IntegerField()),
             ],
         ),
     ]

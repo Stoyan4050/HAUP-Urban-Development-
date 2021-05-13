@@ -47,15 +47,14 @@ class TileManager(models.Manager):
         if not url:
             raise ValueError(ugettext_lazy("You can't save tile without URL"))
 
-        tile = self.model(url=url, label=label, year=year)
-        tile.save()
+        tile = self.create(url=url, label=label, year=year)
         return tile
 
 
 class Tile(models.Model):
     url = models.CharField(max_length=200)
     label = models.CharField(max_length=50)
-    year = models.IntegerField(max_length=4)
+    year = models.IntegerField()
     REQUIRED_FIELDS = [url, label]
     objects = TileManager()
 
