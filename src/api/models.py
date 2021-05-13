@@ -26,7 +26,7 @@ class UserManager(BaseUserManager):
             raise ValueError(ugettext_lazy("Superusers must have is_staff=True."))
         
         return self.create_user(email, password, **extra_fields)
-    
+
 class User(AbstractUser):
     username = None
     first_name = None
@@ -40,3 +40,22 @@ class User(AbstractUser):
     objects = UserManager()
 
 # Create your models here.
+
+
+class TileManager(models.Manager):
+    def create_tile(self, url, label, year):
+        if not url:
+            raise ValueError(ugettext_lazy("You can't save tile without URL"))
+
+        tile = self.model(url=url, label=label, year=year)
+        tile.save()
+        return tile
+
+
+class Tile(models.Model):
+    url = models.CharField(max_length=200)
+    label = models.CharField(max_length=50)
+    year = models.IntegerField(max_length=4)
+    REQUIRED_FIELDS = [url, label]
+    objects = TileManager()
+
