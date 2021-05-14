@@ -1,14 +1,12 @@
+from .email import send_email
 from .forms import ChangePasswordForm, RegisterForm, LoginForm, NewPasswordForm
 from .models import User
 from .tokens import token_generator
 from django.contrib.auth import authenticate, login
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_text
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
 from django.views import View
 
 class LoginView(View):
@@ -77,24 +75,8 @@ class SendActivationEmailView(View):
 
     def get(self, request, uid):
         self._context["hyperlinks"] = {**{"Click here to resend the activation email": "/urban_development/send_activation_email/" + uid}, **self._context["hyperlinks"]}
-        
-        try:
-            user = User.objects.get(pk=uid)
-        except:
-            user = None
 
-        if user is not None:
-            current_site = get_current_site(request)
-            email_subject = "Activate your Urban Devlopment account."
-            email_message = render_to_string("pages/account_activation_email.html", {
-                "user": user,
-                "domain": current_site.domain,
-                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                "token": token_generator.make_token(user),
-            })
-            email_to = user.email
-            email = EmailMessage(email_subject, email_message, to=[email_to])
-            email.send()
+        if send_email(uid, get_current_site(request).domain, "Activate your Urban Devlopment account.", "pages/account_activation_email.html"):
             self._context["title"] = "Activation Email Sent"
             return render(request, "pages/register_and_change_password_page.html", context=self._context)
 
@@ -158,24 +140,8 @@ class SendChangePasswordEmailView(View):
 
     def get(self, request, uid):
         self._context["hyperlinks"] = {**{"Click here to resend the change password email": "/urban_development/send_change_password_email/" + uid}, **self._context["hyperlinks"]}
-        
-        try:
-            user = User.objects.get(pk=uid)
-        except:
-            user = None
 
-        if user is not None:
-            current_site = get_current_site(request)
-            email_subject = "Change the password for your Urban Devlopment account."
-            email_message = render_to_string("pages/change_password_email.html", {
-                "user": user,
-                "domain": current_site.domain,
-                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                "token": token_generator.make_token(user),
-            })
-            email_to = user.email
-            email = EmailMessage(email_subject, email_message, to=[email_to])
-            email.send()
+        if send_email(uid, get_current_site(request).domain, "Change the password for your Urban Devlopment account.", "pages/change_password_email.html"):
             self._context["title"] = "Change Password Email Sent"
             return render(request, "pages/register_and_change_password_page.html", context=self._context)
         
