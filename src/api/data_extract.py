@@ -52,7 +52,6 @@ def extract_convert_to_esri():
     #     url_result = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" \
     #                  + str(year_map) + "/MapServer/tile/11/" + str(y_esri) + "/" + str(x_esri)
         try:
-            Tile.objects.get(x_coordinate=x_esri, y_coordinate=y_esri)
             Classification.objects.create(tile_id=Tile.objects.get(x_coordinate=x_esri, y_coordinate=y_esri), year=year,
                                           label=label, classified_by="-2")
         except Tile.DoesNotExist:
