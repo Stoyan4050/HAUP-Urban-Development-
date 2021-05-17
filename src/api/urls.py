@@ -1,4 +1,4 @@
-from .views import AccountActivatedView, ChangePasswordView, LoginView, PasswordChangedView, RegisterView, SendActivationEmailView, SendChangePasswordEmailView
+from .views import AccountActivatedView, ChangePasswordView, LoginView, PasswordChangedView, RegisterView, SendActivationEmailView, SendChangePasswordEmailView, MapInput
 from django.urls import path
 from django.views.generic import RedirectView
 
@@ -12,5 +12,6 @@ urlpatterns = [
     path("change_password/", ChangePasswordView.as_view(), name="change_password_page"),
     path("send_change_password_email/<slug:uid>/", SendChangePasswordEmailView.as_view(), name="send_change_password_email_page"),
     path("password_changed/<slug:uidb64>/<slug:token>/", PasswordChangedView.as_view(), name="password_changed_page"),
+    path("map_input/", MapInput.as_view(), name="map_input"),
     path("", RedirectView.as_view(url="login/", permanent=True)),
 ]

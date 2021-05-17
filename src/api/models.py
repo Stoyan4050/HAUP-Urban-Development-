@@ -3,6 +3,15 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import ugettext_lazy
 
+FEATURE_TYPES = (
+    ("park","park"),
+    ("pond", "pond"),
+    ("citysquares", "squares"),
+    ("forest", "forest"),
+    ("urbanforest", "urbanf"),
+    ("nationalpark", "nationalp"),
+)
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         if not email:
@@ -40,31 +49,42 @@ class User(AbstractUser):
     objects = UserManager()
 
 #models for the maps
-class InputTiles(models.Model):
+# class InputTiles(models.Model):
+#     year = models.IntegerField()
+#     name = models.CharField()
+#     filename = models.CharField()
+#
+# class Feature(models.Model):
+#     FEATURE_TYPES = (
+#         ("park","park"),
+#         ("pond", "pond"),
+#         ("citysquares", "squares"),
+#         ("forest", "forest"),
+#         ("urbanforest", "urbanf"),
+#         ("nationalpark", "nationalp"),
+#     )
+#     type = models.CharField(choices=FEATURE_TYPES)
+#     name = models.CharField()
+#
+# class MapFeature(models.Model):
+#     map = models.ForeignKey(InputTiles)
+#     feature = models.ForeignKey(Feature)
+#     # lat and long are center coordinates
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6)
+#     shape = models.MultiPolygonField()
+
+class Tile(models.Model):
+    tid = models.AutoField(primary_key=True)
+    x_coordinate = models.DecimalField(max_digits=9, decimal_places=6)
+    y_coordinate = models.DecimalField(max_digits=9, decimal_places=6)
+    #year = models.IntegerField()
+
+class Classification(models.Model):
+    tile = models.ForeignKey(Tile, db_column="tid", on_delete=models.CASCADE)
+    label = models.CharField(max_length=30)
+    #type = models.CharField(choices=FEATURE_TYPES, default=None, max_length=30)
     year = models.IntegerField()
-    name = models.CharField()
-    filename = models.CharField()
-
-class Feature(models.Model):
-    FEATURE_TYPES = (
-        ("park","park"),
-        ("pond", "pond"),
-        ("citysquares", "squares"),
-        ("forest", "forest"),
-        ("urbanforest", "urbanf"),
-        ("nationalpark", "nationalp"),
-    )
-    type = models.CharField(choices=FEATURE_TYPES)
-    name = models.CharField()
-
-class MapFeature(models.Model):
-    map = models.ForeignKey(InputTiles)
-    feature = models.ForeignKey(Feature)
-    # lat and long are center coordinates
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    shape = models.MultiPolygonField()
-
 
 
 

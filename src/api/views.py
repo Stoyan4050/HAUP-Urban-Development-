@@ -1,6 +1,6 @@
 from .email import send_email
 from .forms import ChangePasswordForm, RegisterForm, LoginForm, NewPasswordForm
-from .models import User
+from .models import User, Tile, Classification
 from .tokens import token_generator
 from django.contrib.auth import authenticate
 from django.contrib.sites.shortcuts import get_current_site
@@ -200,4 +200,9 @@ class PasswordChangedView(View):
                 return render(request, "pages/register_and_change_password_page.html", context=self._form_context)
 
         self._context["title"] = "Password Not Changed"
+        return render(request, "templates/user_data_template.html", context=self._context)
+
+
+class MapInput(View):
+    def get(self, request):
         return render(request, "templates/user_data_template.html", context=self._context)
