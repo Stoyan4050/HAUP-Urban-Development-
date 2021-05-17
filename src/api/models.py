@@ -17,7 +17,7 @@ FEATURE_TYPES = (
     ("naturereserve", "nature reserve"),
     ("park","park"),
     ("pond", "pond"),
-    ("recreationalares", "recretional area"),
+    ("recreationalares", "recreational area"),
     ("road", "road")
     ("school", "school"),
     ("urbanforest", "urban forest"),
