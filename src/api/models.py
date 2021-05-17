@@ -48,31 +48,6 @@ class User(AbstractUser):
 
     objects = UserManager()
 
-#models for the maps
-# class InputTiles(models.Model):
-#     year = models.IntegerField()
-#     name = models.CharField()
-#     filename = models.CharField()
-#
-# class Feature(models.Model):
-#     FEATURE_TYPES = (
-#         ("park","park"),
-#         ("pond", "pond"),
-#         ("citysquares", "squares"),
-#         ("forest", "forest"),
-#         ("urbanforest", "urbanf"),
-#         ("nationalpark", "nationalp"),
-#     )
-#     type = models.CharField(choices=FEATURE_TYPES)
-#     name = models.CharField()
-#
-# class MapFeature(models.Model):
-#     map = models.ForeignKey(InputTiles)
-#     feature = models.ForeignKey(Feature)
-#     # lat and long are center coordinates
-#     latitude = models.DecimalField(max_digits=9, decimal_places=6)
-#     longitude = models.DecimalField(max_digits=9, decimal_places=6)
-#     shape = models.MultiPolygonField()
 
 class Tile(models.Model):
     tid = models.AutoField(primary_key=True)
