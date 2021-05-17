@@ -201,8 +201,3 @@ class PasswordChangedView(View):
 
         self._context["title"] = "Password Not Changed"
         return render(request, "templates/user_data_template.html", context=self._context)
-
-
-class MapInput(View):
-    def get(self, request):
-        return render(request, "templates/user_data_template.html", context=self._context)
