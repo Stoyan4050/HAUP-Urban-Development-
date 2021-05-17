@@ -4,12 +4,23 @@ from django.db import models
 from django.utils.translation import ugettext_lazy
 
 FEATURE_TYPES = (
-    ("park","park"),
-    ("pond", "pond"),
+    ("arboretum", "arboretum")
+    ("botanicalgarden", "botanical garden"),
+    ("building", "building"),
+    ("church", "church"),
     ("citysquares", "squares"),
     ("forest", "forest"),
-    ("urbanforest", "urbanf"),
-    ("nationalpark", "nationalp"),
+    ("greenspace", "green space"),
+    ("monument", "monument"),
+    ("museum", "museum"),
+    ("nationalpark", "national park"),
+    ("naturereserve", "nature reserve"),
+    ("park","park"),
+    ("pond", "pond"),
+    ("recreationalares", "recretional area"),
+    ("road", "road")
+    ("school", "school"),
+    ("urbanforest", "urban forest"),
 )
 
 class UserManager(BaseUserManager):
@@ -60,6 +71,3 @@ class Classification(models.Model):
     label = models.CharField(max_length=30)
     #type = models.CharField(choices=FEATURE_TYPES, default=None, max_length=30)
     year = models.IntegerField()
-
-
-
