@@ -66,7 +66,7 @@ class Tile(models.Model):
 class ClassificationManager(models.Manager):
     def create_classification(self, tile_id, year, label, classified_by):
         if not tile_id:
-            raise ValueError(ugettext_lazy("There is no such tile!"))
+            raise ValueError(ugettext_lazy("No tile with these coordinates exists"))
 
         classification = self.create(tile_id=tile_id, year=year, label=label, classified_by=classified_by)
         return classification

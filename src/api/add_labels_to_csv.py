@@ -5,8 +5,10 @@ from csv import writer
 # It also adds the data label, which can be entered in by the user
 def add_label():
 
+    print("Please enter the file wish to read")
     file_name = input()
-    df = pandas.read_csv("./data_extraction/" +file_name)
+    df = pandas.read_csv("./data_extraction/" + file_name)
+    print("please enter in desired label name")
     label_name = input()
     points = df.geo.tolist()
     points.pop(0)
@@ -21,11 +23,11 @@ def add_label():
     with open ("./data_extraction/data.csv", 'a') as f_object:
         writer_object = writer(f_object)
         for ind in range(len(points)):
-            if(flag == True):
-                List =[points[ind], years[ind], label_name]
+            if flag:
+                args = [points[ind], years[ind], label_name]
             else:
-                List = [points[ind], "Unknown", label_name]
-            writer_object.writerow(List)
+                args = [points[ind], "Unknown", label_name]
+            writer_object.writerow(args)
 
         f_object.close()
 
