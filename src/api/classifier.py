@@ -97,7 +97,7 @@ def classify(year=2020):
         ext = os.path.splitext(f)[1]
         if ext.lower() not in valid_images:
             continue
-        imgs_test.append(cv2.imread((os.path.join(path_test, f)),1))
+        imgs_test.append(cv2.resize((cv2.imread((os.path.join(path_test, f)),1)), (32,32)))
 
     # train_images = imgs_train
     test_images = imgs_test
@@ -115,7 +115,7 @@ def classify(year=2020):
     hyperparameter_tuning_scores = np.empty(0)
 
     # Array containing the score of the highest rated estimator for each model
-    best_scores = np.empty(0)
+    # best_scores = np.empty(0)
 
     models = {
         "KNeighborsClassifier": KNeighborsClassifier(n_neighbors=3, weights="distance"),
@@ -137,7 +137,7 @@ def classify(year=2020):
                                                                           models["SVM"],
                                                                           params, train_labels, train_imgs_reshaped)
 
-    hyperparameter_tuning_scores = np.append(hyperparameter_tuning_scores, mean_score, )
+    hyperparameter_tuning_scores = np.append(hyperparameter_tuning_scores, mean_score, train_labels, train_images)
     best_estimators = np.append(best_estimators, best_model_estimator)
     # best_scores = np.append(best_scores, best_model_score)
 
@@ -149,7 +149,7 @@ def classify(year=2020):
     test_imgs_reshaped = test_images.reshape(mte, nte * rte * kte)
     #print("After reshaping " + str(test_imgs_reshaped.shape))
 
-    best_model = best_estimators[np.argmax(hyperparameter_tuning_scores)]
+    # best_model = best_estimators[np.argmax(hyperparameter_tuning_scores)]
     pipe = make_pipeline(best_estimators[0], best_estimators[1])
     pipe.fit(train_imgs_reshaped, train_labels)
     prediction = pipe.predict(test_imgs_reshaped)
