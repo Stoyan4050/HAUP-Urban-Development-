@@ -6,3 +6,4 @@
 *.csv filter=lfs diff=lfs merge=lfs -text
 *.mid filter=lfs diff=lfs merge=lfs -text
 *.mif filter=lfs diff=lfs merge=lfs -text
+*.docx filter=lfs diff=lfs merge=lfs -text
