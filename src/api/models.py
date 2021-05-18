@@ -58,16 +58,3 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
-
-
-class Tile(models.Model):
-    tid = models.AutoField(primary_key=True)
-    x_coordinate = models.DecimalField(max_digits=9, decimal_places=6)
-    y_coordinate = models.DecimalField(max_digits=9, decimal_places=6)
-    #year = models.IntegerField()
-
-class Classification(models.Model):
-    tile = models.ForeignKey(Tile, db_column="tid", on_delete=models.CASCADE)
-    label = models.CharField(max_length=30)
-    #type = models.CharField(choices=FEATURE_TYPES, default=None, max_length=30)
-    year = models.IntegerField()

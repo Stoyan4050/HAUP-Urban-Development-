@@ -1,4 +1,4 @@
-from .views import AccountActivatedView, ChangePasswordView, LoginView, PasswordChangedView, RegisterView, SendActivationEmailView, SendChangePasswordEmailView, MapInput
+from .views import AccountActivatedView, ChangePasswordView, LoginView, PasswordChangedView, RegisterView, SendActivationEmailView, SendChangePasswordEmailView
 from django.urls import path
 from django.views.generic import RedirectView
 
