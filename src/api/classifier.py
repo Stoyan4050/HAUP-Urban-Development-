@@ -1,4 +1,5 @@
 import os
+import urllib.request
 
 import cv2
 import numpy as np
@@ -13,16 +14,81 @@ from sklearn.pipeline import make_pipeline
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
+from .models import Classification, Tile
+def getImageFromURL(year, x_coord, y_coord):
+    url = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + str(
+        year) + "/MapServer/tile/11/" + str(x_coord) + "/" + str(y_coord)
 
-def classify():
+    res = urllib.request.urlretrieve(url)
+    img = cv2.resize(cv2.imread(res[0],1), (32,32))
+    return img
+
+def getImages(year=2020):
+    data = Classification.objects.all()
+    training_imgs = []
+    counter = 0
+    for c in data:
+        print(c.year)
+        tileYear = c.year
+        print(tileYear)
+        if tileYear == "Unknown":
+            tileYear = 2020
+
+        if tileYear == year:
+
+            tile = c.tile_id
+            print(year)
+            img = getImageFromURL(year, tile.y_coordinate, tile.x_coordinate)
+            print(counter)
+            training_imgs.append((img, c.label))
+            counter+=1
+
+    return training_imgs
+#
+def random_sample(arr):
+    arr = np.array(arr)
+    print(arr)
+    return arr[np.random.choice(len(arr), size=int(len(arr)/10), replace=False)]
+
+def getPortionOfTheData(data):
+    print(len(data))
+    #np.array(X_train)[indices.astype(int)]
+    ix_size = int(0.05 * len(data))
+    ix = np.random.choice(len(data), size=ix_size, replace=False)
+    train_data_10per = data[ix]
+    np.random.shuffle(train_data_10per)
+    print(len(train_data_10per))
+    return train_data_10per
+
+def getLabelsImgs(data):
+    labels = []
+    imgs = []
+    for img, lb in data:
+        labels.append(lb)
+        imgs.append(img)
+    return labels, imgs
+
+def classify(year=2020):
+
+    #train_data = getImages()
+    train_data = getImages()
+    train_data_10per = random_sample(train_data)
+    # print(train_data)
+    # print(train_data_10per)
+    train_labels, train_images = getLabelsImgs(train_data_10per)
+    #print(train_labels, train_images)
+    print("Training data extracted!")
+    # img = getImageFromURL(2020, 75400, 75410)
+    # cv2.imshow("img", img)
+    # cv2.waitKey()
     imgs_train = []
-    path = "./training_data"
-    valid_images = [".jpg", ".png"]
-    for f in os.listdir(path):
-        ext = os.path.splitext(f)[1]
-        if ext.lower() not in valid_images:
-            continue
-        imgs_train.append(cv2.imread((os.path.join(path, f)),1))
+    # path = "./training_data"
+    # valid_images = [".jpg", ".png"]
+    # for f in os.listdir(path):
+    #     ext = os.path.splitext(f)[1]
+    #     if ext.lower() not in valid_images:
+    #         continue
+    #     imgs_train.append(cv2.imread((os.path.join(path, f)),1))
 
     imgs_test = []
     path_test = "./test_data"
@@ -33,16 +99,15 @@ def classify():
             continue
         imgs_test.append(cv2.imread((os.path.join(path_test, f)),1))
 
-    train_images = imgs_train
+    # train_images = imgs_train
     test_images = imgs_test
-    train_labels = ["park", "park", "park", "park", "park", "park", "park", "park", "no-park", "no-park", "no-park", "no-park", "no-park", "no-park", "no-park", "no-park",]
 
     train_images = np.array(train_images)
     test_images = np.array(test_images)
-    print(train_images.shape)
+    print("Training imgs loaded. Classification starts!")
     m, n, r, k = train_images.shape
     train_imgs_reshaped = train_images.reshape(m, n * r * k)
-    train_labels = np.array(train_labels)
+
     # Array that holds the best set of parameters for each model
     best_estimators = np.empty(0)
 
@@ -70,11 +135,11 @@ def classify():
 
     mean_score, best_model_score, best_model_estimator = tune_hyperparams("svm",
                                                                           models["SVM"],
-                                                                          params, train_imgs_reshaped, train_labels)
+                                                                          params, train_labels, train_imgs_reshaped)
 
     hyperparameter_tuning_scores = np.append(hyperparameter_tuning_scores, mean_score, )
     best_estimators = np.append(best_estimators, best_model_estimator)
-    best_scores = np.append(best_scores, best_model_score)
+    # best_scores = np.append(best_scores, best_model_score)
 
     # print(hyperparameter_tuning_scores, "ddd")
     # print(best_estimators, "ccc")
@@ -91,9 +156,11 @@ def classify():
     print(prediction)
 
 
-def tune_hyperparams(estimator_name, estimator, estimator_params, train_images, train_labels):
+def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, train_images):
 
     k_fold = KFold(n_splits=4)
+
+
     best_model_estimator = Pipeline([("pca", PCA()), (estimator_name, estimator)])
     sum_scores = 0
     best_model_score = 0.0
