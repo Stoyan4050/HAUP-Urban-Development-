@@ -1,19 +1,17 @@
 stages:
   - build
-  - staticAnalysis
   - test
 
 build:
   stage: build
   script:
-
-
-checkStyle:
-  stage: staticAnalysis
-  script:
+    - echo "Building
+    - mkdir build
+    - touch build/info.txt
 
 test:
   stage: test
   script:
-    - python manage.py test
+    - echo "Testing"
+    - test -f "build/info.txt"
 
