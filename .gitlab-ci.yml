@@ -1,28 +1,19 @@
 image: python:latest
 
+before_script:
+  - python --version
+  - pip install -r requirements.txt
+
 stages:
-  - build
   - static analysis
-  - test
 
-build:
-  stage: build
+flake8:
+  stage: static analysis
   script:
-    - echo "Building
-    - mkdir build
-    - touch build/info.txt
-  artifacts:
-    paths:
-      - build/
+  - flake8 --max-line-length=120 bild/*.py
 
-static analysis:
+pylint:
+  stage: static analysis
+  allow_failure: true
   script:
-    - pylint -d C0301 src/*.py
-
-test:
-  stage: test
-  script:
-    - echo "Testing"
-    - test -f "build/info.txt"
-    - cd test/;pytest -v
-
+  - pylint -d C0301 bild/*.py

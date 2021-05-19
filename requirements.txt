@@ -16,4 +16,13 @@ six==1.16.0
 sqlparse==0.4.1
 threadpoolctl==2.1.0
 typing-extensions==3.10.0.0
+flake8==3.9.2
+importlib-metadata==4.0.1
+mccabe==0.6.1
+pycodestyle==2.7.0
+pyflakes==2.3.1
+pytz==2021.1
+sqlparse==0.4.1
+typing-extensions==3.10.0.0
+zipp==3.4.1
 pylint==2.4.4
