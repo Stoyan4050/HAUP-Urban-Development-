@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Urban Development">
+        <meta name="author" content="Group 18A">
+        <title>Urban Development</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'urban_development/css/map_data_template.css' %}">
+        {% block imports %}
+        {% endblock %}
+    </head>
+    <body>
+        <div id="header">
+            <div class="header-cell">
+                <button class="header-button" {% if map_view %}disabled{% endif %}>
+                    Map View
+                </button>
+            </div>
+            <div class="header-cell">
+                <button class="header-button" {% if not map_view %}disabled{% endif %}>
+                    Data View
+                </button>
+            </div>
+            <div class="header-cell">
+                <div>
+                    <span>
+                        Year
+                    </span>
+                    <br>
+                    <select name="year" id="year">
+                        <option value="2020">
+                            2020
+                        </option>
+                        {% for key, value in years.items %}
+                        <option value="{{ value }}">
+                            {{ key }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            {% if map_view %}
+            <div class="header-cell">
+                <div>
+                    <span>
+                        Overlay
+                    </span>
+                    <br>
+                    <select name="overlay" id="overlay">
+                        <option value="None">None</option>
+                        <option value="Classified as">Classified as</option>
+                        <option value="Classified by">Classified by</option>
+                    </select>
+                </div>
+            </div>
+            {% endif %}
+            <div class="header-cell" id="email-cell">
+                <div>
+                    <span>
+                        Hello, 
+                        {% if user.is_authenticated %}
+                        {{ user.email }}
+                        {% else %}
+                        guest
+                        {% endif %}
+                    </span>
+                    <br>
+                    <a href="/urban_development/logout/">
+                        Log out
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>

@@ -1,15 +1,22 @@
+import collections
+import json
+import requests
 from .forms import ChangePasswordForm, RegisterForm, LoginForm, NewPasswordForm
-from .models import User
+from .models import Classification, Tile, User
+from .tile_to_coordinates_transformer import TileToCoordinatesTransformer
 from .tokens import token_generator
-from django.contrib.auth import authenticate, login
+from bs4 import BeautifulSoup
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
-from django.http import HttpResponse
+from django.db.models import Q
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
+from pyproj import Transformer
 
 class LoginView(View):
     _context = {
@@ -18,7 +25,7 @@ class LoginView(View):
         "hyperlinks": {
             "Click here to change your password": "/urban_development/change_password/",
             "Click here to register": "/urban_development/register/",
-            "Log in as a guest": "",
+            "Log in as a guest": "/urban_development/guest/",
         },
         "button": "Log in",
     }
@@ -36,8 +43,8 @@ class LoginView(View):
             user = authenticate(request, username=email, password=password)
             
             if user is not None:
-                # login(request, user)
-                return redirect("urban_development:register_page")
+                login(request, user)
+                return redirect("urban_development:map_page")
         
         self._context["form"] = form
         return render(request, "pages/login_page.html", context=self._context)
@@ -235,3 +242,135 @@ class PasswordChangedView(View):
 
         self._context["title"] = "Password Not Changed"
         return render(request, "templates/user_data_template.html", context=self._context)
+
+class MapView(View):
+    _context = {
+        "map_view": True,
+    }
+
+    def get(self, request):
+        page = requests.get("https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services")
+        soup = BeautifulSoup(page.content, 'html.parser')
+        years = {}
+        
+        for hyperlink in soup.select("ol[id=serviceList] > li > a[id=l1]"):
+            if hyperlink.text.startswith("Historische_tijdreis_"):
+                reference = hyperlink.text[len("Historische_tijdreis_") : ]
+
+                if "_" in reference:
+                    for i in range(int(reference[ : reference.index("_")]), int(reference[reference.index("_") + 1 : ]) + 1):
+                        years[i] = reference
+                else:
+                    years[int(reference)] = reference
+        
+        self._context["years"] = collections.OrderedDict(sorted(years.items(), reverse=True))
+        return render(request, "pages/map_page.html", context=self._context)
+
+class GetClassifiedAsView(View):
+    def get(self, request, parameters):
+        params = json.loads(parameters)
+        classifications_for_year = Classification.objects.filter(year__lte=params.get("year"))
+
+        if len(classifications_for_year) == 0:
+            return HttpResponseBadRequest("No classified tiles for the selected year.")
+
+        all_ids = classifications_for_year.values("tile_id").distinct()
+        public_space_ids = classifications_for_year.filter(~Q(label="not a public space")).values("tile_id").distinct()
+        not_public_space_ids = classifications_for_year.filter(label="not a public space").values("tile_id").distinct()
+
+        all_tiles = Tile.objects.filter(tid__in=all_ids.values_list("tile_id", flat=True))
+        public_space_tiles = Tile.objects.filter(tid__in=public_space_ids.values_list("tile_id", flat=True))
+        not_public_space_tiles = Tile.objects.filter(tid__in=not_public_space_ids.values_list("tile_id", flat=True))
+
+        result = {}
+
+        tile_to_coordinates_transformer = TileToCoordinatesTransformer()
+        coordinates_transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
+        
+        for tile in all_tiles:
+            coordinates = tile_to_coordinates_transformer.transform(tile.x_coordinate, tile.y_coordinate)
+            center_coordinates = coordinates_transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
+            result[tile.tid] = {
+                "xmin": coordinates["xmin"],
+                "ymin": coordinates["ymin"],
+                "xmax": coordinates["xmax"],
+                "ymax": coordinates["ymax"],
+                "x_coordinate": center_coordinates[0],
+                "y_coordinate": center_coordinates[1],
+                "public_space": False,
+                "not_public_space": False,
+            }
+
+        for tile in public_space_tiles:
+            result[tile.tid]["public_space"] = True
+
+        for tile in not_public_space_tiles:
+            result[tile.tid]["not_public_space"] = True
+
+        return JsonResponse(list(result.values()), safe=False)
+
+class GetClassifiedByView(View):
+    def get(self, request, parameters):
+        params = json.loads(parameters)
+        classifications_for_year = Classification.objects.filter(year__lte=params.get("year"))
+
+        if len(classifications_for_year) == 0:
+            return HttpResponseBadRequest("No classified tiles for the selected year.")
+
+        all_ids = classifications_for_year.values("tile_id").distinct()
+        user_ids = classifications_for_year.filter(classified_by__gt=0).values("tile_id").distinct()
+        classifier_ids = classifications_for_year.filter(classified_by=-1).values("tile_id").distinct()
+        training_data_ids = classifications_for_year.filter(classified_by=-2).values("tile_id").distinct()
+
+        all_tiles = Tile.objects.filter(tid__in=all_ids.values_list("tile_id", flat=True))
+        user_tiles = Tile.objects.filter(tid__in=user_ids.values_list("tile_id", flat=True))
+        classifier_tiles = Tile.objects.filter(tid__in=classifier_ids.values_list("tile_id", flat=True))
+        training_data_tiles = Tile.objects.filter(tid__in=training_data_ids.values_list("tile_id", flat=True))
+
+        result = {}
+
+        tile_to_coordinates_transformer = TileToCoordinatesTransformer()
+        coordinates_transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
+
+        for tile in all_tiles:
+            coordinates = tile_to_coordinates_transformer.transform(tile.x_coordinate, tile.y_coordinate)
+            center_coordinates = coordinates_transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
+            result[tile.tid] = {
+                "xmin": coordinates["xmin"],
+                "ymin": coordinates["ymin"],
+                "xmax": coordinates["xmax"],
+                "ymax": coordinates["ymax"],
+                "x_coordinate": center_coordinates[0],
+                "y_coordinate": center_coordinates[1],
+                "user": False,
+                "classifier": False,
+                "training_data": False,
+            }
+
+        for tile in user_tiles:
+            result[tile.tid]["user"] = True
+
+        for tile in classifier_tiles:
+            result[tile.tid]["classifier"] = True
+
+        for tile in training_data_tiles:
+            result[tile.tid]["training_data"] = True
+
+        return JsonResponse(list(result.values()), safe=False)
+
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect("urban_development:login_page")
+
+class GuestView(View):
+    def get(self, request):
+        logout(request)
+        return redirect("urban_development:map_page")
+
+class BaseView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect("urban_development:map_page")
+        
+        return redirect("urban_development:login_page")

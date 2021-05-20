@@ -9,6 +9,7 @@ body {
     bottom: 0; 
     left: 0; 
     right: 0;
+    margin: 0;
 }
 
 table {
@@ -41,7 +42,7 @@ button {
 /* IDs */
 
 #header {
-    text-align: center; 
+    text-align: center;
 }
 
 #title-container {
@@ -51,7 +52,7 @@ button {
 #title {
     background-color: white;
     padding: 0 10px;
-    margin: 5vh 0 0 0;
+    margin: 6vh 0 0 0;
     border: solid;
     border-color: black;
     border-width: 5px;

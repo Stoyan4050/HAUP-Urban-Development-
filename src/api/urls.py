@@ -1,6 +1,5 @@
-from .views import AccountActivatedView, ChangePasswordView, LoginView, PasswordChangedView, RegisterView, SendActivationEmailView, SendChangePasswordEmailView
+from .views import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedAsView, GetClassifiedByView, GuestView, LoginView, LogoutView, MapView, PasswordChangedView, RegisterView, SendActivationEmailView, SendChangePasswordEmailView
 from django.urls import path
-from django.views.generic import RedirectView
 
 app_name = "urban_development"
 
@@ -12,5 +11,10 @@ urlpatterns = [
     path("change_password/", ChangePasswordView.as_view(), name="change_password_page"),
     path("send_change_password_email/<slug:uid>/", SendChangePasswordEmailView.as_view(), name="send_change_password_email_page"),
     path("password_changed/<slug:uidb64>/<slug:token>/", PasswordChangedView.as_view(), name="password_changed_page"),
-    path("", RedirectView.as_view(url="login/", permanent=True)),
+    path("map/", MapView.as_view(), name="map_page"),
+    path("get_classified_as/<parameters>/", GetClassifiedAsView.as_view(), name="get_classified_as_page"),
+    path("get_classified_by/<parameters>/", GetClassifiedByView.as_view(), name="get_classified_by_page"),
+    path("logout/", LogoutView.as_view(), name="logout_page"),
+    path("guest/", GuestView.as_view(), name="guest_page"),
+    path("", BaseView.as_view(), name="base_page"),
 ]
