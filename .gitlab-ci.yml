@@ -10,6 +10,12 @@ stages:
   - test
   - deploy
 
+run:
+  stage: build
+  script:
+  - cd src
+  - python manage.py runserver
+
 flake8:
   stage: static analysis
   script:
