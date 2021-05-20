@@ -5,8 +5,10 @@ before_script:
   - pip install -r requirements.txt
 
 stages:
+  - build
   - static analysis
   - test
+  - deploy
 
 flake8:
   stage: static analysis
@@ -18,8 +20,8 @@ pylint:
   allow_failure: true
   script:
   - pylint -d C0301 src/*.py
+  - pylint -d C0301 src/api/*.py
+  - pylint -d C0301 src/urban_development/*.py
 
-test:
-  script:
-    - python manage.py test
+
 
