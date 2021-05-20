@@ -23,5 +23,9 @@ pylint:
   - pylint -d C0301 src/api/*.py
   - pylint -d C0301 src/urban_development/*.py
 
-
+unit_test:
+  stage: test
+  script:
+  - cd src
+  - python manage.py test
 
