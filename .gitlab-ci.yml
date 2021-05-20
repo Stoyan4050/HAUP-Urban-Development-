@@ -6,6 +6,8 @@ before_script:
 
 stages:
   - static analysis
+  - test
+  - deploy
 
 flake8:
   stage: static analysis
@@ -17,3 +19,12 @@ pylint:
   allow_failure: true
   script:
   - pylint -d C0301 src/*.py
+
+MSDeploy:
+  stage: Deploy
+  script:
+  - echo "test ms depoly"
+  - cd src/
+  - pyinstaller -F lintpractice.py
+  tags:
+  - deployMS
