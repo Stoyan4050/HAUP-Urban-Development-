@@ -21,7 +21,7 @@ pylint:
   - pylint -d C0301 src/*.py
 
 MSDeploy:
-  stage: Deploy
+  stage: deploy
   script:
   - echo "test ms depoly"
   - cd src/
