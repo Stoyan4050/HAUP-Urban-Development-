@@ -43,9 +43,6 @@ class User(AbstractUser):
     objects = UserManager()
 
 
-# Create your models here.
-
-
 class TileManager(models.Manager):
     def create_tile(self, x_coordinate, y_coordinate):
         if not x_coordinate or not y_coordinate:
@@ -78,3 +75,5 @@ class Classification(models.Model):
     label = models.CharField(max_length=50)
     classified_by = models.IntegerField()
     objects = ClassificationManager()
+
+# Create your models here.
