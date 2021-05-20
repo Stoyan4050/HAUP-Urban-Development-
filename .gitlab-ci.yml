@@ -26,5 +26,3 @@ MSDeploy:
   - echo "test ms depoly"
   - cd src/
   - pyinstaller -F lintpractice.py
-  tags:
-  - deployMS
