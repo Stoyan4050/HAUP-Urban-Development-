@@ -71,7 +71,7 @@ class ClassificationManager(models.Manager):
 
 class Classification(models.Model):
     tile_id = models.ForeignKey("Tile", null=False, db_column="tid", on_delete=models.CASCADE)
-    year = models.CharField(max_length=255)
+    year = models.IntegerField()
     label = models.CharField(max_length=50)
     classified_by = models.IntegerField()
     objects = ClassificationManager()
