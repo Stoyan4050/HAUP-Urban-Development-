@@ -3,6 +3,8 @@ import urllib.request
 
 import cv2
 import numpy as np
+import tensorflow as tf
+import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
@@ -14,6 +16,8 @@ from sklearn.pipeline import make_pipeline
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from django.db.models import Q
+from tensorflow.keras import Sequential
+from tensorflow.keras import layers
 
 from .models import Classification, Tile
 def getImageFromURL(year, x_coord, y_coord):
@@ -243,38 +247,58 @@ def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, 
 
 
     #------------------------------ TensorFlow approach - in progress:
-    #
-    # # Normalize pixel values to be between 0 and 1
-    # train_images, test_images = train_images / 255.0, test_images / 255.0
-    #
-    # model = models.Sequential()
-    # model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(256, 256, 3)))
-    # model.add(layers.MaxPooling2D((2, 2)))
-    # model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    # model.add(layers.MaxPooling2D((2, 2)))
-    # model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    #
-    # model.summary()
-    #
-    # model.add(layers.Flatten())
-    # model.add(layers.Dense(64, activation='relu'))
-    # model.add(layers.Dense(10))
-    #
-    # model.compile(optimizer='adam',
-    #               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-    #               metrics=['accuracy'])
-    #
-    # # history = model.fit(train_images, train_labels, epochs=5,
-    # #                     validation_data=(test_images, test_labels))
-    # #
-    # # plt.plot(history.history['accuracy'], label='accuracy')
-    # # plt.plot(history.history['val_accuracy'], label='val_accuracy')
-    # # plt.xlabel('Epoch')
-    # # plt.ylabel('Accuracy')
-    # # plt.ylim([0.5, 1])
-    # # plt.legend(loc='lower right')
-    # # plt.show()
-    # #test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
-    # prediction = model.predict(test_images)
-    # print(prediction)
-    # #print(test_acc)
+def train_cnn(year=2015):
+    train_data = getImagesTraining(Classification.objects.filter(year__lte=year), year)
+    # train_data_10per = random_sample(train_data)
+    # print(train_data)
+    # print(train_data_10per)
+    train_labels, train_images = getLabelsImgs(train_data)
+    # print(train_labels, train_images)
+    print("Training data extracted!")
+
+    test_data = getImagesTest(year)
+    test_coord, test_images = getLabelsImgs(test_data)
+
+    train_images = np.array(train_images)
+    test_images = np.array(test_images)
+    # print("TEST", test_images)
+    print("Training imgs loaded. Classification starts!")
+
+
+
+    # Normalize pixel values to be between 0 and 1
+    train_images, test_images = train_images / 255.0, test_images / 255.0
+
+    model = Sequential()
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(256, 256, 3)))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+
+
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(64, activation='relu'))
+    model.add(layers.Dense(10))
+
+    model.summary()
+
+    model.compile(optimizer='adam',
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  metrics=['accuracy'])
+
+    history = model.fit(train_images, train_labels, epochs=5,
+                     validation_split=0.2)
+
+    plt.plot(history.history['accuracy'], label='accuracy')
+    plt.plot(history.history['val_accuracy'], label='val_accuracy')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.ylim([0.5, 1])
+    plt.legend(loc='lower right')
+    plt.show()
+    #test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
+    prediction = model.predict(test_images)
+    print(prediction)
+    #print(test_acc)
