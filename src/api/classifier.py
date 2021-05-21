@@ -1,6 +1,7 @@
 import os
 import urllib.request
 
+import os
 import cv2
 import numpy as np
 import tensorflow as tf
@@ -18,6 +19,8 @@ from sklearn.tree import DecisionTreeClassifier
 from django.db.models import Q
 from tensorflow.keras import Sequential
 from tensorflow.keras import layers
+from sklearn.preprocessing import LabelEncoder
+from sklearn.utils import shuffle
 
 from .models import Classification, Tile
 def getImageFromURL(year, x_coord, y_coord):
@@ -40,9 +43,11 @@ def getImagesTraining(data, year):
             #print(year)
         img = getImageFromURL(year, tile.y_coordinate, tile.x_coordinate)
             #print(counter)
+        save_images(c.label, img, counter, True)
         training_imgs.append((img, c.label))
         #print(counter)
         print(counter)
+
         counter+=1
         # if counter > 100:
         #     print(len(training_imgs), "IM")
@@ -66,6 +71,7 @@ def getImagesTest(year):
         tile = c.tile_id
         # print(year)
         img = getImageFromURL(year, tile.y_coordinate, tile.x_coordinate)
+        save_images(c.label, img, counter, False)
         # print(counter)
         coord = (tile.y_coordinate, tile.x_coordinate)
         test_imgs.append((img, coord))
@@ -238,49 +244,99 @@ def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, 
     mean_score = sum_scores / k_fold.get_n_splits()
 
 
-    # print("Mean score:", mean_score, "\n")
-    # print("Best score:", best_model_score, "\n")
-    # print("Best estimator:", best_model_estimator)
+    print("Mean score:", mean_score, "\n")
+    print("Best score:", best_model_score, "\n")
+    print("Best estimator:", best_model_estimator)
     return mean_score, best_model_score, best_model_estimator
 
 
 
+def save_images(label, img, counter, train=True):
+    path = "./data"
+
+    if train:
+        try:
+            os.makedirs(path + "/train")
+            path = path + "/train"
+        except:
+            print("exception dir")
+        try:
+            os.makedirs(path + "/" + label)
+        except:
+            print("directory already present")
+
+        cv2.imwrite(path + "/" + label + "/train_img_" + str(counter) + ".jpg", img)
+    else:
+        try:
+            os.makedirs(path + "/test")
+            path = path + "/test"
+        except:
+            print("exception dir")
+        try:
+            os.makedirs(path + "/" + label)
+        except:
+            print("directory already present")
+
+        cv2.imwrite(path + "/" + label + "/test_img_" + str(counter) + ".jpg", img)
 
     #------------------------------ TensorFlow approach - in progress:
-def train_cnn(year=2015):
-    train_data = getImagesTraining(Classification.objects.filter(year__lte=year), year)
+def train_cnn(year=2015, download_data=False):
+    if download_data:
+        getImagesTraining(Classification.objects.filter(year__lte=year), year)
+        getImagesTest(year)
+
+    all_labels = []
+    PATH_TO_DIRECTORY = "./data/train"
+    for root, dirs, files in os.walk(PATH_TO_DIRECTORY):
+        all_labels += dirs
+    train_images, train_labels = read_images(all_labels, True)
+    test_images, test_labels = read_images(all_labels, False)
+
+    #train_data = getImagesTraining(Classification.objects.filter(year__lte=year), year)
     # train_data_10per = random_sample(train_data)
     # print(train_data)
     # print(train_data_10per)
-    train_labels, train_images = getLabelsImgs(train_data)
+    #train_labels, train_images = getLabelsImgs(train_data)
     # print(train_labels, train_images)
     print("Training data extracted!")
 
-    test_data = getImagesTest(year)
-    test_coord, test_images = getLabelsImgs(test_data)
+    #test_data = getImagesTest(year)
+    #test_coord, test_images = getLabelsImgs(test_data)
 
-    train_images = np.array(train_images)
-    test_images = np.array(test_images)
+    le = LabelEncoder()
+    train_labels = le.fit_transform(train_labels)
+    #test_images = np.array(test_images)
     # print("TEST", test_images)
     print("Training imgs loaded. Classification starts!")
 
 
-
     # Normalize pixel values to be between 0 and 1
-    train_images, test_images = train_images / 255.0, test_images / 255.0
+    #train_images, test_images = train_images / 255.0, test_images / 255.0
+    train_images = train_images / 255.0
+
+    train_images, train_labels = shuffle(train_images, train_labels, random_state=1)
 
     model = Sequential()
-    model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(256, 256, 3)))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+    model.add(layers.BatchNormalization())
     model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.Dropout(0.25))
+
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+    model.add(layers.BatchNormalization())
     model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.Dropout(0.25))
 
-
+    model.add(layers.Conv2D(128, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+    model.add(layers.BatchNormalization())
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Dropout(0.25))
 
     model.add(layers.Flatten())
-    model.add(layers.Dense(64, activation='relu'))
-    model.add(layers.Dense(10))
+    model.add(layers.Dense(512, activation='relu'))
+    model.add(layers.BatchNormalization())
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(9, activation='softmax'))
 
     model.summary()
 
@@ -288,8 +344,8 @@ def train_cnn(year=2015):
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=['accuracy'])
 
-    history = model.fit(train_images, train_labels, epochs=5,
-                     validation_split=0.2)
+    history = model.fit(train_images, train_labels, epochs=20,
+                     validation_split=0.2, shuffle=True)
 
     plt.plot(history.history['accuracy'], label='accuracy')
     plt.plot(history.history['val_accuracy'], label='val_accuracy')
@@ -299,6 +355,25 @@ def train_cnn(year=2015):
     plt.legend(loc='lower right')
     plt.show()
     #test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
-    prediction = model.predict(test_images)
-    print(prediction)
+    #prediction = model.predict(test_images)
+    #print(prediction)
     #print(test_acc)
+
+
+def read_images(all_labels, train_data=True):
+    images = []
+    labels = []
+    for label in all_labels:
+        print(label)
+        if train_data:
+            path = "./data/train" + label
+        else:
+            path = "./data/test" + label
+        for filename in os.listdir(path):
+            img = cv2.imread(path + "/" + filename)
+            if img is not None:
+                images.append(img)
+                labels.append(label)
+    images = np.array(images)
+    labels = np.array(labels)
+    return images, labels
