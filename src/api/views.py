@@ -256,14 +256,14 @@ class GetClassifiedAsView(View):
         
         for tile in all_tiles:
             coordinates = tile_to_coordinates_transformer.transform(tile.x_coordinate, tile.y_coordinate)
-            center_coordinates = coordinates_transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
+            x_coordinate, y_coordinate = coordinates_transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
             result[tile.tid] = {
                 "xmin": coordinates["xmin"],
                 "ymin": coordinates["ymin"],
                 "xmax": coordinates["xmax"],
                 "ymax": coordinates["ymax"],
-                "x_coordinate": center_coordinates[0],
-                "y_coordinate": center_coordinates[1],
+                "x_coordinate": x_coordinate,
+                "y_coordinate": y_coordinate,
                 "public_space": False,
                 "not_public_space": False,
             }
@@ -301,14 +301,14 @@ class GetClassifiedByView(View):
 
         for tile in all_tiles:
             coordinates = tile_to_coordinates_transformer.transform(tile.x_coordinate, tile.y_coordinate)
-            center_coordinates = coordinates_transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
+            x_coordinate, y_coordinate = coordinates_transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
             result[tile.tid] = {
                 "xmin": coordinates["xmin"],
                 "ymin": coordinates["ymin"],
                 "xmax": coordinates["xmax"],
                 "ymax": coordinates["ymax"],
-                "x_coordinate": center_coordinates[0],
-                "y_coordinate": center_coordinates[1],
+                "x_coordinate": x_coordinate,
+                "y_coordinate": y_coordinate,
                 "user": False,
                 "classifier": False,
                 "training_data": False,

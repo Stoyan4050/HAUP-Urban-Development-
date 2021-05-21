@@ -1,22 +1,24 @@
-from math import floor
-from .models import Tile, Classification
-from pyproj.transformer import TransformerGroup
-
 import pandas
-
+from .models import Tile, Classification
+from math import floor
+from pyproj import Transformer
 
 def extract_convert_to_esri():
-    tg = TransformerGroup("epsg:4326", "epsg:28992")
+    transformer = Transformer.from_crs("EPSG:4326", "EPSG:28992")
 
     # Change here the name of the input file
     df = pandas.read_csv("./api/data_extraction/data.csv")
+    
     points = df.geo.tolist()
     points.pop(0)
+    
     labels = df.label.tolist()
     labels.pop(0)
+    
     if 'inception' in df.columns:
         years = df.inception.tolist()
         years.pop(0)
+    
     # Change here the name of the output file
     # f = open("./api/data_extraction/query_tiles.txt", "a")
 
@@ -28,11 +30,9 @@ def extract_convert_to_esri():
 
     for location, year, label in zip(points, years, labels):
         before_flip = location.split("(")[1][:-1]
-        x = before_flip.split(" ")[1]
-        y = before_flip.split(" ")[0]
-
-        x_esri = tg.transformers[0].transform(x, y)[0]
-        y_esri = tg.transformers[0].transform(x, y)[1]
+        x, y = before_flip.split(" ")
+        x_esri, y_esri = transformer.transform(x, y)
+        
         if isinstance(year, str):
             year = str(year.split("-")[0])
         else:
@@ -49,6 +49,7 @@ def extract_convert_to_esri():
 
     #     url_result = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" \
     #                  + str(year_map) + "/MapServer/tile/11/" + str(y_esri) + "/" + str(x_esri)
+        
         try:
             Classification.objects.create(tile_id=Tile.objects.get(x_coordinate=x_esri, y_coordinate=y_esri), year=year,
                                           label=label, classified_by="-2")
