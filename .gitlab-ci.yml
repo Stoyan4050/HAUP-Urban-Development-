@@ -19,6 +19,7 @@ pylint:
   stage: static analysis
   allow_failure: true
   script:
+  - pylint -d C0301 src/*.py
   - pylint -d C0301 src/api/*.py
   - pylint -d C0301 src/urban_development/*.py
 
