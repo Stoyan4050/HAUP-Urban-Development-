@@ -5,7 +5,19 @@ before_script:
   - pip install -r requirements.txt
 
 stages:
-  - build
   - static analysis
   - test
   - deploy
+
+flake8:
+  stage: static analysis
+  script:
+  - flake8 --max-line-length=120 src/*.py
+
+pylint:
+  stage: static analysis
+  allow_failure: true
+  script:
+  - pylint -d C0301 src/*.py
+  - pylint -d C0301 src/api/*.py
+  - pylint -d C0301 src/urban_development/*.py
