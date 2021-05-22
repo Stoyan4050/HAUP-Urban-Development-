@@ -281,9 +281,6 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/LayerList", "esri/widge
                     setupSpan("user-classifier-training-data-tiles", json["user_classifier_training_data"]);
                 }
             } catch (exception) {
-                console.error(exception);
-                console.error(exception.lineNumber);
-                    
                 alert("Error.");
             }
         }
