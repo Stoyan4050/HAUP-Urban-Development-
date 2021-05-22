@@ -10,3 +10,4 @@ def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id):
                                               label=label, classified_by=user_id)
             except Tile.DoesNotExist:
                 print(x, y)
+                
