@@ -75,5 +75,3 @@ class Classification(models.Model):
     label = models.CharField(max_length=50)
     classified_by = models.IntegerField()
     objects = ClassificationManager()
-
-# Create your models here.

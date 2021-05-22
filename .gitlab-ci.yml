@@ -29,4 +29,3 @@ unit_test:
   script:
   - cd src
   - python manage.py test
-

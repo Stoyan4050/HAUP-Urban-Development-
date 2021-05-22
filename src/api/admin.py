@@ -1,4 +1,4 @@
-from .models import User
+from .models import User, Tile, Classification
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
@@ -41,4 +41,12 @@ class AdminUser(UserAdmin):
     search_fields = ("email", )
     ordering = ("email", )
 
-# Register your models here.
+
+@admin.register(Tile)
+class TileAdmin(admin.ModelAdmin):
+    model = Tile
+
+
+@admin.register(Classification)
+class ClassificationAdmin(admin.ModelAdmin):
+    model = Classification
