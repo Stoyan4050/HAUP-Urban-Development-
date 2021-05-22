@@ -10,6 +10,16 @@ from django.utils.http import urlsafe_base64_encode
 from math import floor
 from pyproj import Transformer
 
+def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id):
+    for x in range(start_x, start_x + length_x - 1):
+        for y in range(start_y, start_y + length_y - 1):
+
+            try:
+                Classification.objects.create(tile_id=Tile.objects.get(x_coordinate=x, y_coordinate=y), year=year,
+                                              label=label, classified_by=user_id)
+            except Tile.DoesNotExist:
+                print(x, y)
+
 def create_tiles():
     df1 = pandas.read_csv("./api/data_extraction/tilenames.csv")
     tile_names = df1.filename.tolist()
