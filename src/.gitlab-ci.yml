@@ -1,0 +1,11 @@
+image: python:latest
+
+before_script:
+  - python --version
+  - pip install -r requirements.txt
+
+stages:
+  - build
+  - static analysis
+  - test
+  - deploy
