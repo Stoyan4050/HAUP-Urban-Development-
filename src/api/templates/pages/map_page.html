@@ -1,15 +1,75 @@
-{% extends "templates/map_data_template.html" %}
-
-{% block imports %}
-{% load static %}
-<link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/dark-blue/main.css"/>
-<link rel="stylesheet" type="text/css" href="{% static 'urban_development/css/map_page.css' %}">
-<script src="https://js.arcgis.com/4.15/"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="{% static 'urban_development/js/map_page.js' %}" type="text/javascript"></script>
-{% endblock %}
-
-{% block content %}
-<div id="map">
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Urban Development">
+        <meta name="author" content="Group 18A">
+        <title>Urban Development</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/4.15/esri/themes/dark-blue/main.css"/>
+        <link rel="stylesheet" type="text/css" href="{% static 'urban_development/css/map_page.css' %}">
+        <script src="https://js.arcgis.com/4.15/"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="{% static 'urban_development/js/map_page.js' %}" type="text/javascript"></script>
+    </head>
+    <body>
+        <div id="header">
+            <div class="header-cell">
+                <button disabled class="header-button text-element" id="map-view-button">
+                    Map View
+                </button>
+            </div>
+            <div class="header-cell">
+                <button class="header-button text-element" id="data-view-button">
+                    Data View
+                </button>
+            </div>
+            <div class="header-cell">
+                <div>
+                    <span class="text-element">
+                        Year
+                    </span>
+                    <br>
+                    <select name="year" class="text-element" id="year">
+                        {% for key, value in years.items %}
+                        <option value="{{ value }}">
+                            {{ key }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="header-cell" id="overlay-cell">
+                <div>
+                    <span class="text-element">
+                        Overlay
+                    </span>
+                    <br>
+                    <select name="overlay" class="text-element" id="overlay">
+                        <option value="None">None</option>
+                        <option value="Classified as">Classified as</option>
+                        <option value="Classified by">Classified by</option>
+                    </select>
+                </div>
+            </div>
+            <div class="header-cell" id="email-cell">
+                <div>
+                    <span class="text-element">
+                        Hello, 
+                        {% if user.is_authenticated %}
+                        {{ user.email }}
+                        {% else %}
+                        guest
+                        {% endif %}
+                    </span>
+                    <br>
+                    <a href="/urban_development/logout/" class="text-element">
+                        Log out
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="map">
+        </div>
+    </body>
+</html>
