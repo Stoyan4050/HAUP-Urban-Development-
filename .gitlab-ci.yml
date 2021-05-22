@@ -10,12 +10,6 @@ stages:
   - test
   - deploy
 
-#run:
-#  stage: build
-#  script:
-#  - cd src
-#  - python manage.py runserver
-
 flake8:
   stage: static analysis
   script:
@@ -28,6 +22,7 @@ pylint:
   - pylint -d C0301 src/*.py
   - pylint -d C0301 src/api/*.py
   - pylint -d C0301 src/urban_development/*.py
+  - pylint --disable=C0415 src/manage.py
 
 unit_test:
   stage: test
