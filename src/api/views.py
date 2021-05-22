@@ -7,7 +7,7 @@ from .utils import extract_available_years, send_email, transform_tile_to_coordi
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sites.shortcuts import get_current_site
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
@@ -233,6 +233,9 @@ class GetClassifiedAsView(View):
         year = json.loads(parameters).get("year")
         classifications_for_year = Classification.objects.filter(year__lte=year)
 
+        if len(classifications_for_year) <= 0:
+            return HttpResponseBadRequest("No tiles have been classified for the selected year.")
+
         all_ids = classifications_for_year.values("tile_id").distinct()
         public_space_ids = classifications_for_year.filter(~Q(label="not a public space")).values("tile_id").distinct()
         not_public_space_ids = classifications_for_year.filter(label="not a public space").values("tile_id").distinct()
@@ -270,6 +273,9 @@ class GetClassifiedByView(View):
     def get(self, request, parameters):
         year = json.loads(parameters).get("year")
         classifications_for_year = Classification.objects.filter(year__lte=year)
+
+        if len(classifications_for_year) <= 0:
+            return HttpResponseBadRequest("No tiles have been classified for the selected year.")
 
         all_ids = classifications_for_year.values("tile_id").distinct()
         user_ids = classifications_for_year.filter(classified_by__gt=0).values("tile_id").distinct()

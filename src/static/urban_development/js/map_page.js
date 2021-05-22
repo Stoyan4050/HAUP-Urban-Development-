@@ -80,11 +80,9 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/LayerList", "esri/widge
         function addCurrentOverlay(overlay, year) {
             if (overlay === "Classified as") {
                 setupClassifiedAsLayer(FeatureLayer);
-                map.add(classifiedAsLayer);                
                 addToClassifiedAsLayer(year);
             } else if (overlay === "Classified by") {
                 setupClassifiedByLayer(FeatureLayer);
-                map.add(classifiedByLayer);                
                 addToClassifiedByLayer(year);
             }
         };
@@ -139,11 +137,10 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/LayerList", "esri/widge
                 }
                 
                 classifiedAsLayer.applyEdits(edits);
+                map.add(classifiedAsLayer);
             } catch (exception) {
-                console.error(exception);
-                console.error(exception.lineNumber);
-                
-                alert("Error.");
+                alert("No tiles have been classified for the selected year.");
+                $("#overlay").val("None").change();
             }
         };
 
@@ -198,11 +195,10 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/LayerList", "esri/widge
                 }
                 
                 classifiedByLayer.applyEdits(edits);
+                map.add(classifiedByLayer);
             } catch (exception) {
-                console.error(exception);
-                console.error(exception.lineNumber);
-                
-                alert("Error.");
+                alert("No tiles have been classified for the selected year.");
+                $("#overlay").val("None").change();
             }
         };
 
@@ -236,34 +232,55 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/LayerList", "esri/widge
             try {
                 var json = await response.json();
 
-                $("#data").append("<span class='text-element data-element'>Total classified tiles: " + json["total"] + " </span><br>");
+                $("#data").append("<span class='text-element data-element'>Total classified tiles: " + json["total"] + "</span><br>");
 
-                const public_space = json["public_space"] - json["mixed"];
-                const not_public_space = json["not_public_space"] - json["mixed"];
+                const publicSpace = json["public_space"] - json["mixed"];
+                const notPublicSpace = json["not_public_space"] - json["mixed"];
 
-                $("#data").append("<br><span class='text-element data-element'>Tiles classified as public space: " + public_space + " (" + (100 * public_space / json["total"]).toFixed(2) + "%)</span><br>");
-                $("#data").append("<span class='text-element data-element'>Tiles classified as not public space: " + not_public_space + " (" + (100 * not_public_space / json["total"]).toFixed(2) + "%)</span><br>");
-                $("#data").append("<span class='text-element data-element'>Tiles classified as mixed: " + json["mixed"] + " (" + (100 * json["mixed"] / json["total"]).toFixed(2) + "%)</span><br>");
+                $("#data").append("<br><span class='text-element data-element' id='public-space-tiles'>Tiles classified as public space: " + publicSpace + "</span><br>");
+                $("#data").append("<span class='text-element data-element' id='not-public-space-tiles'>Tiles classified as not public space: " + notPublicSpace + "</span><br>");
+                $("#data").append("<span class='text-element data-element' id='mixed-tiles'>Tiles classified as mixed: " + json["mixed"] + "</span><br>");
 
                 const user = json["user"] - json["user_classifier"] - json["user_training_data"] + json["user_classifier_training_data"];
                 const classifier = json["classifier"] - json["user_classifier"] - json["classifier_training_data"] + json["user_classifier_training_data"];
-                const training_data = json["training_data"] - json["user_training_data"] - json["classifier_training_data"] + json["user_classifier_training_data"];
+                const trainingData = json["training_data"] - json["user_training_data"] - json["classifier_training_data"] + json["user_classifier_training_data"];
+                const userClassifier = json["total"] - user - classifier - json["training_data"];
+                const userTrainingData = json["total"] - user - trainingData - json["classifier"];
+                const classifierTrainingData = json["total"] - classifier - trainingData - json["user"];
+                    
+                $("#data").append("<br><span class='text-element data-element id='user-tiles'>Tiles classified by user: " + user + "</span><br>");
+                $("#data").append("<span class='text-element data-element' id='classifier-tiles'>Tiles classified by classifier: " + classifier + "</span><br>");
+                $("#data").append("<span class='text-element data-element' id='training-data-tiles'>Tiles classified by training data: " + trainingData +"</span><br>");
+                $("#data").append("<span class='text-element data-element' id='user-classifier-tiles'>Tiles classified by user and classifier: " + userClassifier + "</span><br>");
+                $("#data").append("<span class='text-element data-element' id='user-training-data-tiles'>Tiles classified by user and training data: " + userTrainingData + "</span><br>");
+                $("#data").append("<span class='text-element data-element' id='classifier-training-data-tiles'>Tiles classified by classifier and training data: " + classifierTrainingData + "</span><br>");
+                $("#data").append("<span class='text-element data-element' id='user-classifier-training-data-tiles'>Tiles classified by user, classifier and training data: " + json["user_classifier_training_data"] + "</span><br>");
 
-                const user_classifier = json["total"] - user - classifier - json["training_data"];
-                const user_training_data = json["total"] - user - training_data - json["classifier"];
-                const classifier_training_data = json["total"] - classifier - training_data - json["user"];
-                    
-                $("#data").append("<br><span class='text-element data-element'>Tiles classified by user: " + user + " (" + (100 * user / json["total"]).toFixed(2) + "%)</span><br>");
-                $("#data").append("<span class='text-element data-element'>Tiles classified by classifier: " + classifier + " (" + (100 * classifier / json["total"]).toFixed(2) + "%)</span><br>");
-                $("#data").append("<span class='text-element data-element'>Tiles classified by training data: " + training_data + " (" + (100 * training_data / json["total"]).toFixed(2) + "%)</span><br>");
-                $("#data").append("<span class='text-element data-element'>Tiles classified by user and classifier: " + user_classifier + " (" + (100 * user_classifier / json["total"]).toFixed(2) + "%)</span><br>");
-                $("#data").append("<span class='text-element data-element'>Tiles classified by user and training data: " + user_training_data + " (" + (100 * user_training_data / json["total"]).toFixed(2) + "%)</span><br>");
-                $("#data").append("<span class='text-element data-element'>Tiles classified by classifier and training data: " + classifier_training_data + " (" + (100 * classifier_training_data / json["total"]).toFixed(2) + "%)</span><br>");
-                $("#data").append("<span class='text-element data-element'>Tiles classified by user, classifier and training data: " + json["user_classifier_training_data"] + " (" + (100 * json["user_classifier_training_data"] / json["total"]).toFixed(2) + "%)</span><br>");
+                if (json["total"] > 0) {
+                    function setupSpan(id, value) {
+                        function roundToTwoDecimalPlaces(x) {
+                            return +(Math.round(x + "e+2") + "e-2");
+                        };
+
+                        if (value > 0) {
+                            const exact = 100 * value / json["total"];
+                            const rounded = roundToTwoDecimalPlaces(exact);
+                            $("#" + id).append(" (" + (rounded == exact ? "=" : "≈") + rounded + "%)");
+                        }
+                    };
+
+                    setupSpan("public-space-tiles", publicSpace);
+                    setupSpan("not-public-space-tiles", notPublicSpace);
+                    setupSpan("mixed-tiles", json["mixed"]);
+                    setupSpan("user-tiles", user);
+                    setupSpan("classifier-tiles", classifier);
+                    setupSpan("training-data-tiles", trainingData);
+                    setupSpan("user-classifier-tiles", userClassifier);
+                    setupSpan("user-training-data-tiles", userTrainingData);
+                    setupSpan("classifier-training-data-tiles", classifierTrainingData);
+                    setupSpan("user-classifier-training-data-tiles", json["user_classifier_training_data"]);
+                }
             } catch (exception) {
-                console.error(exception);
-                console.error(exception.lineNumber);
-                    
                 alert("Error.");
             }
         }
