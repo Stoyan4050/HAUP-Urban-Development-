@@ -1,13 +1,30 @@
-from .email import send_email
+import collections
+import json
 from .forms import ChangePasswordForm, RegisterForm, LoginForm, NewPasswordForm
-from .models import User, Tile, Classification
+from .models import Classification, Tile, User
 from .tokens import token_generator
-from django.contrib.auth import authenticate
+from .utils import extract_available_years, send_email, transform_tile_to_coordinates
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.sites.shortcuts import get_current_site
+from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.views import View
+from pyproj import Transformer
+
+class BaseView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect("urban_development:map_page")
+        
+        return redirect("urban_development:login_page")
+
+class GuestView(View):
+    def get(self, request):
+        logout(request)
+        return redirect("urban_development:map_page")
 
 class LoginView(View):
     _context = {
@@ -16,7 +33,7 @@ class LoginView(View):
         "hyperlinks": {
             "Click here to change your password": "/urban_development/change_password/",
             "Click here to register": "/urban_development/register/",
-            "Log in as a guest": "",
+            "Log in as a guest": "/urban_development/guest/",
         },
         "button": "Log in",
     }
@@ -34,11 +51,16 @@ class LoginView(View):
             user = authenticate(request, username=email, password=password)
             
             if user is not None:
-                # login(request, user)
-                return redirect("urban_development:register_page")
+                login(request, user)
+                return redirect("urban_development:map_page")
         
         self._context["form"] = form
         return render(request, "pages/login_page.html", context=self._context)
+
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect("urban_development:login_page")
 
 class RegisterView(View):
     _context = {
@@ -201,3 +223,122 @@ class PasswordChangedView(View):
 
         self._context["title"] = "Password Not Changed"
         return render(request, "templates/user_data_template.html", context=self._context)
+
+class MapView(View):
+    def get(self, request):
+        return render(request, "pages/map_page.html", context={ "years": collections.OrderedDict(sorted(extract_available_years().items(), reverse=True)) })
+
+class GetClassifiedAsView(View):
+    def get(self, request, parameters):
+        year = json.loads(parameters).get("year")
+        classifications_for_year = Classification.objects.filter(year__lte=year)
+
+        all_ids = classifications_for_year.values("tile_id").distinct()
+        public_space_ids = classifications_for_year.filter(~Q(label="not a public space")).values("tile_id").distinct()
+        not_public_space_ids = classifications_for_year.filter(label="not a public space").values("tile_id").distinct()
+
+        all_tiles = Tile.objects.filter(tid__in=all_ids.values_list("tile_id", flat=True))
+        public_space_tiles = Tile.objects.filter(tid__in=public_space_ids.values_list("tile_id", flat=True))
+        not_public_space_tiles = Tile.objects.filter(tid__in=not_public_space_ids.values_list("tile_id", flat=True))
+
+        transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
+        result = {}
+        
+        for tile in all_tiles:
+            coordinates = transform_tile_to_coordinates(tile.x_coordinate, tile.y_coordinate)
+            x_coordinate, y_coordinate = transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
+            result[tile.tid] = {
+                "xmin": coordinates["xmin"],
+                "ymin": coordinates["ymin"],
+                "xmax": coordinates["xmax"],
+                "ymax": coordinates["ymax"],
+                "x_coordinate": x_coordinate,
+                "y_coordinate": y_coordinate,
+                "public_space": False,
+                "not_public_space": False,
+            }
+
+        for tile in public_space_tiles:
+            result[tile.tid]["public_space"] = True
+
+        for tile in not_public_space_tiles:
+            result[tile.tid]["not_public_space"] = True
+
+        return JsonResponse(list(result.values()), safe=False)
+
+class GetClassifiedByView(View):
+    def get(self, request, parameters):
+        year = json.loads(parameters).get("year")
+        classifications_for_year = Classification.objects.filter(year__lte=year)
+
+        all_ids = classifications_for_year.values("tile_id").distinct()
+        user_ids = classifications_for_year.filter(classified_by__gt=0).values("tile_id").distinct()
+        classifier_ids = classifications_for_year.filter(classified_by=-1).values("tile_id").distinct()
+        training_data_ids = classifications_for_year.filter(classified_by=-2).values("tile_id").distinct()
+
+        all_tiles = Tile.objects.filter(tid__in=all_ids.values_list("tile_id", flat=True))
+        user_tiles = Tile.objects.filter(tid__in=user_ids.values_list("tile_id", flat=True))
+        classifier_tiles = Tile.objects.filter(tid__in=classifier_ids.values_list("tile_id", flat=True))
+        training_data_tiles = Tile.objects.filter(tid__in=training_data_ids.values_list("tile_id", flat=True))
+
+        transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
+        result = {}
+
+        for tile in all_tiles:
+            coordinates = transform_tile_to_coordinates(tile.x_coordinate, tile.y_coordinate)
+            x_coordinate, y_coordinate = transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
+            result[tile.tid] = {
+                "xmin": coordinates["xmin"],
+                "ymin": coordinates["ymin"],
+                "xmax": coordinates["xmax"],
+                "ymax": coordinates["ymax"],
+                "x_coordinate": x_coordinate,
+                "y_coordinate": y_coordinate,
+                "user": False,
+                "classifier": False,
+                "training_data": False,
+            }
+
+        for tile in user_tiles:
+            result[tile.tid]["user"] = True
+
+        for tile in classifier_tiles:
+            result[tile.tid]["classifier"] = True
+
+        for tile in training_data_tiles:
+            result[tile.tid]["training_data"] = True
+
+        return JsonResponse(list(result.values()), safe=False)
+
+class GetDataView(View):
+    def get(self, request, parameters):
+        year = json.loads(parameters).get("year")
+        classifications_for_year = Classification.objects.filter(year__lte=year)
+
+        total = classifications_for_year.values("tile_id").distinct()
+        public_space = classifications_for_year.filter(~Q(label="not a public space")).values("tile_id").distinct()
+        not_public_space = classifications_for_year.filter(label="not a public space").values("tile_id").distinct()
+        mixed = public_space.filter(tile_id__in=not_public_space.values_list("tile_id", flat=True))
+        user = classifications_for_year.filter(classified_by__gt=0).values("tile_id").distinct()
+        classifier = classifications_for_year.filter(classified_by=-1).values("tile_id").distinct()
+        training_data = classifications_for_year.filter(classified_by=-2).values("tile_id").distinct()
+        user_classifier = user.filter(tile_id__in=classifier.values_list("tile_id", flat=True)).values("tile_id").distinct()
+        user_training_data = user.filter(tile_id__in=training_data.values_list("tile_id", flat=True)).values("tile_id").distinct()
+        classifier_training_data = classifier.filter(tile_id__in=training_data.values_list("tile_id", flat=True)).values("tile_id").distinct()
+        user_classifier_training_data = user_classifier.filter(tile_id__in=training_data.values_list("tile_id", flat=True)).values("tile_id").distinct()
+
+        result = {
+            "total": len(total),
+            "public_space": len(public_space),
+            "not_public_space": len(not_public_space),
+            "mixed": len(mixed),
+            "user": len(user),
+            "classifier": len(classifier),
+            "training_data": len(training_data),
+            "user_classifier": len(user_classifier),
+            "user_training_data": len(user_training_data),
+            "classifier_training_data": len(classifier_training_data),
+            "user_classifier_training_data": len(user_classifier_training_data),
+        }
+        
+        return JsonResponse(result, safe=False)
