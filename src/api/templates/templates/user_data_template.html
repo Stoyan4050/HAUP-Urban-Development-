@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Urban Development">
+        <meta name="author" content="Group 18A">
+        <title>Urban Development</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'urban_development/css/user_data_template.css' %}">
+        {% block imports %}
+        {% endblock %}
+    </head>
+    <body>
+        <div id="header">
+            <div id="title-container">
+                <p id="title">
+                    Urban Development
+                </p>
+            </div>
+        </div>
+        <div id="main">
+            <div id="content-box">
+                <p id="page-name">
+                    {{ title }}
+                </p>
+                <form action="{{ action }}" method="POST">
+                    {% csrf_token %}
+                    {% if form %}
+                    <table>
+                        {% load widget_tweaks %}
+                        {% block form-error %}
+                        {% endblock %}
+                        {% for field in form %}
+                        <tr>
+                            <td>
+                                {{ field.label_tag }}
+                            </td>
+                            <td class="input-field">
+                                {% render_field field oninput="change()" onfocus="gainFocus()" onfocusout="loseFocus()" %}
+                            </td>
+                        </tr>
+                        <tr class="hidden-row">
+                            <td colspan="2" class="{% if field.help_text %}help-message{% endif %}">
+                                {{ field.help_text }}
+                            </td>
+                        </tr>
+                        {% block input-error %}
+                        {% endblock %}
+                        {% endfor %}
+                    </table>
+                    {% endif %}
+                    {% if hyperlinks %}
+                    <div id="hyperlinks-container">
+                        {% for message, location in hyperlinks.items %}
+                        <a href="{{ location }}">
+                            {{ message }}
+                        </a>
+                        <br>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if button %}
+                    <button type="submit">
+                        {{ button }}
+                    </button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
