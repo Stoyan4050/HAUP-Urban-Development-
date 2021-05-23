@@ -5,10 +5,12 @@ import os
 import cv2
 import numpy as np
 import tensorflow as tf
+import shutil
+
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, classification_report
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import KFold
 from sklearn.neighbors import KNeighborsClassifier
@@ -21,6 +23,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras import layers
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils import shuffle
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
 from .models import Classification, Tile
 def getImageFromURL(year, x_coord, y_coord):
@@ -71,9 +74,9 @@ def getImagesTest(year):
         tile = c.tile_id
         # print(year)
         img = getImageFromURL(year, tile.y_coordinate, tile.x_coordinate)
-        save_images(c.label, img, counter, False)
-        # print(counter)
+                # print(counter)
         coord = (tile.y_coordinate, tile.x_coordinate)
+        save_images(c.label, img, counter, False)
         test_imgs.append((img, coord))
         print(counter)
         counter += 1
@@ -105,13 +108,21 @@ def getLabelsImgs(data):
         imgs.append(img)
     return np.array(labels), np.array(imgs)
 
-def classify(year=2015):
+def classify(year=2015, download_data=False):
+    all_labels = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space', 'park',
+                  'recreational area']
+    create_dir(all_labels)
 
-    train_data = getImagesTraining(Classification.objects.filter(year__lte=year), year)
+    if download_data:
+        getImagesTraining(Classification.objects.filter(year__lte=year), year)
+        getImagesTest(year)
+
+    train_images, train_labels = read_images(all_labels, True)
+    test_images, test_labels = read_images(all_labels, False)
+
     #train_data_10per = random_sample(train_data)
     # print(train_data)
     #print(train_data_10per)
-    train_labels, train_images = getLabelsImgs(train_data)
     #print(train_labels, train_images)
     print("Training data extracted!")
     # img = getImageFromURL(2020, 75400, 75410)
@@ -136,8 +147,8 @@ def classify(year=2015):
     #     imgs_test.append(cv2.resize((cv2.imread((os.path.join(path_test, f)),1)), (32,32)))
 
     # train_images = imgs_train
-    test_data = getImagesTest(year)
-    test_coord, test_images = getLabelsImgs(test_data)
+    #test_data = getImagesTest(year)
+    #test_coord, test_images = getLabelsImgs(test_data)
 
     train_images = np.array(train_images)
     test_images = np.array(test_images)
@@ -192,14 +203,15 @@ def classify(year=2015):
     pipe.fit(train_imgs_reshaped, train_labels)
     prediction = pipe.predict(test_imgs_reshaped)
     print(best_estimators)
-    print(prediction)
-
-    print(test_coord)
-    for i in range(len(prediction)):
-        print(test_coord[i][1])
-        print(test_coord[i][0])
-        Classification.objects.create(tile_id=Tile.objects.get(x_coordinate=test_coord[i][1], y_coordinate=test_coord[i][0]), year=year, label=prediction[i], classified_by="-1")
+    #print(prediction)
+    print(classification_report(test_labels, prediction))
+    # print(test_coord)
+    # for i in range(len(prediction)):
+    #     print(test_coord[i][1])
+    #     print(test_coord[i][0])
+    #     Classification.objects.create(tile_id=Tile.objects.get(x_coordinate=test_coord[i][1], y_coordinate=test_coord[i][0]), year=year, label=prediction[i], classified_by="-1")
         #Classification.objects.filter(tile_id=Tile.objects.get(x_coordinate=test_coord[i][1], y_coordinate=test_coord[i][0]).tid).update(year=year, label=prediction[i], classified_by="-1")
+
 
 def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, train_images):
 
@@ -250,45 +262,40 @@ def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, 
     return mean_score, best_model_score, best_model_estimator
 
 
+def create_dir(all_labels):
+    path_train = "./data/train"
+    path_test = "./data/test"
+    shutil.rmtree(path_train)
+    shutil.rmtree(path_test)
+    os.makedirs(path_train)
+    os.makedirs(path_test)
+
+    for label in all_labels:
+        new_path_train = path_train + "/" + label
+        new_path_test = path_test + "/" + label
+        os.makedirs(new_path_train)
+        os.makedirs(new_path_test)
+
 
 def save_images(label, img, counter, train=True):
-    path = "./data"
 
+    print(label)
     if train:
-        try:
-            os.makedirs(path + "/train")
-            path = path + "/train"
-        except:
-            print("exception dir")
-        try:
-            os.makedirs(path + "/" + label)
-        except:
-            print("directory already present")
 
+        path = "./data/train"
         cv2.imwrite(path + "/" + label + "/train_img_" + str(counter) + ".jpg", img)
     else:
-        try:
-            os.makedirs(path + "/test")
-            path = path + "/test"
-        except:
-            print("exception dir")
-        try:
-            os.makedirs(path + "/" + label)
-        except:
-            print("directory already present")
-
+        path = "./data/test"
         cv2.imwrite(path + "/" + label + "/test_img_" + str(counter) + ".jpg", img)
 
     #------------------------------ TensorFlow approach - in progress:
-def train_cnn(year=2015, download_data=False):
+def train_cnn(year=2015, download_data=False, train_network=True):
+    all_labels = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space', 'park', 'recreational area']
+    create_dir(all_labels)
     if download_data:
         getImagesTraining(Classification.objects.filter(year__lte=year), year)
         getImagesTest(year)
 
-    all_labels = []
-    PATH_TO_DIRECTORY = "./data/train"
-    for root, dirs, files in os.walk(PATH_TO_DIRECTORY):
-        all_labels += dirs
     train_images, train_labels = read_images(all_labels, True)
     test_images, test_labels = read_images(all_labels, False)
 
@@ -315,49 +322,61 @@ def train_cnn(year=2015, download_data=False):
     train_images = train_images / 255.0
 
     train_images, train_labels = shuffle(train_images, train_labels, random_state=1)
+    batch_size = 32
+    checkpoint_path = "./model_checkpoint/cp-{epoch:04d}.ckpt"
+    checkpoint_dir = os.path.dirname(checkpoint_path)
 
-    model = Sequential()
-    model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
-    model.add(layers.BatchNormalization())
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Dropout(0.25))
+    if train_network:
+        model = Sequential()
+        model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+        model.add(layers.BatchNormalization())
+        model.add(layers.MaxPooling2D((2, 2)))
+        model.add(layers.Dropout(0.25))
 
-    model.add(layers.Conv2D(64, (3, 3), activation='relu', input_shape=(32, 32, 3)))
-    model.add(layers.BatchNormalization())
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Dropout(0.25))
+        model.add(layers.Conv2D(64, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+        model.add(layers.BatchNormalization())
+        model.add(layers.MaxPooling2D((2, 2)))
+        model.add(layers.Dropout(0.25))
 
-    model.add(layers.Conv2D(128, (3, 3), activation='relu', input_shape=(32, 32, 3)))
-    model.add(layers.BatchNormalization())
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Dropout(0.25))
+        model.add(layers.Conv2D(128, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+        model.add(layers.BatchNormalization())
+        model.add(layers.MaxPooling2D((2, 2)))
+        model.add(layers.Dropout(0.25))
 
-    model.add(layers.Flatten())
-    model.add(layers.Dense(512, activation='relu'))
-    model.add(layers.BatchNormalization())
-    model.add(layers.Dropout(0.5))
-    model.add(layers.Dense(9, activation='softmax'))
+        model.add(layers.Flatten())
+        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.BatchNormalization())
+        model.add(layers.Dropout(0.5))
+        model.add(layers.Dense(9, activation='softmax'))
 
-    model.summary()
+        model.summary()
 
-    model.compile(optimizer='adam',
-                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                  metrics=['accuracy'])
+        model.compile(optimizer='adam',
+                      loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                      metrics=['accuracy'])
+        early_stopping = EarlyStopping(monitor='val_loss',patience=15,verbose=0,mode='min')
+        mcp_save = ModelCheckpoint(checkpoint_path,monitor='val_loss',mode='min',verbose=1,save_weights_only=True,save_best_only=True)
+        reduce_lr_loss = ReduceLROnPlateau(monitor='val_loss',factor=0.1,patience=10,verbose=1,mode='min')
+        model.save_weights(checkpoint_path.format(epoch=0))
+        history = model.fit(train_images, train_labels, epochs=20,
+                         validation_split=0.2, shuffle=True,batch_size=batch_size,callbacks=[early_stopping,mcp_save,reduce_lr_loss])
 
-    history = model.fit(train_images, train_labels, epochs=20,
-                     validation_split=0.2, shuffle=True)
+        plt.plot(history.history['loss'], label='train_loss')
+        plt.plot(history.history['val_loss'], label='validation_loss')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.ylim([0.5, 1])
+        plt.legend(loc='lower right')
+        plt.show()
 
-    plt.plot(history.history['accuracy'], label='accuracy')
-    plt.plot(history.history['val_accuracy'], label='val_accuracy')
-    plt.xlabel('Epoch')
-    plt.ylabel('Accuracy')
-    plt.ylim([0.5, 1])
-    plt.legend(loc='lower right')
-    plt.show()
-    #test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
-    #prediction = model.predict(test_images)
-    #print(prediction)
-    #print(test_acc)
+
+    latest = tf.train.latest_checkpoint(checkpoint_dir)
+    model.load_weights(latest)
+    test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
+    prediction = model.predict(test_images)
+
+    print(test_acc)
+    print(classification_report(test_labels, prediction))
 
 
 def read_images(all_labels, train_data=True):
@@ -366,9 +385,9 @@ def read_images(all_labels, train_data=True):
     for label in all_labels:
         print(label)
         if train_data:
-            path = "./data/train" + label
+            path = "./data/train/" + label
         else:
-            path = "./data/test" + label
+            path = "./data/test/" + label
         for filename in os.listdir(path):
             img = cv2.imread(path + "/" + filename)
             if img is not None:
