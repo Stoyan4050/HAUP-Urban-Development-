@@ -1,6 +1,7 @@
 import pandas
 from csv import writer
 
+
 # This script reads csv files extracted from wikidata and places all relevant information from them into data.csv
 # It also adds the data label, which can be entered in by the user
 def add_label():
@@ -20,7 +21,7 @@ def add_label():
         years = df.inception.tolist()
         years.pop(0)
 
-    with open ("./data_extraction/data.csv", 'a') as f_object:
+    with open("./data_extraction/data.csv", 'a') as f_object:
         writer_object = writer(f_object)
         for ind in range(len(points)):
             if flag:

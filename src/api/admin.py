@@ -2,6 +2,7 @@ from .models import User, Tile, Classification
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
+
 @admin.register(User)
 class AdminUser(UserAdmin):
     def get_form(self, request, obj=None, **kwargs):
