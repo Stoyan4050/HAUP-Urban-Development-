@@ -1,5 +1,4 @@
 import os
-
 import cv2
 import numpy as np
 from sklearn.decomposition import PCA
@@ -22,7 +21,7 @@ def classify():
         ext = os.path.splitext(f)[1]
         if ext.lower() not in valid_images:
             continue
-        imgs_train.append(cv2.imread((os.path.join(path, f)),1))
+        imgs_train.append(cv2.imread((os.path.join(path, f)), 1))
 
     imgs_test = []
     path_test = "./test_data"
@@ -31,11 +30,12 @@ def classify():
         ext = os.path.splitext(f)[1]
         if ext.lower() not in valid_images:
             continue
-        imgs_test.append(cv2.imread((os.path.join(path_test, f)),1))
+        imgs_test.append(cv2.imread((os.path.join(path_test, f)), 1))
 
     train_images = imgs_train
     test_images = imgs_test
-    train_labels = ["park", "park", "park", "park", "park", "park", "park", "park", "no-park", "no-park", "no-park", "no-park", "no-park", "no-park", "no-park", "no-park",]
+    train_labels = ["park", "park", "park", "park", "park", "park", "park", "park", "no-park",
+                    "no-park", "no-park", "no-park", "no-park", "no-park", "no-park", "no-park", ]
 
     train_images = np.array(train_images)
     test_images = np.array(test_images)
@@ -47,10 +47,10 @@ def classify():
     best_estimators = np.empty(0)
 
     # Array that holds the mean score obtained during hyperparamter tuning for each model
-    hyperparameter_tuning_scores = np.empty(0)
+    # hyperparameter_tuning_scores = np.empty(0)
 
     # Array containing the score of the highest rated estimator for each model
-    best_scores = np.empty(0)
+    # best_scores = np.empty(0)
 
     models = {
         "KNeighborsClassifier": KNeighborsClassifier(n_neighbors=3, weights="distance"),
@@ -72,9 +72,9 @@ def classify():
                                                                           models["SVM"],
                                                                           params, train_imgs_reshaped, train_labels)
 
-    hyperparameter_tuning_scores = np.append(hyperparameter_tuning_scores, mean_score, )
+    # hyperparameter_tuning_scores = np.append(hyperparameter_tuning_scores, mean_score, )
     best_estimators = np.append(best_estimators, best_model_estimator)
-    best_scores = np.append(best_scores, best_model_score)
+    # best_scores = np.append(best_scores, best_model_score)
 
     # print(hyperparameter_tuning_scores, "ddd")
     # print(best_estimators, "ccc")
@@ -82,9 +82,9 @@ def classify():
 
     mte, nte, rte, kte = test_images.shape
     test_imgs_reshaped = test_images.reshape(mte, nte * rte * kte)
-    #print("After reshaping " + str(test_imgs_reshaped.shape))
+    # print("After reshaping " + str(test_imgs_reshaped.shape))
 
-    best_model = best_estimators[np.argmax(hyperparameter_tuning_scores)]
+    # best_model = best_estimators[np.argmax(hyperparameter_tuning_scores)]
     pipe = make_pipeline(best_estimators[0], best_estimators[1])
     pipe.fit(train_imgs_reshaped, train_labels)
     prediction = pipe.predict(test_imgs_reshaped)
@@ -99,27 +99,27 @@ def tune_hyperparams(estimator_name, estimator, estimator_params, train_images, 
     best_model_score = 0.0
     for train_index, test_index in k_fold.split(train_images):
 
-        Xtrain, Xtest = train_images[train_index], train_images[test_index]
-        Ytrain, Ytest = train_labels[train_index], train_labels[test_index]
+        x_train, x_test = train_images[train_index], train_images[test_index]
+        y_train, y_test = train_labels[train_index], train_labels[test_index]
 
         pipe = Pipeline([("pca", PCA()), (estimator_name, estimator)])
         search = GridSearchCV(pipe, estimator_params, cv=5, return_train_score=True, n_jobs=-1, verbose=2,
-                                  scoring="f1_macro")
+                              scoring="f1_macro")
 
-        search.fit(Xtrain, Ytrain)
+        search.fit(x_train, y_train)
 
         est = search.best_estimator_
         # print("ESST", est)
         # print("BESST", search.best_score_)
 
         est_pipe = make_pipeline(est)
-        est_pipe.fit(Xtrain, Ytrain)
-        prediction = est_pipe.predict(Xtest)
+        est_pipe.fit(x_train, y_train)
+        prediction = est_pipe.predict(x_test)
 
-        f1_score_est = f1_score(Ytest, prediction, average="macro")
+        f1_score_est = f1_score(y_test, prediction, average="macro")
         # print("f1_score_: ", f1_score_est)
 
-        if (f1_score_est > best_model_score):
+        if f1_score_est > best_model_score:
             best_model_score = f1_score_est
             best_model_estimator = est
 
@@ -127,16 +127,12 @@ def tune_hyperparams(estimator_name, estimator, estimator_params, train_images, 
 
     mean_score = sum_scores / k_fold.get_n_splits()
 
-
     # print("Mean score:", mean_score, "\n")
     # print("Best score:", best_model_score, "\n")
     # print("Best estimator:", best_model_estimator)
     return mean_score, best_model_score, best_model_estimator
 
-
-
-
-    #------------------------------ TensorFlow approach - in progress:
+    # ------------------------------ TensorFlow approach - in progress:
     #
     # # Normalize pixel values to be between 0 and 1
     # train_images, test_images = train_images / 255.0, test_images / 255.0
