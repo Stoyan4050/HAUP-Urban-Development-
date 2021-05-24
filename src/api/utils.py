@@ -24,8 +24,8 @@ def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id):
 
 
 def create_tiles():
-    df1 = pandas.read_csv("./api/data_extraction/tilenames.csv")
-    tile_names = df1.filename.tolist()
+    df1 = pandas.read_csv("./src/data/tilenames.csv")
+    tile_names = df1.tilename.tolist()
 
     for tile in tile_names:
         Tile.objects.create_tile(x_coordinate=tile.split("_")[0], y_coordinate=tile.split("_")[1][:-4])
@@ -56,22 +56,18 @@ def extract_convert_to_esri():
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:28992")
 
     # Change here the name of the input file
-    df = pandas.read_csv("./data/Wikidata/airports.csv")
+    df = pandas.read_csv("./data/Wikidata/stadium.csv")
 
     points = df.geo.tolist()
-    points.pop(0)
-
     labels = df.label.tolist()
-    labels.pop(0)
-
-    years = [2020 for _ in range(len(df) - 1)]
+    years = [2020 for _ in range(len(df))]
+    
     if 'inception' in df.columns:
         years = df.inception.tolist()
-        years.pop(0)
 
     for location, year, label in zip(points, years, labels):
         before_flip = location.split("(")[1][:-1]
-        x, y = before_flip.split(" ")
+        y, x = before_flip.split(" ")
         x_esri, y_esri = transformer.transform(x, y)
 
         if isinstance(year, str):
