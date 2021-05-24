@@ -143,7 +143,7 @@ class AccountActivatedView(View):
             user.save()
             self._context["title"] = "Account Activated Successfully"
             return render(request, "templates/user_data_template.html", context=self._context)
-    
+
         self._context["title"] = "Invalid Activation Link"
         return render(request, "templates/user_data_template.html", context=self._context)
 
@@ -164,7 +164,7 @@ class ChangePasswordView(View):
 
     def post(self, request):
         form = ChangePasswordForm(request.POST)
-        
+
         if form.is_valid():
             email = form.cleaned_data.get("email")
             user = User.objects.get(email=email)
@@ -195,7 +195,7 @@ class SendChangePasswordEmailView(View):
                       "pages/change_password_email.html"):
             self._context["title"] = "Change Password Email Sent"
             return render(request, "pages/register_and_change_password_page.html", context=self._context)
-        
+
         self._context["title"] = "Change Password Email Not Sent"
         return render(request, "templates/user_data_template.html", context=self._context)
 
@@ -220,13 +220,13 @@ class PasswordChangedView(View):
             user = User.objects.get(pk=uid)
         except(TypeError, ValueError, OverflowError, ObjectDoesNotExist):
             user = None
-    
+
         if user is not None and token_generator.check_token(user, token):
             form = NewPasswordForm(user=user)
             self._form_context["form"] = form
             self._form_context["action"] = "/urban_development/password_changed/" + uidb64 + "/" + token + "/"
             return render(request, "pages/register_and_change_password_page.html", context=self._form_context)
-    
+
         self._context["title"] = "Password Not Changed"
         return render(request, "templates/user_data_template.html", context=self._context)
 
@@ -283,7 +283,7 @@ class GetClassifiedAsView(View):
 
         transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
         result = {}
-        
+
         for tile in all_tiles:
             coordinates = transform_tile_to_coordinates(tile.x_coordinate, tile.y_coordinate)
             x_coordinate, y_coordinate = transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
@@ -397,5 +397,5 @@ class GetDataView(View):
             "classifier_training_data": len(classifier_training_data),
             "user_classifier_training_data": len(user_classifier_training_data),
         }
-        
+
         return JsonResponse(result, safe=False)
