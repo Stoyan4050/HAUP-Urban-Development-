@@ -1,10 +1,22 @@
-from .models import User
+"""
+forms.py
+"""
+
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, UserCreationForm
 from django.core.exceptions import ObjectDoesNotExist
+from .models import User
 
 
 class LoginForm(AuthenticationForm):
+    """
+    class LoginForm(AuthenticationForm)
+    """
+
     class Meta:
+        """
+        class Meta
+        """
+
         model = User
         fields = ("username", "password")
 
@@ -21,7 +33,15 @@ class LoginForm(AuthenticationForm):
 
 
 class RegisterForm(UserCreationForm):
+    """
+    class RegisterForm(UserCreationForm)
+    """
+
     class Meta:
+        """
+        class Meta
+        """
+
         model = User
         fields = ("email", "password1", "password2")
 
@@ -50,7 +70,15 @@ class RegisterForm(UserCreationForm):
 
 
 class ChangePasswordForm(PasswordResetForm):
+    """
+    class ChangePasswordForm(PasswordResetForm)
+    """
+
     class Meta:
+        """
+        class Meta
+        """
+
         model = User
         fields = ("email", )
 
@@ -74,7 +102,15 @@ class ChangePasswordForm(PasswordResetForm):
 
 
 class NewPasswordForm(SetPasswordForm):
+    """
+    class NewPasswordForm(SetPasswordForm)
+    """
+
     class Meta:
+        """
+        class Meta
+        """
+
         model = User
         fields = ("new_password1", "new_password2")
 
