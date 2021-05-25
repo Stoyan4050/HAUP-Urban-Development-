@@ -12,6 +12,7 @@ joblib==1.0.1
 mccabe==0.6.1
 mysqlclient==2.0.3
 numpy==1.20.3
+opencv-python==4.5.2.52
 pandas==1.2.4
 pefile==2021.5.13
 pycodestyle==2.7.0

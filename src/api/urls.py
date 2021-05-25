@@ -1,7 +1,11 @@
+"""
+urls.py
+"""
+
+from django.urls import path
 from .views import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedAsView, GetClassifiedByView,\
     GetDataView, GuestView, LoginView, LogoutView, MapView, PasswordChangedView, RegisterView,\
     SendActivationEmailView, SendChangePasswordEmailView
-from django.urls import path
 
 app_name = "urban_development"
 
