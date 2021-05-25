@@ -25,25 +25,25 @@ def classify():
     imgs_train = []
     path = "./training_data"
     valid_images = [".jpg", ".png"]
-    
+
     for file in os.listdir(path):
         ext = os.path.splitext(file)[1]
-        
+
         if ext.lower() not in valid_images:
             continue
-        
+
         imgs_train.append(cv2.imread((os.path.join(path, file)), 1))
 
     imgs_test = []
     path_test = "./test_data"
     valid_images = [".jpg", ".png"]
-    
+
     for file in os.listdir(path_test):
         ext = os.path.splitext(file)[1]
-        
+
         if ext.lower() not in valid_images:
             continue
-        
+
         imgs_test.append(cv2.imread((os.path.join(path_test, file)), 1))
 
     train_images = imgs_train
