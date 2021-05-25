@@ -1,4 +1,4 @@
-import os
+
 import urllib.request
 
 import os
@@ -10,7 +10,7 @@ import shutil
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import f1_score, classification_report
+from sklearn.metrics import f1_score, classification_report, accuracy_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import KFold
 from sklearn.neighbors import KNeighborsClassifier
@@ -291,13 +291,15 @@ def save_images(label, img, counter, train=True):
     #------------------------------ TensorFlow approach - in progress:
 def train_cnn(year=2015, download_data=False, train_network=True):
     all_labels = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space', 'park', 'recreational area']
-    create_dir(all_labels)
+
     if download_data:
+        create_dir(all_labels)
         getImagesTraining(Classification.objects.filter(year__lte=year), year)
         getImagesTest(year)
 
     train_images, train_labels = read_images(all_labels, True)
     test_images, test_labels = read_images(all_labels, False)
+    print(len(train_images))
 
     #train_data = getImagesTraining(Classification.objects.filter(year__lte=year), year)
     # train_data_10per = random_sample(train_data)
@@ -312,6 +314,7 @@ def train_cnn(year=2015, download_data=False, train_network=True):
 
     le = LabelEncoder()
     train_labels = le.fit_transform(train_labels)
+    test_labels = le.transform(test_labels)
     #test_images = np.array(test_images)
     # print("TEST", test_images)
     print("Training imgs loaded. Classification starts!")
@@ -372,22 +375,23 @@ def train_cnn(year=2015, download_data=False, train_network=True):
 
     latest = tf.train.latest_checkpoint(checkpoint_dir)
     model.load_weights(latest)
-    test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
+    # test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
     prediction = model.predict(test_images)
-
-    print(test_acc)
-    print(classification_report(test_labels, prediction))
+    new_predictions = []
+    for i in range(len(prediction)):
+        new_predictions.append(np.argmax(prediction[i]))
+    print(accuracy_score(test_labels, new_predictions))
+    print(classification_report(test_labels, new_predictions))
 
 
 def read_images(all_labels, train_data=True):
     images = []
     labels = []
     for label in all_labels:
-        print(label)
         if train_data:
-            path = "./data/train/" + label
+            path = "./data/train/" + label + "/"
         else:
-            path = "./data/test/" + label
+            path = "./data/test/" + label + "/"
         for filename in os.listdir(path):
             img = cv2.imread(path + "/" + filename)
             if img is not None:
