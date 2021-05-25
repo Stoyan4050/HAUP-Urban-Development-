@@ -1,3 +1,7 @@
+"""
+classifier.py
+"""
+
 import os
 import cv2
 import numpy as np
@@ -14,23 +18,33 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 def classify():
+    """
+    def classify()
+    """
+
     imgs_train = []
     path = "./training_data"
     valid_images = [".jpg", ".png"]
-    for f in os.listdir(path):
-        ext = os.path.splitext(f)[1]
+    
+    for file in os.listdir(path):
+        ext = os.path.splitext(file)[1]
+        
         if ext.lower() not in valid_images:
             continue
-        imgs_train.append(cv2.imread((os.path.join(path, f)), 1))
+        
+        imgs_train.append(cv2.imread((os.path.join(path, file)), 1))
 
     imgs_test = []
     path_test = "./test_data"
     valid_images = [".jpg", ".png"]
-    for f in os.listdir(path_test):
-        ext = os.path.splitext(f)[1]
+    
+    for file in os.listdir(path_test):
+        ext = os.path.splitext(file)[1]
+        
         if ext.lower() not in valid_images:
             continue
-        imgs_test.append(cv2.imread((os.path.join(path_test, f)), 1))
+        
+        imgs_test.append(cv2.imread((os.path.join(path_test, file)), 1))
 
     train_images = imgs_train
     test_images = imgs_test
@@ -40,9 +54,10 @@ def classify():
     train_images = np.array(train_images)
     test_images = np.array(test_images)
     print(train_images.shape)
-    m, n, r, k = train_images.shape
-    train_imgs_reshaped = train_images.reshape(m, n * r * k)
+    count, height, width, channels = train_images.shape
+    train_imgs_reshaped = train_images.reshape(count, height * width * channels)
     train_labels = np.array(train_labels)
+
     # Array that holds the best set of parameters for each model
     best_estimators = np.empty(0)
 
@@ -56,21 +71,18 @@ def classify():
         "KNeighborsClassifier": KNeighborsClassifier(n_neighbors=3, weights="distance"),
         "SVM": SVC(C=10, kernel="poly", random_state=42),
         "DecisionTreeClassifier": DecisionTreeClassifier(max_depth=None, min_samples_leaf=2, random_state=42),
-        "LogisticRegression": LogisticRegression(C=10, random_state=42, penalty="none", max_iter=1000)
-
+        "LogisticRegression": LogisticRegression(C=10, random_state=42, penalty="none", max_iter=1000),
     }
     params = [
         {
             "pca__n_components": np.linspace(0.5, 0.99, 2),
             "svm__C": np.arange(start=1, stop=10, step=2),
             "svm__kernel": ["poly", "sigmoid"],
-            "svm__random_state": [42]
+            "svm__random_state": [42],
         }
     ]
 
-    mean_score, best_model_score, best_model_estimator = tune_hyperparams("svm",
-                                                                          models["SVM"],
-                                                                          params, train_imgs_reshaped, train_labels)
+    _, _, best_model_estimator = tune_hyperparams("svm", models["SVM"], params, train_imgs_reshaped, train_labels)
 
     # hyperparameter_tuning_scores = np.append(hyperparameter_tuning_scores, mean_score, )
     best_estimators = np.append(best_estimators, best_model_estimator)
@@ -92,13 +104,16 @@ def classify():
 
 
 def tune_hyperparams(estimator_name, estimator, estimator_params, train_images, train_labels):
+    """
+    def tune_hyperparams(estimator_name, estimator, estimator_params, train_images, train_labels)
+    """
 
     k_fold = KFold(n_splits=4)
     best_model_estimator = Pipeline([("pca", PCA()), (estimator_name, estimator)])
     sum_scores = 0
     best_model_score = 0.0
-    for train_index, test_index in k_fold.split(train_images):
 
+    for train_index, test_index in k_fold.split(train_images):
         x_train, x_test = train_images[train_index], train_images[test_index]
         y_train, y_test = train_labels[train_index], train_labels[test_index]
 
@@ -130,6 +145,7 @@ def tune_hyperparams(estimator_name, estimator, estimator_params, train_images, 
     # print("Mean score:", mean_score, "\n")
     # print("Best score:", best_model_score, "\n")
     # print("Best estimator:", best_model_estimator)
+
     return mean_score, best_model_score, best_model_estimator
 
     # ------------------------------ TensorFlow approach - in progress:
