@@ -350,14 +350,13 @@ class PasswordChangedView(View):
                 user.save()
                 self._context["title"] = "Password Changed Successfully"
                 return render(request, "templates/user_data_template.html", context=self._context)
-            else:
-                self._form_context["form"] = form
-                self._form_context["action"] = "/urban_development/password_changed/" + uidb64 + "/" + token + "/"
-                return render(request, "pages/register_and_change_password_page.html", context=self._form_context)
 
-        else:
-            self._context["title"] = "Password Not Changed"
-            return render(request, "templates/user_data_template.html", context=self._context)
+            self._form_context["form"] = form
+            self._form_context["action"] = "/urban_development/password_changed/" + uidb64 + "/" + token + "/"
+            return render(request, "pages/register_and_change_password_page.html", context=self._form_context)
+
+        self._context["title"] = "Password Not Changed"
+        return render(request, "templates/user_data_template.html", context=self._context)
 
 
 class MapView(View):

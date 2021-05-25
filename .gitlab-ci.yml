@@ -24,12 +24,12 @@ pylint:
   stage: static analysis
   allow_failure: true
   script:
-#  - pylint -d C0301 src/*.py
-  - pylint -d C0301 src/api/*.py
-  - pylint -d C0301 src/classification/*.py
-  - pylint -d C0301 src/scripts/*.py
-  - pylint -d C0301 src/urban_development/*.py
-  - pylint -d C0301 src/utils/*.py
+#  - pylint src/*.py
+  - pylint src/api/*.py
+  - pylint src/classification/*.py
+  - pylint src/scripts/*.py
+  - pylint src/urban_development/*.py
+  - pylint src/utils/*.py
 
 
 unit_test:

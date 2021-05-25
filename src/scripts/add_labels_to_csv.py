@@ -1,33 +1,35 @@
-import pandas
+"""
+add_labels_to_csv.py
+"""
+
 from csv import writer
+import pandas
 
 
 # This script reads csv files extracted from wikidata and places all relevant information from them into data.csv
 # It also adds the data label, which can be entered in by the user
 def add_label():
+    """
+    def add_label()
+    """
 
     print("Please enter the file wish to read")
     file_name = input()
-    df = pandas.read_csv("./data_extraction/" + file_name)
-    print("please enter in desired label name")
+    data_frame = pandas.read_csv("./data/Wikidata/" + file_name)
+
+    print("Please enter in desired label name")
     label_name = input()
-    points = df.geo.tolist()
-    points.pop(0)
+    points = data_frame.geo.tolist()
 
-    flag = False
-    years = []
-    if 'inception' in df.columns:
-        flag = True
-        years = df.inception.tolist()
-        years.pop(0)
+    years = ["Unknown" for _ in range(len(data_frame))]
+    if 'inception' in data_frame.columns:
+        years = data_frame.inception.tolist()
 
-    with open("./data_extraction/data.csv", 'a') as f_object:
+    with open("./data/Wikidata/data.csv", "a") as f_object:
         writer_object = writer(f_object)
+
         for ind in range(len(points)):
-            if flag:
-                args = [points[ind], years[ind], label_name]
-            else:
-                args = [points[ind], "Unknown", label_name]
+            args = [points[ind], years[ind], label_name]
             writer_object.writerow(args)
 
         f_object.close()
