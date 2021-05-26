@@ -2,4 +2,4 @@ from api.classifier import classify
 
 
 def run(*args):
-    classify()
+    classify(download_data=False)

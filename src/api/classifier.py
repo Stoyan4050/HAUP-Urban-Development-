@@ -111,9 +111,9 @@ def getLabelsImgs(data):
 def classify(year=2015, download_data=False):
     all_labels = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space', 'park',
                   'recreational area']
-    create_dir(all_labels)
 
     if download_data:
+        create_dir(all_labels)
         getImagesTraining(Classification.objects.filter(year__lte=year), year)
         getImagesTest(year)
 
@@ -149,6 +149,9 @@ def classify(year=2015, download_data=False):
     # train_images = imgs_train
     #test_data = getImagesTest(year)
     #test_coord, test_images = getLabelsImgs(test_data)
+    le = LabelEncoder()
+    train_labels = le.fit_transform(train_labels)
+    test_labels = le.transform(test_labels)
 
     train_images = np.array(train_images)
     test_images = np.array(test_images)
@@ -182,12 +185,12 @@ def classify(year=2015, download_data=False):
         }
     ]
 
-    mean_score, best_model_score, best_model_estimator = tune_hyperparams("svm",
-                                                                          models["SVM"],
-                                                                          params, train_labels, train_imgs_reshaped)
+    #mean_score, best_model_score, best_model_estimator = tune_hyperparams("svm",
+    #                                                                      models["SVM"],
+    #                                                                      params, train_labels, train_imgs_reshaped)
 
-    hyperparameter_tuning_scores = np.append(hyperparameter_tuning_scores, mean_score)
-    best_estimators = np.append(best_estimators, best_model_estimator)
+    #hyperparameter_tuning_scores = np.append(hyperparameter_tuning_scores, mean_score)
+    #best_estimators = np.append(best_estimators, best_model_estimator)
     # best_scores = np.append(best_scores, best_model_score)
 
     # print(hyperparameter_tuning_scores, "ddd")
@@ -199,12 +202,14 @@ def classify(year=2015, download_data=False):
     #print("After reshaping " + str(test_imgs_reshaped.shape))
 
     # best_model = best_estimators[np.argmax(hyperparameter_tuning_scores)]
-    pipe = make_pipeline(best_estimators[0], best_estimators[1])
+    #pipe = make_pipeline(best_estimators[0], best_estimators[1])
+    pipe = Pipeline([("pca", PCA(n_components=2)), ("svc", SVC(C=10, kernel="poly", random_state=42))])
     pipe.fit(train_imgs_reshaped, train_labels)
     prediction = pipe.predict(test_imgs_reshaped)
-    print(best_estimators)
+    #print(best_estimators)
     #print(prediction)
-    print(classification_report(test_labels, prediction))
+    print(accuracy_score(test_labels, prediction))
+    print(classification_report(test_labels, prediction, target_names=le.classes_))
     # print(test_coord)
     # for i in range(len(prediction)):
     #     print(test_coord[i][1])
@@ -381,7 +386,7 @@ def train_cnn(year=2015, download_data=False, train_network=True):
     for i in range(len(prediction)):
         new_predictions.append(np.argmax(prediction[i]))
     print(accuracy_score(test_labels, new_predictions))
-    print(classification_report(test_labels, new_predictions))
+    print(classification_report(test_labels, new_predictions, target_names=le.classes_))
 
 
 def read_images(all_labels, train_data=True):
