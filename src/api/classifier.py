@@ -283,7 +283,6 @@ def create_dir(all_labels):
 
 
 def save_images(label, img, counter, train=True):
-
     print(label)
     if train:
 
@@ -293,7 +292,7 @@ def save_images(label, img, counter, train=True):
         path = "./data/test"
         cv2.imwrite(path + "/" + label + "/test_img_" + str(counter) + ".jpg", img)
 
-    #------------------------------ TensorFlow approach - in progress:
+
 def train_cnn(year=2015, download_data=False, train_network=True):
     all_labels = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space', 'park', 'recreational area']
 
@@ -306,27 +305,13 @@ def train_cnn(year=2015, download_data=False, train_network=True):
     test_images, test_labels = read_images(all_labels, False)
     print(len(train_images))
 
-    #train_data = getImagesTraining(Classification.objects.filter(year__lte=year), year)
-    # train_data_10per = random_sample(train_data)
-    # print(train_data)
-    # print(train_data_10per)
-    #train_labels, train_images = getLabelsImgs(train_data)
-    # print(train_labels, train_images)
     print("Training data extracted!")
-
-    #test_data = getImagesTest(year)
-    #test_coord, test_images = getLabelsImgs(test_data)
 
     le = LabelEncoder()
     train_labels = le.fit_transform(train_labels)
     test_labels = le.transform(test_labels)
-    #test_images = np.array(test_images)
-    # print("TEST", test_images)
     print("Training imgs loaded. Classification starts!")
 
-
-    # Normalize pixel values to be between 0 and 1
-    #train_images, test_images = train_images / 255.0, test_images / 255.0
     train_images = train_images / 255.0
 
     train_images, train_labels = shuffle(train_images, train_labels, random_state=1)
@@ -380,7 +365,6 @@ def train_cnn(year=2015, download_data=False, train_network=True):
 
     latest = tf.train.latest_checkpoint(checkpoint_dir)
     model.load_weights(latest)
-    # test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
     prediction = model.predict(test_images)
     new_predictions = []
     for i in range(len(prediction)):
