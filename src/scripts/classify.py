@@ -1,5 +1,13 @@
+"""
+classify.py
+"""
+
 from api.classifier import classify
 
 
-def run(*args):
+def run():
+    """
+        run classifier classify
+    """
+
     classify(download_data=False)
