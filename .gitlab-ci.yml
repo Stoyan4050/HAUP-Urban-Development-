@@ -1,0 +1,39 @@
+image: python:3.9.4
+
+before_script:
+  - python --version
+  - pip install -r requirements.txt
+
+stages:
+#  - build
+  - static analysis
+  - test
+#  - deploy
+
+flake8:
+  stage: static analysis
+  script:
+#  - flake8 --max-line-length=120 src/*.py
+  - flake8 --max-line-length=120 src/api/*.py
+  - flake8 --max-line-length=120 src/classification/*.py
+  - flake8 --max-line-length=120 src/scripts/*.py
+  - flake8 --max-line-length=120 src/urban_development/*.py
+  - flake8 --max-line-length=120 src/utils/*.py
+
+pylint:
+  stage: static analysis
+  allow_failure: true
+  script:
+#  - pylint -d E0633 src/*.py
+  - pylint -d E0633 src/api/*.py
+  - pylint -d E0633 src/classification/*.py
+  - pylint -d E0633 src/scripts/*.py
+  - pylint -d E0633 src/urban_development/*.py
+  - pylint -d E0633 src/utils/*.py
+
+
+unit_test:
+  stage: test
+  script:
+  - cd src
+  - python manage.py test

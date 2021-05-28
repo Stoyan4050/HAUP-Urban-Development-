@@ -1,9 +1,19 @@
-from .models import User
+"""
+admin.py
+"""
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from .models import User, Tile, Classification
+
 
 @admin.register(User)
 class AdminUser(UserAdmin):
+    """
+    @admin.register(User)
+    class AdminUser(UserAdmin)
+    """
+
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         disabled_fields = set()
@@ -41,4 +51,22 @@ class AdminUser(UserAdmin):
     search_fields = ("email", )
     ordering = ("email", )
 
-# Register your models here.
+
+@admin.register(Tile)
+class TileAdmin(admin.ModelAdmin):
+    """
+    @admin.register(Tile)
+    class TileAdmin(admin.ModelAdmin)
+    """
+
+    model = Tile
+
+
+@admin.register(Classification)
+class ClassificationAdmin(admin.ModelAdmin):
+    """
+    @admin.register(Classification)
+    class ClassificationAdmin(admin.ModelAdmin)
+    """
+
+    model = Classification
