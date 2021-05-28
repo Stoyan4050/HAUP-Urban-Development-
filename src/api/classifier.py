@@ -8,7 +8,6 @@ import os
 import cv2
 import numpy as np
 from django.db.models import Q
-import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.metrics import f1_score, classification_report, accuracy_score
 from sklearn.model_selection import GridSearchCV, KFold
@@ -16,6 +15,7 @@ from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.svm import SVC
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils import shuffle
+import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.keras import Sequential, layers
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
