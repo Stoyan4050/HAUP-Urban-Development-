@@ -40,6 +40,17 @@ class TestTest(unittest.TestCase):
         self.user_name = self.driver.find_element_by_id('user-name')
         self.assertEqual(self.user_name.text, 'Hello, hauptest@hauptest.com')
 
+    def test_login_guest(self):
+        self.guest_login_button = self.driver.find_element_by_xpath('//*[@id="hyperlinks-container"]/a[3]')
+        self.guest_login_button.click()
+
+        self.guest_login_url = self.driver.current_url
+        self.assertEqual(self.guest_login_url, 'http://127.0.0.1:8000/urban_development/map/')
+        # self.driver.save_screenshot("screenshot4.png")
+
+        self.guest_name = self.driver.find_element_by_id('user-name')
+        self.assertEqual(self.guest_name.text, 'Hello, guest')
+
     def test_logout_user(self):
         self.email_field = self.driver.find_element_by_id('id_username')
         self.email_field.send_keys('hauptest@hauptest.com')
@@ -49,10 +60,77 @@ class TestTest(unittest.TestCase):
         self.login_button.click()
         self.logout_button = self.driver.find_element_by_xpath('//*[@id="logout-button"]')
         self.logout_button.click()
-
+        # self.driver.save_screenshot("screenshot5.png")
         self.after_logout_url = self.driver.current_url
         self.assertEqual(self.after_logout_url, 'http://127.0.0.1:8000/urban_development/login/')
-        # self.driver.save_screenshot("screenshot4.png")
+        # self.driver.save_screenshot("screenshot6.png")
+
+    def test_change_password(self):
+        self.to_change_password_button = self.driver.find_element_by_xpath('//*[@id="hyperlinks-container"]/a[1]')
+        self.to_change_password_button.click()
+
+        self.change_password_url = self.driver.current_url
+        self.assertEqual(self.change_password_url, 'http://127.0.0.1:8000/urban_development/change_password/')
+        # self.driver.save_screenshot("screenshot7.png")
+
+        self.change_password_email = self.driver.find_element_by_id('id_email')
+        self.change_password_email.send_keys('hauptest2@hauptest.com')
+        self.change_password_button = self.driver.find_element_by_xpath('//*[@id="content-box"]/form/button')
+        self.change_password_button.click()
+        # self.driver.save_screenshot("screenshot8.png")
+
+        self.after_change_password_url = self.driver.current_url
+        self.assertIn('http://127.0.0.1:8000/urban_development/send_change_password_email/',
+                      self.after_change_password_url)
+        # self.driver.save_screenshot("screenshot9.png")
+
+        self.resend_password_button = self.driver.find_element_by_xpath('//*[@id="hyperlinks-container"]/a[1]')
+        self.resend_password_button.click()
+
+        self.resend_password_url = self.driver.current_url
+        self.assertIn('http://127.0.0.1:8000/urban_development/send_change_password_email/',
+                      self.after_change_password_url)
+        # self.driver.save_screenshot("screenshot10.png")
+
+        self.back_to_login_after_change = self.driver.find_element_by_xpath('//*[@id="hyperlinks-container"]/a[2]')
+        self.back_to_login_after_change.click()
+        # self.driver.save_screenshot("screenshot11.png")
+
+        self.login_after_change_password_url = self.driver.current_url
+        self.assertEqual(self.login_after_change_password_url, 'http://127.0.0.1:8000/urban_development/login/')
+
+    def test_register_user(self):
+        self.register_user_button = self.driver.find_element_by_xpath('//*[@id="hyperlinks-container"]/a[2]')
+        self.register_user_button.click()
+
+        self.register_user_url = self.driver.current_url
+        self.assertEqual(self.register_user_url, 'http://127.0.0.1:8000/urban_development/register/')
+        # self.driver.save_screenshot("screenshot12.png")
+
+        self.return_to_login_button = self.driver.find_element_by_xpath('//*[@id="hyperlinks-container"]/a')
+        self.return_to_login_button.click()
+        # self.driver.save_screenshot("screenshot13.png")
+
+        self.login_after_registration_url = self.driver.current_url
+        self.assertEqual(self.login_after_registration_url, 'http://127.0.0.1:8000/urban_development/login/')
+
+    def test_check_map_data_view(self):
+        self.email_field = self.driver.find_element_by_id('id_username')
+        self.email_field.send_keys('hauptest@hauptest.com')
+        self.password_field = self.driver.find_element_by_id('id_password')
+        self.password_field.send_keys('!helloT12345')
+        self.login_button = self.driver.find_element_by_xpath('//*[@id="content-box"]/form/button')
+        self.login_button.click()
+        # self.driver.save_screenshot("screenshot14.png")
+
+        self.map_view_button = self.driver.find_element_by_xpath('//*[@id="map-view-button"]')
+        self.data_view_button = self.driver.find_element_by_xpath('//*[@id="data-view-button"]')
+        self.assertFalse(self.map_view_button.is_enabled())
+        self.assertTrue(self.data_view_button.is_enabled())
+
+        self.data_view_button.click()
+        self.assertTrue(self.map_view_button.is_enabled())
+        self.assertFalse(self.data_view_button.is_enabled())
 
     def tearDown(self):
         # close the browser window
