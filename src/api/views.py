@@ -538,3 +538,18 @@ class GetDataView(View):
         }
 
         return JsonResponse(result, safe=False)
+
+
+class HowToUseView(View):
+    """
+    class HowToUseView(View)
+    """
+
+    @staticmethod
+    def get(request):
+        """
+        @staticmethod
+        def get(request)
+        """
+
+        return render(request, "pages/how_to_use.html")
