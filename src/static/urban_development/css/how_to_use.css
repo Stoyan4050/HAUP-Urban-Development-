@@ -1,0 +1,23 @@
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 16px;
+}
+
+h3 {
+  padding: 15px 0;
+}
+
+.header {
+  color: red;
+  background-color: rgb(32,101,136);
+  height: 350px;
+}
+
+.howto {
+  height: 350px;
+  text-align: center;
+}
+
+.howto-top {
+  padding: 30px;
+}
