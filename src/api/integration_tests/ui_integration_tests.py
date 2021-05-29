@@ -24,6 +24,7 @@ def browser():
     chrome_options.add_argument("window-position=500,0")
     chrome_options.add_argument("window-size=793,1167")
 
+    # create a new Chrome session
     driver = webdriver.Chrome(options=chrome_options)
     return driver
 
@@ -76,9 +77,6 @@ if url_after_logout == 'http://127.0.0.1:8000/urban_development/login/':
     print('Correct page')
 else:
     print('Incorrect page')
-
-# assert url_after_logout == 'http://127.0.0.1:8000/urban_development/login/'
-
 
 change_password = selection('a', 0)
 change_password.click()
@@ -148,21 +146,21 @@ else:
 # Check map and data view
 map_view_button = selection('button', 0)
 data_view_button = selection('button', 1)
-if map_view_button.is_enabled() == False:
+if not map_view_button.is_enabled():
     print('Button enabling correct')
 else:
     print('Button enabling incorrect')
-if data_view_button.is_enabled() == True:
+if data_view_button.is_enabled():
     print('Button enabling correct')
 else:
     print('Button enabling incorrect')
 
 data_view_button.click()
-if map_view_button.is_enabled() == True:
+if map_view_button.is_enabled():
     print('Button enabling correct')
 else:
     print('Button enabling incorrect')
-if data_view_button.is_enabled() == False:
+if not data_view_button.is_enabled():
     print('Button enabling correct')
 else:
     print('Button enabling incorrect')
