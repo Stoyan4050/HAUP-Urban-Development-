@@ -145,8 +145,24 @@ if guest_name == 'Hello, guest':
 else:
     print('Incorrect user')
 
-# map_view_enabled = selection('#map_view_button')
-# print(map_view_enabled.is_enabled())
+# Check map and data view
+map_view_button = selection('button', 0)
+data_view_button = selection('button', 1)
+if map_view_button.is_enabled() == False:
+    print('Button enabling correct')
+else:
+    print('Button enabling incorrect')
+if data_view_button.is_enabled() == True:
+    print('Button enabling correct')
+else:
+    print('Button enabling incorrect')
 
-# data_view_button = selection('#data_view_button')
-# data_view_button.click()
+data_view_button.click()
+if map_view_button.is_enabled() == True:
+    print('Button enabling correct')
+else:
+    print('Button enabling incorrect')
+if data_view_button.is_enabled() == False:
+    print('Button enabling correct')
+else:
+    print('Button enabling incorrect')
