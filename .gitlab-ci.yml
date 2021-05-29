@@ -12,6 +12,7 @@ stages:
 
 flake8:
   stage: static analysis
+  allow_failure: false
   script:
 #  - flake8 --max-line-length=120 src/*.py
   - flake8 --max-line-length=120 src/api/*.py
@@ -22,7 +23,7 @@ flake8:
 
 pylint:
   stage: static analysis
-  allow_failure: true
+  allow_failure: false
   script:
 #  - pylint -d E0633 src/*.py
   - pylint -d E0633 src/api/*.py
@@ -34,6 +35,7 @@ pylint:
 
 unit_test:
   stage: test
+  allow_failure: false
   script:
   - cd src
   - python manage.py test
