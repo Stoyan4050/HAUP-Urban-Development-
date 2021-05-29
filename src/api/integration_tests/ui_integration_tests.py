@@ -62,6 +62,12 @@ if url_map == 'http://127.0.0.1:8000/urban_development/map/':
 else:
     print('Incorrect page')
 
+user_name = selection('#user-name').text
+if user_name == 'Hello, hauptest@hauptest.com':
+    print('Correct user')
+else:
+    print('Incorrect user')
+
 logout_button = selection('#logout-button')
 logout_button.click()
 
@@ -133,8 +139,11 @@ if url_map_guest == 'http://127.0.0.1:8000/urban_development/map/':
 else:
     print('Incorrect page')
 
-user_name = selection('#user-name')
-print(user_name.text)
+guest_name = selection('#user-name').text
+if guest_name == 'Hello, guest':
+    print('Correct user')
+else:
+    print('Incorrect user')
 
 # map_view_enabled = selection('#map_view_button')
 # print(map_view_enabled.is_enabled())
