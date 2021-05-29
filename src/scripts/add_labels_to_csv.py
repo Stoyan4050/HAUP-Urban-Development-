@@ -28,7 +28,7 @@ def add_label():
     with open("./data/Wikidata/data.csv", "a") as f_object:
         writer_object = writer(f_object)
 
-        for ind in range(len(points)):
+        for ind in enumerate(points):
             args = [points[ind], years[ind], label_name]
             writer_object.writerow(args)
 
