@@ -1,23 +1,192 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
 body {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  font-size: 16px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 16px;
 }
 
-h3 {
-  padding: 15px 0;
+h1 {
+    font-family: Arial, sans-serif;
 }
 
-.header {
-  color: red;
-  background-color: rgb(32,101,136);
-  height: 350px;
+.title-container {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    position: relative;
 }
 
-.howto {
-  height: 350px;
-  text-align: center;
+.navbar {
+    padding-top: 1%;
+    height: 15hv;
+    padding-left: 5%;
+    padding-right: 3%;
+    margin: auto;
+    display: flex;
+    align-items: center;
 }
 
-.howto-top {
-  padding: 30px;
+.logo {
+    width: 160px;
+    cursor: auto;
 }
+
+nav {
+    flex: 1;
+    padding-left: 60px;
+}
+
+nav ul li {
+    display: inline-block;
+    list-style: none;
+    margin: 0px 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #228B22;
+}
+
+#user-info {
+    float: right;
+}
+
+.page-title {
+    width: 100%;
+    height: 500px;
+    font-size: 30px;
+    font-weight: 50;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: white;
+    background-image: url(images/background-color.png);
+    background-position: center;
+    background-size: cover;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.page-title h1 {
+    margin-left: 35px;
+    padding-top: 90px;
+    padding-left: 8%;
+    padding-right: 5%;
+}
+
+.tree {
+    float: right;
+    height: 350px;
+    position: absolute;
+}
+
+.bench {
+    float: right;
+    height: 50%;
+    position: absolute;
+}
+
+.steps {
+    padding-top: 3%;
+    padding-left: 15%;
+}
+
+.steps h3 {
+    color: #228B22;
+}
+
+.steps ol {
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.steps li {
+    padding-top: 1%;
+    padding-bottom: 1%;
+    color: #5a5a5a;
+}
+
+.map-button {
+    background-color: #228B22;
+    border: solid;
+    border-color: #228B22;
+    color: white;
+    padding: 16px 32px;
+    margin-bottom: 50px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 2px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.map-button:hover {
+    background-color: white;
+    color: #228B22;
+    border-style: solid;
+    border-color: #228B22;
+    border-radius: 6px;
+}
+
+#second-step {
+    margin-top: 50px;
+}
+
+
+
+/*body {*/
+/*  font-family: Verdana, Geneva, Tahoma, sans-serif;*/
+/*  font-size: 16px;*/
+/*}*/
+
+/*h3 {*/
+/*  padding: 15px 0;*/
+/*}*/
+
+/*.navbar {*/
+/*  width: 100%;*/
+/*  height: 15vh;*/
+/*  margin: auto;*/
+/*  display: flex;*/
+/*  align-items: center;*/
+/*}*/
+
+/*.logo {*/
+/*  width: 50px;*/
+/*  cursor: pointer;*/
+/*}*/
+
+/*.page-title {*/
+/*  color: white;*/
+
+/*}*/
+
+/*.container {*/
+/*  height: 500px;*/
+/*  background-image: url("../../../static/urban_development/images/background3.png");*/
+/*  background-position: center;*/
+/*  padding-left: 5%;*/
+/*  padding-right: 5%;*/
+/*  box-sizing: border-box;*/
+/*  position: relative;*/
+/*}*/
+
+
+
+/*.howto {*/
+
+/*}*/
+
+/*.howto-top {*/
+
+/*}*/
+
+/*#how-to-view-button {*/
+/*  text-decoration: none;*/
+/*}*/
+

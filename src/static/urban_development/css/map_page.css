@@ -38,6 +38,10 @@ html, body {
     float: left;
 }
 
+#how-to-view-button {
+  text-decoration: none;
+}
+
 /* Classes */
 
 .header-cell {
