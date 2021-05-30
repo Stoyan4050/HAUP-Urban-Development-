@@ -54,7 +54,7 @@
             </div>
             <div class="header-cell" id="email-cell">
                 <div>
-                    <span class="text-element">
+                    <span class="text-element" id="user-name">
                         Hello, 
                         {% if user.is_authenticated %}
                         {{ user.email }}
@@ -63,7 +63,7 @@
                         {% endif %}
                     </span>
                     <br>
-                    <a href="/urban_development/logout/" class="text-element">
+                    <a href="/urban_development/logout/" class="text-element" id="logout-button">
                         Log out
                     </a>
                 </div>
