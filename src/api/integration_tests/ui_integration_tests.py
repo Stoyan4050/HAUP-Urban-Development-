@@ -31,6 +31,7 @@ class UIIntegrationTest(unittest.TestCase):
 
         self.user_name = self.driver.find_element_by_id('user-name')
         self.assertEqual(self.user_name.text, 'Hello, hauptest@hauptest.com')
+        self.driver.quit()
 
     def test_login_guest(self):
         self.guest_login_button = self.driver.find_element_by_xpath('//*[@id="hyperlinks-container"]/a[3]')
@@ -42,6 +43,7 @@ class UIIntegrationTest(unittest.TestCase):
 
         self.guest_name = self.driver.find_element_by_id('user-name')
         self.assertEqual(self.guest_name.text, 'Hello, guest')
+        self.driver.quit()
 
     def test_logout_user(self):
         self.email_field = self.driver.find_element_by_id('id_username')
@@ -56,6 +58,7 @@ class UIIntegrationTest(unittest.TestCase):
         self.after_logout_url = self.driver.current_url
         self.assertEqual(self.after_logout_url, 'http://127.0.0.1:8000/urban_development/login/')
         # self.driver.save_screenshot("screenshot6.png")
+        self.driver.quit()
 
     def test_change_password(self):
         self.to_change_password_button = self.driver.find_element_by_xpath('//*[@id="hyperlinks-container"]/a[1]')
@@ -90,6 +93,7 @@ class UIIntegrationTest(unittest.TestCase):
 
         self.login_after_change_password_url = self.driver.current_url
         self.assertEqual(self.login_after_change_password_url, 'http://127.0.0.1:8000/urban_development/login/')
+        self.driver.quit()
 
     def test_register_user(self):
         self.register_user_button = self.driver.find_element_by_xpath('//*[@id="hyperlinks-container"]/a[2]')
@@ -105,6 +109,7 @@ class UIIntegrationTest(unittest.TestCase):
 
         self.login_after_registration_url = self.driver.current_url
         self.assertEqual(self.login_after_registration_url, 'http://127.0.0.1:8000/urban_development/login/')
+        self.driver.quit()
 
     def test_check_map_data_view(self):
         self.email_field = self.driver.find_element_by_id('id_username')
@@ -123,10 +128,11 @@ class UIIntegrationTest(unittest.TestCase):
         self.data_view_button.click()
         self.assertTrue(self.map_view_button.is_enabled())
         self.assertFalse(self.data_view_button.is_enabled())
-
-    def tearDown(self):
-        # close the browser window
         self.driver.quit()
+
+    # def tearDown(self):
+    #     # close the browser window
+    #     self.driver.quit()
 
 
 if __name__ == '__main__':
