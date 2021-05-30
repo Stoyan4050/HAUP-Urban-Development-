@@ -2,7 +2,12 @@
 fill_db.py
 """
 
-from ..api.utils import extract_convert_to_esri
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath('..'))
+
+from api.utils import extract_convert_to_esri
 
 
 def run():
