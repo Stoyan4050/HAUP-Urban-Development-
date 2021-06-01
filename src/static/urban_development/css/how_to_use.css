@@ -80,7 +80,7 @@ nav .nav-left{
 }
 
 .page-title h3 {
-    flex-direction: start;
+    margin-left: -170px;
 }
 
 .page-title div {
@@ -129,7 +129,6 @@ nav .nav-left{
     border: none;
     text-align: left;
     outline: none;
-    font-size: 15px;
 }
   
 .active, .collapsible:hover {
@@ -144,7 +143,7 @@ nav .nav-left{
 }
 
 .steps button {
-    font-size: 20px;
+    font-size: 1rem;
 }
 
 .steps-list {
