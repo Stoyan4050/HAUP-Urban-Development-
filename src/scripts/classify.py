@@ -10,4 +10,4 @@ def run():
         run classifier classify
     """
 
-    classify(download_data=False)
+    classify(download_data=True)
