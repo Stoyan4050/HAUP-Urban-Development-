@@ -13,7 +13,13 @@ h1 {
     font-family: Arial, sans-serif;
 }
 
-
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    padding-left: 60px;
+}
 
 /* Classes */
 
@@ -28,14 +34,6 @@ h1 {
     display: flex;
     align-items: center;
     padding: 10px 5%;
-}
-
-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex: 1;
-    padding-left: 60px;
 }
 
 nav .nav-left{

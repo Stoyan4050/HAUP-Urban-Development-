@@ -10,6 +10,8 @@
     flex-direction: column-reverse;
   }
 
+  /*IDs*/
+
   #email-cell {
     margin-bottom: 1.5rem;
   }
