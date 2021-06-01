@@ -12,6 +12,7 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/4.15/esri/themes/dark-blue/main.css" />
     <link rel="stylesheet" type="text/css" href="{% static 'urban_development/css/how_to_use.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'urban_development/css/global.css' %}">
     <script src="https://js.arcgis.com/4.15/"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="{% static 'urban_development/js/map_page.js' %}" type="text/javascript"></script>
@@ -30,9 +31,9 @@
                         </a>
                     </div>
                     <div class="header-button text-element" id="map-view-button">
-                        <a>Map View</a>
+                        <a href="../map?view=map">Map View</a>
                     </div>
-                    <div class="header-button text-element" id="data-view-button"><a>Data View</a></div>
+                    <div class="header-button text-element" id="data-view-button"><a href="../map?view=data">Data View</a></div>
                 </div>
                 <div id="email-cell">
                     <div>
@@ -99,7 +100,7 @@
         </div>
     </div>
     <div class="footer">
-        <p>Copyright &copy;
+        <p>
             <script>document.write(new Date().getFullYear())</script> Urban Development
         </p>
     </div>
