@@ -68,15 +68,15 @@ class TileManager(models.Manager):
     class TileManager(models.Manager)
     """
 
-    def create_tile(self, x_coordinate, y_coordinate):
+    def create_tile(self, tile_id, x_coordinate, y_coordinate):
         """
         def create_tile(self, x_coordinate, y_coordinate)
         """
 
-        if not x_coordinate or not y_coordinate:
-            raise ValueError(ugettext_lazy("You can't save tile without x and y coordinates"))
+        if not tile_id or not x_coordinate or not y_coordinate:
+            raise ValueError(ugettext_lazy("You cannot save a tile without an id, x and y coordinates."))
 
-        tile = self.create(x_coordinate=x_coordinate, y_coordinate=y_coordinate)
+        tile = self.create(tile_id=tile_id, x_coordinate=x_coordinate, y_coordinate=y_coordinate)
         return tile
 
 
@@ -84,11 +84,14 @@ class Tile(models.Model):
     """
     class Tile(models.Model)
     """
+    class Meta:
+        unique_together = ["x_coordinate", "y_coordinate"]
+        ordering = ["x_coordinate", "y_coordinate"]
 
-    tid = models.AutoField(primary_key=True, serialize=True)
-    x_coordinate = models.IntegerField()
-    y_coordinate = models.IntegerField()
-    REQUIRED_FIELDS = [x_coordinate, y_coordinate]
+    tile_id = models.IntegerField(primary_key=True, null=False, unique=True)
+    x_coordinate = models.IntegerField(null=False)
+    y_coordinate = models.IntegerField(null=False)
+    REQUIRED_FIELDS = [tile_id, x_coordinate, y_coordinate]
     objects = TileManager()
 
 
@@ -97,15 +100,16 @@ class ClassificationManager(models.Manager):
     class ClassificationManager(models.Manager)
     """
 
-    def create_classification(self, tile_id, year, label, classified_by):
+    def create_classification(self, tile_id, year, contains_greenery, classified_by):
         """
-        def create_classification(self, tile_id, year, label, classified_by)
+        def create_classification(self, tile_id, year, contains_greenery, classified_by)
         """
 
         if not tile_id:
             raise ValueError(ugettext_lazy("No tile with these coordinates exists"))
 
-        classification = self.create(tile_id=tile_id, year=year, label=label, classified_by=classified_by)
+        classification = self.create(tile_id=tile_id, year=year, contains_greenery=contains_greenery,
+                                     classified_by=classified_by)
         return classification
 
 
@@ -113,9 +117,14 @@ class Classification(models.Model):
     """
     class Classification(models.Model)
     """
+    class Meta:
+        unique_together = ["year", "tile_id"]
+        ordering = ["year", "tile_id", "contains_greenery", "classified_by"]
 
-    tile_id = models.ForeignKey("Tile", null=False, db_column="tid", on_delete=models.CASCADE)
-    year = models.IntegerField()
-    label = models.CharField(max_length=50)
-    classified_by = models.IntegerField()
+    classification_id = models.AutoField(primary_key=True, null=False, unique=True)
+    year = models.IntegerField(null=False)
+    tile_id = models.ForeignKey("Tile", db_column="tile_id", on_delete=models.CASCADE, null=False)
+    contains_greenery = models.BooleanField(null=False)
+    classified_by = models.IntegerField(null=False)
+    REQUIRED_FIELDS = [tile_id, year, contains_greenery, classified_by]
     objects = ClassificationManager()

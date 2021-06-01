@@ -41,7 +41,8 @@ def create_tiles():
     tile_names = data_frame.tilename.tolist()
 
     for tile in tile_names:
-        Tile.objects.create_tile(x_coordinate=tile.split("_")[0], y_coordinate=tile.split("_")[1][:-4])
+        tile_id = tile.split("_")[0] * 75879 + tile.split("_")[1][:-4]
+        Tile.objects.create_tile(tile_id=tile_id, x_coordinate=tile.split("_")[0], y_coordinate=tile.split("_")[1][:-4])
 
 
 def extract_available_years():
