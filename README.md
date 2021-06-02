@@ -100,9 +100,13 @@ When users go to the Data Page, they are shown a fairly simple textual represent
 ## Team
 
 Angel Karchev - ank1972@abv.bg
+
 Ivan Nestorov - ivan.nestorov@gmail.com
+
 Ivan Todorov - ivan.s.t@icloud.com
+
 Liselotte Jongejans - liselottejongejans@gmail.com
+
 Stoyan Dimitrov - s.g.dimitrov@student.tudelft.nl
 
 ## Contributions
