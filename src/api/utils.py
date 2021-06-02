@@ -137,9 +137,9 @@ def extract_convert_to_esri():
             print(x_esri, y_esri)
         except IntegrityError:
             if contains_greenery:
-                t = Classification.objects.get(tile_id=tile_id, year=year)
-                t.contains_greenery = True
-                t.save()
+                classification = Classification.objects.get(tile_id=tile_id, year=year)
+                classification.contains_greenery = True
+                classification.save()
                 # Classification.objects.replace(tile_id=Tile.objects.get(x_coordinate=x_esri, y_coordinate=y_esri),
                 #                                year=year, contains_greenery=contains_greenery, classified_by="-2")
 
