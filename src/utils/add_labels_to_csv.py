@@ -33,7 +33,7 @@ def add_label():
     if 'inception' in data_frame.columns:
         years = data_frame.inception.tolist()
 
-    with open("../data/Wikidata/data.csv", "a") as f_object:
+    with open("../data/Wikidata/data_1.csv", "a", newline="") as f_object:
         writer_object = writer(f_object)
 
         for ind in range(len(points)):
