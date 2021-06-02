@@ -9,8 +9,6 @@ from api.utils import create_tiles
 sys.path.insert(0, os.path.abspath('..'))
 
 
-
-
 def run():
     """
     def run()
