@@ -85,6 +85,9 @@ class Tile(models.Model):
     class Tile(models.Model)
     """
     class Meta:
+        """
+        class Meta
+        """
         unique_together = ["x_coordinate", "y_coordinate"]
         ordering = ["x_coordinate", "y_coordinate"]
 
@@ -118,6 +121,9 @@ class Classification(models.Model):
     class Classification(models.Model)
     """
     class Meta:
+        """
+        class Meta
+        """
         unique_together = ["year", "tile_id"]
         ordering = ["year", "tile_id", "contains_greenery", "classified_by"]
 
