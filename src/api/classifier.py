@@ -332,6 +332,10 @@ def read_images(all_labels, train_data=True):
 
 
 def color_detection(download_data=False, year=2015):
+    """
+        detetect the colors and shapes of maps
+    """
+
     path = "./data/parks_detected"
     shutil.rmtree(path)
     os.makedirs(path)
@@ -340,9 +344,10 @@ def color_detection(download_data=False, year=2015):
         get_images_training(Classification.objects.filter(year__lte=year), year)
         get_images_test(year)
 
-    train_images, train_labels = read_images(ALL_LABELS, True)
+    train_images = read_images(ALL_LABELS, True)
+    # train_labels = read_images(ALL_LABELS, True)
     # test_images = read_images(ALL_LABELS, False)
-    print(train_images.shape)
+    # print(train_images.shape)
     # print(test_images.shape)
     # all_images = np.concatenate(train_images, test_images)
     for i, img in enumerate(train_images):
@@ -362,8 +367,10 @@ def color_detection(download_data=False, year=2015):
         cv2.drawContours(output, contours, -1, (0, 255, 0), 1)
         areas = []
         for contour in contours:
-            (x, y, w, h) = cv2.boundingRect(contour)
-            areas.append(w * h)
+            (x_shape, y_shape, w_shape, h_shape) = cv2.boundingRect(contour)
+            areas.append(w_shape * h_shape)
+            print(x_shape)
+            print(y_shape)
         if len(areas) > 0:
             max_area = np.max(areas)
             if max_area >= 15:
