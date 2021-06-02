@@ -1,5 +1,5 @@
 """
-fill_db_classfications.py
+fill_db_classifications.py
 """
 
 import os
