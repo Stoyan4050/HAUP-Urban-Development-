@@ -103,7 +103,7 @@ Angel Karchev - ank1972@abv.bg\
 Ivan Nestorov - ivan.nestorov@gmail.com\
 Ivan Todorov - ivan.s.t@icloud.com\
 Liselotte Jongejans - liselottejongejans@gmail.com\
-Stoyan Dimitrov - s.g.dimitrov@student.tudelft.nl\
+Stoyan Dimitrov - s.g.dimitrov@student.tudelft.nl
 
 ## Contributions
 
