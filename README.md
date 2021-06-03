@@ -78,7 +78,7 @@ In order to change their password, users must provide the email address associat
 
 #### Map Page
 
-After logging in with their account or as a guest, users are redirected to the Map Page, which shows the map for the currently selected year (by default, the most recent available year is selected). From the menu bar at the top of the page users can switch between the Map Page and the Data Page. Moreover, they can select the year, which they want to view the map, as well as add an overlay to the map of the currently selected year. The following overlays are available:
+After logging in with their account or as a guest, users are redirected to the Map Page, which shows the map for the currently selected year (by default, the most recent available year is selected). From the menu bar at the top of the page users can switch between the Map Page and the Data Page. Moreover, they can select the year, which they want to view the map of, as well as add an overlay to the map of the currently selected year. The following overlays are available:
 - The 'Classified as' overlay provides information on what different map tiles have been classified as:
   - Map tiles colored in green have been classified as containing greenery;
   - Map tiles colored in red have been classified as not containing greenery.
@@ -89,18 +89,18 @@ After logging in with their account or as a guest, users are redirected to the M
 
 #### Data Page
 
-When users go to the Data Page, they are shown a fairly simple textual representation of the most important information for the map of the currently selected year. From the menu bar at the top of the page users can select the year, the map for which they want to view the information. The displayed information includes:
-- The total amount of map tiles of the selected year, which have been classified;
-- The number of map tiles of the selected year classified as containing greenery;
-- The number of map tiles of the selected year classified as not containing greenery;
-- The number of map tiles of the selected year classified by the training data used by our machine learning algorithm; 
-- The number of map tiles of the selected year classified by a user;
-- The number of map tiles of the selected year classified by our machine learning algorithm.
+When users go to the Data Page, they are shown a fairly simple textual representation of the most important information for the map of the currently selected year. From the menu bar at the top of the page users can select the year, the map of which they want to view the information for. The displayed information includes:
+- The total number of map tiles of the selected year, which have been classified;
+- The number/percentage of map tiles of the selected year classified as containing greenery;
+- The number/percentage of map tiles of the selected year classified as not containing greenery;
+- The number/percentage of map tiles of the selected year classified by the training data used by our machine learning algorithm; 
+- The number/percentage of map tiles of the selected year classified by a user;
+- The number/percentage of map tiles of the selected year classified by our machine learning algorithm.
 
 ## Team
 
 Angel Karchev - ank1972@abv.bg\
-Ivan Nestorov - ivan.nestorov@gmail.com\
+Ivan Nestorov - ivan.nestorov1401@gmail.com\
 Ivan Todorov - ivan.s.t@icloud.com\
 Liselotte Jongejans - liselottejongejans@gmail.com\
 Stoyan Dimitrov - s.g.dimitrov@student.tudelft.nl
