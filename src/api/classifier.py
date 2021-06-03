@@ -333,7 +333,7 @@ def read_images(all_labels, train_data=True):
 
 def color_detection(download_data=False, year=2015):
     """
-        detetect the colors and shapes of maps
+        detect the colors and shapes of maps
     """
 
     path = "./data/parks_detected"
