@@ -24,6 +24,7 @@ pylint:
   stage: static analysis
   allow_failure: true
   script:
+  - pylint --disable=E0611
 #  - pylint -d E0633 src/*.py
   - pylint -d E0633 src/api/*.py
   - pylint -d E0633 src/classification/*.py

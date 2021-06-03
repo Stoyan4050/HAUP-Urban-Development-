@@ -17,9 +17,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.utils import shuffle
 import tensorflow as tf
 from tensorflow.keras import Sequential, layers
-from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.callbacks import ModelCheckpoint
-from tensorflow.keras.callbacks import ReduceLROnPlateau
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 import matplotlib.pyplot as plt
 from .models import Classification
 
