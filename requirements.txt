@@ -34,5 +34,5 @@ six~=1.15.0
 sqlparse==0.4.1
 tensorflow==2.5.0
 threadpoolctl==2.1.0
-typing-extensions==3.10.0.0
+typing-extensions~=3.7.4
 zipp==3.4.1
