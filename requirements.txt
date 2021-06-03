@@ -1,5 +1,6 @@
 altgraph==0.17
 asgiref==3.3.4
+beautifulsoup4~=4.9.3
 bs4==0.0.1
 certifi==2020.12.5
 Django==3.2.3
@@ -9,6 +10,7 @@ flake8==3.9.2
 future==0.18.2
 importlib-metadata==4.0.1
 joblib==1.0.1
+matplotlib~=3.3.2
 mccabe==0.6.1
 mysqlclient==2.0.3
 numpy~=1.19.5
@@ -30,10 +32,7 @@ scikit-learn==0.24.2
 scipy==1.6.3
 six~=1.15.0
 sqlparse==0.4.1
+tensorflow==2.5.0
 threadpoolctl==2.1.0
 typing-extensions==3.10.0.0
 zipp==3.4.1
-
-beautifulsoup4~=4.9.3
-tensorflow~=2.4.1
-matplotlib~=3.3.2
