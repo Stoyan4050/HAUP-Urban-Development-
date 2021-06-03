@@ -52,7 +52,7 @@ class UIIntegrationTest(unittest.TestCase):
         self.password_field.send_keys('!helloT12345')
         self.login_button = self.driver.find_element_by_xpath('//*[@id="content-box"]/form/button')
         self.login_button.click()
-        self.logout_button = self.driver.find_element_by_xpath('//*[@id="logout-button"]')
+        self.logout_button = self.driver.find_element_by_xpath('//*[@id="email-cell"]/div/a')
         self.logout_button.click()
         # self.driver.save_screenshot("screenshot5.png")
         self.after_logout_url = self.driver.current_url
@@ -111,24 +111,38 @@ class UIIntegrationTest(unittest.TestCase):
         self.assertEqual(self.login_after_registration_url, 'http://127.0.0.1:8000/urban_development/login/')
         self.driver.quit()
 
-    def test_check_map_data_view(self):
+    # def test_check_map_data_view(self):
+    #     self.email_field = self.driver.find_element_by_id('id_username')
+    #     self.email_field.send_keys('hauptest@hauptest.com')
+    #     self.password_field = self.driver.find_element_by_id('id_password')
+    #     self.password_field.send_keys('!helloT12345')
+    #     self.login_button = self.driver.find_element_by_xpath('//*[@id="content-box"]/form/button')
+    #     self.login_button.click()
+    #     # self.driver.save_screenshot("screenshot14.png")
+    #
+    #     self.map_view_button = self.driver.find_element_by_xpath('//*[@id="map-view-button"]')
+    #     self.data_view_button = self.driver.find_element_by_xpath('//*[@id="data-view-button"]')
+    #     self.assertFalse(self.map_view_button.is_enabled())
+    #     self.assertTrue(self.data_view_button.is_enabled())
+    #
+    #     self.data_view_button.click()
+    #     self.assertTrue(self.map_view_button.is_enabled())
+    #     self.assertFalse(self.data_view_button.is_enabled())
+    #     self.driver.quit()
+
+    def test_how_to_use_page(self):
         self.email_field = self.driver.find_element_by_id('id_username')
         self.email_field.send_keys('hauptest@hauptest.com')
         self.password_field = self.driver.find_element_by_id('id_password')
         self.password_field.send_keys('!helloT12345')
         self.login_button = self.driver.find_element_by_xpath('//*[@id="content-box"]/form/button')
         self.login_button.click()
-        # self.driver.save_screenshot("screenshot14.png")
+        self.how_to_use_button = self.driver.find_element_by_xpath('//*[@id="how-to-view-button"]/a')
+        self.how_to_use_button.click()
 
-        self.map_view_button = self.driver.find_element_by_xpath('//*[@id="map-view-button"]')
-        self.data_view_button = self.driver.find_element_by_xpath('//*[@id="data-view-button"]')
-        self.assertFalse(self.map_view_button.is_enabled())
-        self.assertTrue(self.data_view_button.is_enabled())
-
-        self.data_view_button.click()
-        self.assertTrue(self.map_view_button.is_enabled())
-        self.assertFalse(self.data_view_button.is_enabled())
-        self.driver.quit()
+        # self.driver.save_screenshot("screenshot13.png")
+        self.how_to_use_url = self.driver.current_url
+        self.assertEqual(self.how_to_use_url, 'http://127.0.0.1:8000/urban_development/how_to_use/')
 
     # def tearDown(self):
     #     # close the browser window
