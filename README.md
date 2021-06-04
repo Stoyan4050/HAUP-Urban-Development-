@@ -19,9 +19,7 @@ HAUP Urban Development is a web application that uses semi-supervised machine le
 
 - Recognizes greenery in maps of the Netherlands
 - Supports maps from different years (all the way back to 1815)
-<!--- - Saves your manual classifications for future use --->
 - Displays a textual representation of the most important information for maps of different years
-<!--- - Can export the most important information for maps of different years in a CSV formatted file for offline use --->
 
 ## Technologies
 
@@ -57,8 +55,7 @@ cd src
 # Run the web application
 python manage.py runserver
 ```
-You can now access the web application using a web browser of your choice at the following link:
-[https://localhost:8000](https://localhost:8000)
+You can now access the web application using a web browser of your choice at the following link: [https://localhost:8000](https://localhost:8000)
 
 ## Usage
 
