@@ -232,3 +232,7 @@ nav .nav-left {
 #user-info {
   float: right;
 }
+
+.esri-ui-inner-container.esri-ui-corner-container {
+  inset: 15px 15px !important;
+}
