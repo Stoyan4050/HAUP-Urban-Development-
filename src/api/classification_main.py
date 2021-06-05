@@ -2,7 +2,7 @@
 classification_main.py
 """
 
-import classifier
+from src.api import classifier
 
 if __name__ == "__main__":
     # main(1900 ,range(75400,75879),range(75400,75825),"1900")
