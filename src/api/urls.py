@@ -5,7 +5,7 @@ urls.py
 from django.urls import path
 from .views import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedAsView, GetClassifiedByView,\
     GetDataView, GuestView, LoginView, LogoutView, MapView, PasswordChangedView, RegisterView,\
-    SendActivationEmailView, SendChangePasswordEmailView
+    SendActivationEmailView, SendChangePasswordEmailView, HowToUseView
 
 app_name = "urban_development"
 
@@ -38,4 +38,6 @@ urlpatterns = [
          name="get_classified_by_page"),
     path("get_data/<parameters>/", GetDataView.as_view(),
          name="get_data_view"),
+    path("how_to_use/", HowToUseView.as_view(),
+         name="how_to_use")
 ]
