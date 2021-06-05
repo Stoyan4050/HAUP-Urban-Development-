@@ -3,8 +3,8 @@ utils.py
 """
 import urllib
 from math import floor, ceil
-import cv2
 import random
+import cv2
 import pandas
 import requests
 import numpy as np
