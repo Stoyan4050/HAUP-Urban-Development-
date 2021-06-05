@@ -67,41 +67,41 @@ def euclidean_distance_random_tiles():
 
     arr = [[], [], [], [], [], [], [], [], [], [], [], [], []]
     for i in range(1, 500):
-        randX = random.randint(75087, 75825)
-        randY = random.randint(74956, 75879)
+        rand_x = random.randint(75087, 75825)
+        rand_y = random.randint(74956, 75879)
 
         try:
-            Tile.objects.get(x_coordinate=randX, y_coordinate=randY)
+            Tile.objects.get(x_coordinate=rand_x, y_coordinate=rand_y)
 
             for year in range(1900, 2030, 10):
                 res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
-                      str(year) + "/MapServer/tile/11/" + str(randY) + "/" + str(randX)
+                      str(year) + "/MapServer/tile/11/" + str(rand_y) + "/" + str(rand_x)
 
-                urllib.request.urlretrieve(res, str(randX) + "_" + str(randY) + "_" + str(year) + ".jpg")
+                urllib.request.urlretrieve(res, str(rand_x) + "_" + str(rand_y) + "_" + str(year) + ".jpg")
                 if year != 1900:
-                    image = cv2.imread(str(randX) + "_" + str(randY) + "_" + str(year) + ".jpg")
+                    image = cv2.imread(str(rand_x) + "_" + str(rand_y) + "_" + str(year) + ".jpg")
                     gray_image1 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     histogram1 = cv2.calcHist([gray_image1], [0],
                                               None, [256], [0, 256])
 
-                    image = cv2.imread(str(randX) + "_" + str(randY) + "_" + str(year - 10) + ".jpg")
+                    image = cv2.imread(str(rand_x) + "_" + str(rand_y) + "_" + str(year - 10) + ".jpg")
                     gray_image2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     histogram2 = cv2.calcHist([gray_image2], [0],
                                               None, [256], [0, 256])
-                    c = 0
+                    distance = 0
 
                     # Euclidean Distace
                     i = 0
                     while i < len(histogram1) and i < len(histogram2):
-                        c += (histogram1[i] - histogram2[i]) ** 2
-                        i += 1
-                    c = c ** (1 / 2)
+                        distance += (histogram1[i] - histogram2[i]) ** 2
+                        distance += 1
+                    distance = distance ** (1 / 2)
 
                     if c > 1:
 
                         print(int((year - 1910) / 10))
                         arr[int((year - 1910) / 10)].append(c)
-                        print(c, randY, randX)
+                        print(c, rand_y, rand_x)
                         count[int(c / 10000)] += 1
 
         except ObjectDoesNotExist:
