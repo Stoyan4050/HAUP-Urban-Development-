@@ -94,13 +94,13 @@ def euclidean_distance_random_tiles():
                     i = 0
                     while i < len(histogram1) and i < len(histogram2):
                         distance += (histogram1[i] - histogram2[i]) ** 2
-                        distance += 1
+                        i += 1
                     distance = distance ** (1 / 2)
 
                     if distance > 1:
 
                         print(int((year - 1910) / 10))
-                        arr[int((year - 1910) / 10)].append(c)
+                        arr[int((year - 1910) / 10)].append(distance)
                         print(distance, rand_y, rand_x)
                         count[int(distance / 10000)] += 1
 
