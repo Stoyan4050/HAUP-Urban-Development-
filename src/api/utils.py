@@ -97,12 +97,12 @@ def euclidean_distance_random_tiles():
                         distance += 1
                     distance = distance ** (1 / 2)
 
-                    if c > 1:
+                    if distance > 1:
 
                         print(int((year - 1910) / 10))
                         arr[int((year - 1910) / 10)].append(c)
-                        print(c, rand_y, rand_x)
-                        count[int(c / 10000)] += 1
+                        print(distance, rand_y, rand_x)
+                        count[int(distance / 10000)] += 1
 
         except ObjectDoesNotExist:
             pass
