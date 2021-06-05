@@ -1,10 +1,14 @@
 """
 utils.py
 """
-
+import urllib
 from math import floor, ceil
+
+import random
+import cv2
 import pandas
 import requests
+import numpy as np
 from bs4 import BeautifulSoup
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
@@ -52,6 +56,65 @@ def create_tiles():
         y_coordinate = int(tile.split("_")[1][:-4])
         tile_id = x_coordinate * 75879 + y_coordinate
         Tile.objects.create_tile(tile_id=tile_id, x_coordinate=x_coordinate, y_coordinate=y_coordinate)
+
+
+def euclidean_distance_random_tiles():
+    """
+    def euclidean_distance_random_tiles()
+    """
+
+    count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    arr = [[], [], [], [], [], [], [], [], [], [], [], [], []]
+    for i in range(1, 500):
+        randX = random.randint(75087, 75825)
+        randY = random.randint(74956, 75879)
+
+        try:
+            Tile.objects.get(x_coordinate=randX, y_coordinate=randY)
+
+            for year in range(1900, 2030, 10):
+                res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
+                      str(year) + "/MapServer/tile/11/" + str(randY) + "/" + str(randX)
+
+                urllib.request.urlretrieve(res, str(randX) + "_" + str(randY) + "_" + str(year) + ".jpg")
+                if year != 1900:
+                    image = cv2.imread(str(randX) + "_" + str(randY) + "_" + str(year) + ".jpg")
+                    gray_image1 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                    histogram1 = cv2.calcHist([gray_image1], [0],
+                                              None, [256], [0, 256])
+
+                    image = cv2.imread(str(randX) + "_" + str(randY) + "_" + str(year - 10) + ".jpg")
+                    gray_image2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                    histogram2 = cv2.calcHist([gray_image2], [0],
+                                              None, [256], [0, 256])
+                    c = 0
+
+                    # Euclidean Distace
+                    i = 0
+                    while i < len(histogram1) and i < len(histogram2):
+                        c += (histogram1[i] - histogram2[i]) ** 2
+                        i += 1
+                    c = c ** (1 / 2)
+
+                    if c > 1:
+
+                        print(int((year - 1910) / 10))
+                        arr[int((year - 1910) / 10)].append(c)
+                        print(c, randY, randX)
+                        count[int(c / 10000)] += 1
+
+        except ObjectDoesNotExist:
+            pass
+
+    np.percentile(arr[0], 90)
+    print(count)
+
+    a_file = open("test.txt", "w")
+    for year in range(1910, 2030, 10):
+        a_file.write(str(year) + ": " + str(np.percentile(arr[int((year - 1910) / 10)], 90)) + "\n")
+
+    a_file.close()
 
 
 def extract_available_years():
