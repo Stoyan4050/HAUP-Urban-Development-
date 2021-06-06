@@ -21,6 +21,9 @@ from .tokens import TOKEN_GENERATOR
 
 
 def add_labels_for_previous_years():
+    """
+    add_labels_for_previous_years()
+    """
     # arr = [[], [], [], [], [], [], [], [], [], [], [], [], []]
     percentile_dictionary = {
 
