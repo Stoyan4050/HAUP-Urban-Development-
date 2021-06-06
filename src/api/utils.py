@@ -20,6 +20,88 @@ from .models import Tile, Classification, User
 from .tokens import TOKEN_GENERATOR
 
 
+def add_labels_for_previous_years():
+    # arr = [[], [], [], [], [], [], [], [], [], [], [], [], []]
+    percentile_dictionary = {
+
+        1900: 7623.754980468751,
+        1910: 8686.396484375,
+        1920: 9016.2767578125,
+        1930: 12544.352734375001,
+        1940: 9720.98046875,
+        1950: 15607.060644531251,
+        1960: 12649.3212890625,
+        1970: 12715.7212890625,
+        1980: 14023.113671875015,
+        1990: 20844.1919921875,
+        2000: 25589.086328125006,
+        2010: 21873.5953125
+    }
+
+    ind = 0
+    classifications = Classification.objects.filter(year=2020)
+    for classification in classifications:
+        ind += 1
+        print(ind)
+
+        tile_x = classification.tile_id.tile_id // 75879
+        tile_y = int(classification.tile_id.tile_id) % 75879
+
+        res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
+              "2020" + "/MapServer/tile/11/" + str(tile_y) + "/" + str(tile_x)
+        print(res)
+        urllib.request.urlretrieve(res, str(tile_x) + "_" + str(tile_y) + "_" + "2020" + ".jpg")
+
+        for year in range(2010, 1890, -10):
+            res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
+                  str(year) + "/MapServer/tile/11/" + str(tile_y) + "/" + str(tile_x)
+            urllib.request.urlretrieve(res, str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
+
+            image = cv2.imread(str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
+            gray_image1 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            histogram1 = cv2.calcHist([gray_image1], [0],
+                                      None, [256], [0, 256])
+
+            image = cv2.imread(str(tile_x) + "_" + str(tile_y) + "_" + str(year + 10) + ".jpg")
+            gray_image2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            histogram2 = cv2.calcHist([gray_image2], [0],
+                                      None, [256], [0, 256])
+            distance = 0
+
+            # Euclidean Distance
+            i = 0
+            while i < len(histogram1) and i < len(histogram2):
+                distance += (histogram1[i] - histogram2[i]) ** 2
+                i += 1
+            distance = distance ** (1 / 2)
+
+            # arr[int((year - 1900) / 10)].append(distance)
+
+            print(year, distance, percentile_dictionary[year], percentile_dictionary[year] - distance)
+
+            if distance > percentile_dictionary[year]:
+                print(year)
+                if year != 2010:
+                    try:
+                        Classification.objects.create(
+                            tile_id=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y),
+                            year=year + 10,
+                            contains_greenery=classification.contains_greenery, classified_by="-5")
+                    except ObjectDoesNotExist:
+                        print(tile_x, tile_y)
+                break
+            if year == 1900:
+                print(year)
+                Classification.objects.create(
+                    tile_id=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y),
+                    year=year,
+                    contains_greenery=classification.contains_greenery, classified_by="-5")
+
+    # for year in range(1910, 2030, 10):
+    #
+    #     print(str(year - 10) + ": " + str(np.percentile(arr[int((year - 1910) / 10)], 90)) + "\n")
+
+
 def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id):
     """
     def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id)
@@ -89,7 +171,7 @@ def euclidean_distance_random_tiles():
                                               None, [256], [0, 256])
                     distance = 0
 
-                    # Euclidean Distace
+                    # Euclidean Distance
                     i = 0
                     while i < len(histogram1) and i < len(histogram2):
                         distance += (histogram1[i] - histogram2[i]) ** 2
@@ -97,7 +179,6 @@ def euclidean_distance_random_tiles():
                     distance = distance ** (1 / 2)
 
                     if distance > 1:
-
                         print(int((year - 1910) / 10))
                         arr[int((year - 1910) / 10)].append(distance)
                         print(distance, rand_y, rand_x)
@@ -106,12 +187,11 @@ def euclidean_distance_random_tiles():
         except ObjectDoesNotExist:
             pass
 
-    np.percentile(arr[0], 90)
     print(count)
 
-    a_file = open("test.txt", "w")
+    a_file = open("year_percentiles.txt", "w")
     for year in range(1910, 2030, 10):
-        a_file.write(str(year) + ": " + str(np.percentile(arr[int((year - 1910) / 10)], 90)) + "\n")
+        a_file.write(str(year - 10) + ": " + str(np.percentile(arr[int((year - 1910) / 10)], 90)) + "\n")
 
     a_file.close()
 
