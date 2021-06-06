@@ -19,7 +19,12 @@ from .models import Classification, Tile, User
 from .tokens import TOKEN_GENERATOR
 from .utils import extract_available_years, send_email, transform_tile_to_coordinates
 
-
+regions = {'Drenthe': [75590, 75751, 75128, 75290], 'Flevoland': [75424, 75574, 75228, 75391],
+            'Friesland': [75380, 75641, 75043, 75240], 'Gelderland': [75402, 75713, 75316, 75532],
+            'Groningen': [75598, 75771, 75032, 75226], 'Limburg': [75499, 75613, 75520, 75805],
+            'Noord-Brabant': [75264, 75581, 75506, 75672], 'Noord-Holland': [75205, 75455, 75133, 75552],
+            'Overijssel': [75534, 75750, 75225, 75425], 'Zuid-Holland': [75205, 75408, 75368, 75552],
+            'Utrecht': [75368, 75509, 75376, 75498], 'Zeeland': [75120, 75278, 75526, 75675]}
 class BaseView(View):
     """
     class BaseView(View)
@@ -389,6 +394,8 @@ class GetClassifiedAsView(View):
         """
 
         year = json.loads(parameters).get("year")
+        region = json.loads(parameters).get("region")
+        print(region)
         classifications_for_year = Classification.objects.filter(year__lte=year)
 
         if len(classifications_for_year) <= 0:
@@ -397,10 +404,24 @@ class GetClassifiedAsView(View):
         all_ids = classifications_for_year.values("tile_id").distinct()
         public_space_ids = classifications_for_year.filter(contains_greenery=True).values("tile_id").distinct()
         not_public_space_ids = classifications_for_year.filter(contains_greenery=False).values("tile_id").distinct()
+        if region == "None":
+            all_tiles = Tile.objects.filter(tile_id__in=all_ids.values_list("tile_id", flat=True))
+            public_space_tiles = Tile.objects.filter(tile_id__in=public_space_ids.values_list("tile_id", flat=True))
+            not_public_space_tiles = Tile.objects.filter(
+                tile_id__in=not_public_space_ids.values_list("tile_id", flat=True))
+        else:
+            x_min = regions.get(region)[0]
+            x_max = regions.get(region)[1]
+            y_min = regions.get(region)[2]
+            y_max = regions.get(region)[3]
+            print(x_min, x_max, y_min, y_max)
+            all_tiles = Tile.objects.filter(x_coordinate__gte=x_min, x_coordinate__lte=x_max,
+                                            y_coordinate__gte=y_min, y_coordinate__lte=y_max)
 
-        all_tiles = Tile.objects.filter(tile_id__in=all_ids.values_list("tile_id", flat=True))
-        public_space_tiles = Tile.objects.filter(tile_id__in=public_space_ids.values_list("tile_id", flat=True))
-        not_public_space_tiles = Tile.objects.filter(tile_id__in=not_public_space_ids.values_list("tile_id", flat=True))
+            public_space_tiles = all_tiles.filter(tile_id__in=public_space_ids.values_list("tile_id", flat=True))
+            not_public_space_tiles = all_tiles.filter(tile_id__in=
+                                                      not_public_space_ids.values_list("tile_id", flat=True))
+
 
         transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
         result = {}
@@ -440,8 +461,9 @@ class GetClassifiedByView(View):
         def get(_, parameters)
         """
         year = json.loads(parameters).get("year")
-        classifications_for_year = Classification.objects.filter(year__lte=year)
+        region = json.loads(parameters).get("region")
 
+        classifications_for_year = Classification.objects.filter(year__lte=year)
         if len(classifications_for_year) <= 0:
             return HttpResponseBadRequest("No tiles have been classified for the selected year.")
 
@@ -453,8 +475,19 @@ class GetClassifiedByView(View):
         training_data_ids = classifications_for_year.filter(
             classified_by=-2).values("tile_id").distinct()
 
-        all_tiles = Tile.objects.filter(
-            tile_id__in=all_ids.values_list("tile_id", flat=True))
+        if region == "None":
+            all_tiles = Tile.objects.filter(tile_id__in=all_ids.values_list("tile_id", flat=True))
+
+        else:
+            x_min = regions.get(region)[0]
+            x_max = regions.get(region)[1]
+            y_min = regions.get(region)[2]
+            y_max = regions.get(region)[3]
+
+            all_tiles = Tile.objects.filter(tile_id__in=all_ids.values_list("tile_id", flat=True),
+                                            x_coordinate__gte=x_min, x_coordinate__lte=x_max,
+                                            y_coordinate__gte=y_min, y_coordinate__lte=y_max)
+
         user_tiles = all_tiles.filter(
             tile_id__in=user_ids.values_list("tile_id", flat=True))
         classifier_tiles = all_tiles.filter(

@@ -2,6 +2,7 @@ var map
 var mapView
 var classifiedAsLayer
 var classifiedByLayer
+var editor
 
 require([
   'esri/Map',
@@ -37,16 +38,17 @@ require([
       }),
     })
 
-    // const editor = new Editor({
-    //     layerInfos: [{
-    //         enabled: true,
-    //         addEnabled: false,
-    //         updateEnabled: true,
-    //         deleteEnabled: true,cl
-    //     }],
-    //     view: mapView,
-    // });
-
+    editor = new Editor({
+        allowedWorkflows: ["update"],
+        layerInfos: [{
+            enabled: true,
+            addEnabled: false,
+            updateEnabled: true,
+            deleteEnabled: false,
+        }],
+        view: mapView,
+    });
+    199
     const legend = new Legend({ view: mapView })
     const layerList = new LayerList({
       view: mapView,
@@ -65,7 +67,6 @@ require([
     coordinatesWidget.className = 'esri-widget esri-component'
     coordinatesWidget.style.padding = '7px 15px 5px'
 
-    // mapView.ui.add(editor, "top-right");
     mapView.ui.add(coordinatesWidget, 'bottom-left')
     mapView.ui.add(layerList, 'bottom-right')
 
@@ -97,6 +98,7 @@ require([
 
     var overlay = $('#overlay option:selected').val().trim()
     var year = $('#year option:selected').val().trim()
+    var region = $('#region option:selected').val().trim()
 
     var yearLayer = new TileLayer({
       url:
@@ -106,16 +108,16 @@ require([
     })
 
     map.add(yearLayer)
-    addCurrentOverlay(overlay, year)
+    addCurrentOverlay(overlay, year, region)
   }
 
-  function addCurrentOverlay(overlay, year) {
+  function addCurrentOverlay(overlay, year, region) {
     if (overlay === 'Classified as') {
       setupClassifiedAsLayer(FeatureLayer)
-      addToClassifiedAsLayer(year)
+      addToClassifiedAsLayer(year, region)
     } else if (overlay === 'Classified by') {
       setupClassifiedByLayer(FeatureLayer)
-      addToClassifiedByLayer(year)
+      addToClassifiedByLayer(year, region)
     }
   }
 
@@ -138,8 +140,14 @@ require([
       abortController.abort()
     })
 
+    $("#region").change(function () {
+      abortController.abort();
+    })
+
     var year = $('#year option:selected').val().trim()
-    const parameters = { year: year }
+    var region = $('#region option:selected').val().trim()
+    mapView.ui.add(editor, "top-right");
+    const parameters = { year: year, region: region }
     const response = await fetch(
       '/urban_development/get_classified_as/' + JSON.stringify(parameters),
       { signal: abortController.signal }
@@ -201,8 +209,14 @@ require([
       abortController.abort()
     })
 
+    $('#region').change(function () {
+      abortController.abort()
+    })
+
     var year = $('#year option:selected').val().trim()
-    const parameters = { year: year }
+    var region = $('#region option:selected').val().trim()
+    const parameters = { year: year, region: region}
+    mapView.ui.remove(editor)
     const response = await fetch(
       '/urban_development/get_classified_by/' + JSON.stringify(parameters),
       { signal: abortController.signal }
@@ -237,7 +251,6 @@ require([
 
         edits.addFeatures.push(graphic)
       }
-
       classifiedByLayer.applyEdits(edits)
       map.add(classifiedByLayer)
     } catch (exception) {
@@ -266,6 +279,10 @@ require([
     })
 
     $('#overlay').change(function () {
+      abortController.abort()
+    })
+
+    $('#region').change(function () {
       abortController.abort()
     })
 
@@ -434,8 +451,21 @@ require([
 
         var overlay = $('#overlay option:selected').val().trim()
         var year = $('#year option:selected').val().trim()
+        var region = $('#region option:selected').val().trim()
 
-        addCurrentOverlay(overlay, year)
+        addCurrentOverlay(overlay, year, region)
+      }
+    })
+
+    $('#region').change(function (event) {
+      if ($('#region-cell').is(':visible')){
+        map.remove(classifiedAsLayer)
+        map.remove(classifiedByLayer)
+        var overlay = $('#overlay option:selected').val().trim()
+        var year = $('#year option:selected').val().trim()
+        var region = $('#region option:selected').val().trim()
+
+        addCurrentOverlay(overlay, year, region)
       }
     })
     $('#map-view-button').click(function (event) {
@@ -443,6 +473,7 @@ require([
       $('#data').remove()
       $('#overlay').val('None').change()
       $('#overlay-cell').show()
+      $('#region-cell').show()
       $('#data-view-button').prop('disabled', false)
 
       var mapDiv = $("<div id='map'></div>")
@@ -458,6 +489,7 @@ require([
       $('#data-view-button').prop('disabled', true)
       $('#map').remove()
       $('#overlay-cell').hide()
+      $('#region-cell').hide()
       $('#map-view-button').prop('disabled', false)
 
       setupDataView()
