@@ -11,6 +11,7 @@ flake8==3.9.2
 future==0.18.2
 importlib-metadata==4.0.1
 joblib==1.0.1
+matplotlib~=3.3.2
 mccabe==0.6.1
 mysqlclient==2.0.3
 numpy~=1.19.5
@@ -30,9 +31,11 @@ pywin32-ctypes==0.2.0
 requests==2.25.1
 scikit-learn==0.24.2
 scipy==1.6.3
+six~=1.15.0
 selenium~=3.141.0
 six~=1.15.0
 sqlparse==0.4.1
+tensorflow==2.5.0
 threadpoolctl==2.1.0
-typing-extensions==3.10.0.0
+typing-extensions~=3.7.4
 zipp==3.4.1
