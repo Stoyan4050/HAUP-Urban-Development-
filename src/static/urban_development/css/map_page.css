@@ -75,11 +75,15 @@ body {
 }
 
 .data-element {
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 }
 
 .text-center {
   text-align: center;
+}
+
+.esri-component.esri-layer-list.esri-widget.esri-widget--panel {
+  margin-bottom: 30px;
 }
 
 * {

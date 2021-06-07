@@ -64,6 +64,7 @@ require([
     var coordinatesWidget = document.createElement('div')
     coordinatesWidget.className = 'esri-widget esri-component'
     coordinatesWidget.style.padding = '7px 15px 5px'
+    coordinatesWidget.style.marginBottom = '10px'
 
     // mapView.ui.add(editor, "top-right");
     mapView.ui.add(coordinatesWidget, 'bottom-left')
