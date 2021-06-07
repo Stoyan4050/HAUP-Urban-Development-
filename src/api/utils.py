@@ -54,7 +54,7 @@ def add_labels_for_previous_years():
         res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
               "2020" + "/MapServer/tile/11/" + str(tile_y) + "/" + str(tile_x)
         # print(res)
-        urllib.request.urlretrieve(res, "./data/images/" +  str(tile_x) + "_" + str(tile_y) + "_" + "2020" + ".jpg")
+        urllib.request.urlretrieve(res, "./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + "2020" + ".jpg")
 
         for year in range(2010, 1890, -10):
             res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
@@ -168,7 +168,7 @@ def euclidean_distance_random_tiles():
                 res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
                       str(year) + "/MapServer/tile/11/" + str(rand_y) + "/" + str(rand_x)
 
-                urllib.request.urlretrieve(res, "./data/images/" +  str(rand_x) + "_" +
+                urllib.request.urlretrieve(res, "./data/images/" + str(rand_x) + "_" +
                                            str(rand_y) + "_" + str(year) + ".jpg")
                 if year != 1900:
                     image = cv2.imread("./data/images/" + str(rand_x) + "_" + str(rand_y) + "_" + str(year) + ".jpg")
@@ -176,7 +176,8 @@ def euclidean_distance_random_tiles():
                     histogram1 = cv2.calcHist([gray_image1], [0],
                                               None, [256], [0, 256])
 
-                    image = cv2.imread("./data/images/" + str(rand_x) + "_" + str(rand_y) + "_" + str(year - 10) + ".jpg")
+                    image = cv2.imread("./data/images/" + str(rand_x) + "_" +
+                                       str(rand_y) + "_" + str(year - 10) + ".jpg")
                     gray_image2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     histogram2 = cv2.calcHist([gray_image2], [0],
                                               None, [256], [0, 256])
