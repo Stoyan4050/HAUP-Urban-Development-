@@ -11,6 +11,21 @@
 
 /* IDs */
 
+body {
+  min-height: 100vh;
+}
+
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#map-container {
+  flex-grow: 1;
+  display: flex;
+}
+
 #header {
   background-color: gray;
   height: 10vh;
@@ -20,8 +35,6 @@
 }
 
 #map {
-  position: fixed;
-  height: 90vh;
   width: 100%;
   margin: 0;
   padding: 0;
