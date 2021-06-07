@@ -54,24 +54,25 @@ def add_labels_for_previous_years():
         res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
               "2020" + "/MapServer/tile/11/" + str(tile_y) + "/" + str(tile_x)
         # print(res)
-        urllib.request.urlretrieve(res, str(tile_x) + "_" + str(tile_y) + "_" + "2020" + ".jpg")
+        urllib.request.urlretrieve(res, "./data/images/" +  str(tile_x) + "_" + str(tile_y) + "_" + "2020" + ".jpg")
 
         for year in range(2010, 1890, -10):
             res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
                   str(year) + "/MapServer/tile/11/" + str(tile_y) + "/" + str(tile_x)
-            urllib.request.urlretrieve(res, str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
+            urllib.request.urlretrieve(res, "./data/images/" + str(tile_x) + "_" +
+                                       str(tile_y) + "_" + str(year) + ".jpg")
 
-            image = cv2.imread(str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
+            image = cv2.imread("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
             gray_image1 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             histogram1 = cv2.calcHist([gray_image1], [0],
                                       None, [256], [0, 256])
 
-            image = cv2.imread(str(tile_x) + "_" + str(tile_y) + "_" + str(year + 10) + ".jpg")
+            image = cv2.imread("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year + 10) + ".jpg")
             gray_image2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             histogram2 = cv2.calcHist([gray_image2], [0],
                                       None, [256], [0, 256])
 
-            os.remove(str(tile_x) + "_" + str(tile_y) + "_" + str(year + 10) + ".jpg")
+            os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year + 10) + ".jpg")
 
             distance = 0
 
@@ -96,10 +97,10 @@ def add_labels_for_previous_years():
                             contains_greenery=classification.contains_greenery, classified_by="-5")
                     except ObjectDoesNotExist:
                         print(tile_x, tile_y)
-                os.remove(str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
+                os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 break
             if year == 1900:
-                os.remove(str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
+                os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 # print(year)
                 Classification.objects.create(
                     tile_id=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y),
@@ -167,19 +168,20 @@ def euclidean_distance_random_tiles():
                 res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
                       str(year) + "/MapServer/tile/11/" + str(rand_y) + "/" + str(rand_x)
 
-                urllib.request.urlretrieve(res, str(rand_x) + "_" + str(rand_y) + "_" + str(year) + ".jpg")
+                urllib.request.urlretrieve(res, "./data/images/" +  str(rand_x) + "_" +
+                                           str(rand_y) + "_" + str(year) + ".jpg")
                 if year != 1900:
-                    image = cv2.imread(str(rand_x) + "_" + str(rand_y) + "_" + str(year) + ".jpg")
+                    image = cv2.imread("./data/images/" + str(rand_x) + "_" + str(rand_y) + "_" + str(year) + ".jpg")
                     gray_image1 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     histogram1 = cv2.calcHist([gray_image1], [0],
                                               None, [256], [0, 256])
 
-                    image = cv2.imread(str(rand_x) + "_" + str(rand_y) + "_" + str(year - 10) + ".jpg")
+                    image = cv2.imread("./data/images/" + str(rand_x) + "_" + str(rand_y) + "_" + str(year - 10) + ".jpg")
                     gray_image2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     histogram2 = cv2.calcHist([gray_image2], [0],
                                               None, [256], [0, 256])
 
-                    os.remove(str(rand_x) + "_" + str(rand_y) + "_" + str(year - 10) + ".jpg")
+                    os.remove("./data/images/" + str(rand_x) + "_" + str(rand_y) + "_" + str(year - 10) + ".jpg")
 
                     distance = 0
 
