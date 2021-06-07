@@ -4,6 +4,7 @@ utils.py
 import urllib
 from math import floor, ceil
 import random
+import os
 import cv2
 import pandas
 import requests
@@ -52,7 +53,7 @@ def add_labels_for_previous_years():
 
         res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
               "2020" + "/MapServer/tile/11/" + str(tile_y) + "/" + str(tile_x)
-        print(res)
+        # print(res)
         urllib.request.urlretrieve(res, str(tile_x) + "_" + str(tile_y) + "_" + "2020" + ".jpg")
 
         for year in range(2010, 1890, -10):
@@ -69,6 +70,9 @@ def add_labels_for_previous_years():
             gray_image2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             histogram2 = cv2.calcHist([gray_image2], [0],
                                       None, [256], [0, 256])
+
+            os.remove(str(tile_x) + "_" + str(tile_y) + "_" + str(year + 10) + ".jpg")
+
             distance = 0
 
             # Euclidean Distance
@@ -80,10 +84,10 @@ def add_labels_for_previous_years():
 
             # arr[int((year - 1900) / 10)].append(distance)
 
-            print(year, distance, percentile_dictionary[year], percentile_dictionary[year] - distance)
+            # print(year, distance, percentile_dictionary[year], percentile_dictionary[year] - distance)
 
             if distance > percentile_dictionary[year]:
-                print(year)
+                # print(year)
                 if year != 2010:
                     try:
                         Classification.objects.create(
@@ -92,9 +96,11 @@ def add_labels_for_previous_years():
                             contains_greenery=classification.contains_greenery, classified_by="-5")
                     except ObjectDoesNotExist:
                         print(tile_x, tile_y)
+                os.remove(str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 break
             if year == 1900:
-                print(year)
+                os.remove(str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
+                # print(year)
                 Classification.objects.create(
                     tile_id=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y),
                     year=year,
@@ -172,6 +178,9 @@ def euclidean_distance_random_tiles():
                     gray_image2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     histogram2 = cv2.calcHist([gray_image2], [0],
                                               None, [256], [0, 256])
+
+                    os.remove(str(rand_x) + "_" + str(rand_y) + "_" + str(year - 10) + ".jpg")
+
                     distance = 0
 
                     # Euclidean Distance
