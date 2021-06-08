@@ -45,7 +45,7 @@ def getImgsURL(i, year, data):
         #print(counter)
     #return img
     # print("Y")
-    return (img, c.contains_greenery)
+    return (img, c.greenery_percentage)
 
 def getImagesTraining(data1, year):
     first = 0
@@ -58,8 +58,8 @@ def getImagesTraining(data1, year):
         print(counter)
         counter+=1
 
-        # if counter > 100:
-        #     return training_imgs
+        if counter > 100:
+            return training_imgs
 
     return training_imgs
     #     print(i)
