@@ -94,7 +94,7 @@ def add_labels_for_previous_years():
                         Classification.objects.create(
                             tile_id=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y),
                             year=year + 10,
-                            contains_greenery=classification.contains_greenery, classified_by="-5")
+                            greenery_percentage=classification.greenery_percentage, classified_by="-5")
                     except ObjectDoesNotExist:
                         print(tile_x, tile_y)
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
@@ -105,7 +105,7 @@ def add_labels_for_previous_years():
                 Classification.objects.create(
                     tile_id=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y),
                     year=year,
-                    contains_greenery=classification.contains_greenery, classified_by="-5")
+                    greenery_percentage=classification.greenery_percentage, classified_by="-5")
 
     # for year in range(1910, 2030, 10):
     #
@@ -247,7 +247,7 @@ def extract_convert_to_esri():
     data_frame = pandas.read_csv("./data/Wikidata/data.csv")
 
     points = data_frame.geo.tolist()
-    contain_greenery = data_frame.contains_greenery.tolist()
+    greenery_percentages = data_frame.greenery_percentage.tolist()
     years = [2020 for _ in range(len(data_frame))]
 
     if 'inception' in data_frame.columns:
@@ -256,7 +256,7 @@ def extract_convert_to_esri():
         percentage = 0
         points_length = len(points)
 
-    for location, year, contains_greenery in zip(points, years, contain_greenery):
+    for location, year, greenery_percentage in zip(points, years, greenery_percentages):
 
         if ceil((100 * count) / points_length) > percentage:
             percentage = ceil((100 * count) / points_length)
@@ -289,11 +289,11 @@ def extract_convert_to_esri():
 
         try:
             Classification.objects.create(tile_id=Tile.objects.get(x_coordinate=x_esri, y_coordinate=y_esri), year=year,
-                                          contains_greenery=contains_greenery, classified_by="-2")
+                                          greenery_percentage=greenery_percentage, classified_by="-2")
         except ObjectDoesNotExist:
             print(x_esri, y_esri)
         except IntegrityError:
-            if contains_greenery:
+            if greenery_percentage > 0:
                 classification = Classification.objects.get(tile_id=tile_id, year=year)
                 classification.contains_greenery = True
                 classification.save()

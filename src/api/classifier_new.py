@@ -4,7 +4,6 @@ from api import classifier
 from sklearn.metrics import classification_report
 
 import numpy as np
-import urllib.request
 import django
 
 import keras
@@ -15,7 +14,6 @@ import matplotlib.pyplot as plt
 
 from django.db.models import Q
 
-from .models import Classification, Tile
 
 django.setup()
 
@@ -23,12 +21,16 @@ import cv2
 
 from django.db.models import Q
 
-from .models import Classification, Tile
+from .models import Classification
 import tensorflow as tf
 
 def classify_cnn(year=2020):
     print("WOrking!!!")
-    train_data = np.array(classifier.getImagesTraining(Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year))
+    data = Classification.objects.all()
+
+    print(data, "DDDDDD")
+    return
+    train_data = np.array(classifier.getImagesTraining(Classification.objects.filter(~Q(classified_by=-1), year__lte=2015), year))
     validation = []
     np.random.shuffle(train_data)
     percent10 = train_data / 10
