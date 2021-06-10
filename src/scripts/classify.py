@@ -1,6 +1,14 @@
+"""
+classify.py
+"""
 
 from api.classifier import classify
+from api.classifier_new import classify_cnn
 
 
-def run(*args):
-    classify()
+def run():
+    """
+        run classifier classify
+    """
+
+    classify_cnn()

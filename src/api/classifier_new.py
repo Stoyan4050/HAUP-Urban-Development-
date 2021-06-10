@@ -1,7 +1,8 @@
 from keras.optimizer_v2.adam import Adam
+from api import classifier
+
 from sklearn.metrics import classification_report
 
-import classifier as cl
 import numpy as np
 import urllib.request
 import django
@@ -22,8 +23,8 @@ from .models import Classification, Tile
 import tensorflow as tf
 
 def classify_cnn(year=2020):
-
-    train_data = np.array(cl.getImagesTraining(Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year))
+    print("WOrking!!!")
+    train_data = np.array(classifier.getImagesTraining(Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year))
     validation = []
     np.random.shuffle(train_data)
     percent10 = train_data / 10
@@ -40,8 +41,8 @@ def classify_cnn(year=2020):
     training = np.array(training)
     validation = np.array(validation)
 
-    train_labels, train_images = cl.getLabelsImgs(training)
-    val_labels, val_images = cl.getLabelsImgs(validation)
+    train_labels, train_images = classifier.getLabelsImgs(training)
+    val_labels, val_images = classifier.getLabelsImgs(validation)
 
     x_train = np.array(train_images) / 255
     x_val = np.array(val_images) / 255
@@ -130,6 +131,6 @@ def classify_cnn(year=2020):
     django.db.connections.close_all()
 
 
-    test_data = cl.getImagesTest(year)
-    test_coord, test_images = cl.getLabelsImgs(test_data)
+    test_data = classifier.getImagesTest(year)
+    test_coord, test_images = classifier.getLabelsImgs(test_data)
 
