@@ -13,6 +13,10 @@ from keras.layers import Dense, Conv2D , MaxPool2D , Flatten , Dropout
 from keras.preprocessing.image import ImageDataGenerator
 import matplotlib.pyplot as plt
 
+from django.db.models import Q
+
+from .models import Classification, Tile
+
 django.setup()
 
 import cv2
@@ -42,6 +46,9 @@ def classify_cnn(year=2020):
     validation = np.array(validation)
 
     train_labels, train_images = classifier.getLabelsImgs(training)
+    print(train_labels, "Train")
+    print(train_images, "Train2")
+
     val_labels, val_images = classifier.getLabelsImgs(validation)
 
     x_train = np.array(train_images) / 255

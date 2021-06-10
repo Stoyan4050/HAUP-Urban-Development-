@@ -27,6 +27,7 @@ from .models import Classification, Tile
 #global data, year
 
 def getImageFromURL(year, x_coord, y_coord):
+    print(year, x_coord, y_coord, "DATA")
     url = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + str(
         year) + "/MapServer/tile/11/" + str(x_coord) + "/" + str(y_coord)
 
@@ -52,7 +53,7 @@ def getImagesTraining(data1, year):
     data = data1
     training_imgs = []
     counter = 0
-
+    print("Taking images", year, data)
     for i in range(len(data)):
         training_imgs.append(getImgsURL(i, year, data))
         print(counter)
