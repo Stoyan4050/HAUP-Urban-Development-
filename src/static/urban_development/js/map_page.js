@@ -29,7 +29,7 @@ require([
 ) {
   function setupMapView() {
     mapView = new MapView({
-      container: 'map',
+      container: 'map-container',
       map: map,
       zoom: 3,
       extent: new Extent(13328.546, 306816.384, 278302.013, 619342.658, {
@@ -64,6 +64,7 @@ require([
     var coordinatesWidget = document.createElement('div')
     coordinatesWidget.className = 'esri-widget esri-component'
     coordinatesWidget.style.padding = '7px 15px 5px'
+    coordinatesWidget.style.marginBottom = '11px'
 
     // mapView.ui.add(editor, "top-right");
     mapView.ui.add(coordinatesWidget, 'bottom-left')
@@ -249,7 +250,7 @@ require([
   async function setupDataView() {
     $('#data').remove()
     var dataDiv = $("<div id='data'></div>")
-    $(document.body).append(dataDiv)
+    $('.page-container').append(dataDiv)
 
     let abortController = new AbortController()
 
@@ -409,9 +410,13 @@ require([
   $(document).ready(function () {
     // Grab query parameters, e.g. if a url is like ?view=map then we can get
     // the "view" value by running searchParams.get('view')
+    var VIEW_TYPES = {
+      map: 'map',
+      data: 'data',
+    }
     var searchParams = new URLSearchParams(window.location.search)
     // Will be either 'map`or 'data'
-    var viewType = searchParams.get('view') || 'map'
+    var viewType = searchParams.get('view') || VIEW_TYPES.map
     // Depending on the view type in the url, we either load the map or the data view
     if (viewType === 'map') {
       addMap()
@@ -439,29 +444,32 @@ require([
       }
     })
     $('#map-view-button').click(function (event) {
+      if (viewType === VIEW_TYPES.map) return
       $('#map-view-button').prop('disabled', true)
       $('#data').remove()
       $('#overlay').val('None').change()
       $('#overlay-cell').show()
       $('#data-view-button').prop('disabled', false)
-
+      var mapContainer = $('<div id="map-container"></div>')
       var mapDiv = $("<div id='map'></div>")
-
       map = new Map(mapDiv)
+      mapContainer.append(map)
+      $('.page-container').append(mapContainer)
       addMap()
-      $(document.body).append(mapDiv)
-
       setupMapView(mapView)
       updateUrl('map')
+      viewType = VIEW_TYPES.map
     })
     $('#data-view-button').click(function (event) {
+      if (viewType === VIEW_TYPES.data) return
       $('#data-view-button').prop('disabled', true)
-      $('#map').remove()
+      $('#map-container').remove()
       $('#overlay-cell').hide()
       $('#map-view-button').prop('disabled', false)
 
       setupDataView()
       updateUrl('data')
+      viewType = VIEW_TYPES.data
     })
   })
 })
