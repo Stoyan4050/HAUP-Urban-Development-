@@ -1,9 +1,13 @@
+"""
+color_detection.py
+"""
+
 from api.classifier import color_detection
 
 
 def run():
     """
-        run classifier train_cnn
+    def run()
     """
 
-    color_detection(download_data=False)
+    color_detection(x_coord=75298, y_coord=75461)

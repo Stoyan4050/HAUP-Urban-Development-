@@ -103,15 +103,15 @@ class ClassificationManager(models.Manager):
     class ClassificationManager(models.Manager)
     """
 
-    def create_classification(self, tile_id, year, contains_greenery, classified_by):
+    def create_classification(self, tile_id, year, greenery_percentage, classified_by):
         """
-        def create_classification(self, tile_id, year, contains_greenery, classified_by)
+        def create_classification(self, tile_id, year, greenery_percentage, classified_by)
         """
 
         if not tile_id:
             raise ValueError(ugettext_lazy("No tile with these coordinates exists"))
 
-        classification = self.create(tile_id=tile_id, year=year, contains_greenery=contains_greenery,
+        classification = self.create(tile_id=tile_id, year=year, greenery_percentage=greenery_percentage,
                                      classified_by=classified_by)
         return classification
 
@@ -125,12 +125,12 @@ class Classification(models.Model):
         class Meta
         """
         unique_together = ["year", "tile_id"]
-        ordering = ["year", "tile_id", "contains_greenery", "classified_by"]
+        ordering = ["year", "tile_id", "greenery_percentage", "classified_by"]
 
     classification_id = models.AutoField(primary_key=True, null=False, unique=True)
     year = models.IntegerField(null=False)
     tile_id = models.ForeignKey("Tile", db_column="tile_id", on_delete=models.CASCADE, null=False)
-    contains_greenery = models.BooleanField(null=False)
+    greenery_percentage = models.FloatField(null=False)
     classified_by = models.IntegerField(null=False)
-    REQUIRED_FIELDS = [tile_id, year, contains_greenery, classified_by]
+    REQUIRED_FIELDS = [tile_id, year, greenery_percentage, classified_by]
     objects = ClassificationManager()

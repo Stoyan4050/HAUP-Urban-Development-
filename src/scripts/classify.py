@@ -7,7 +7,7 @@ from api.classifier import classify
 
 def run():
     """
-        run classifier classify
+    def run()
     """
 
     classify(download_data=True)

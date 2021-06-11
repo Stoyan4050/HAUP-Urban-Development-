@@ -2,11 +2,12 @@
 Classifier
 """
 
+from urllib.error import HTTPError
 import urllib.request
-import shutil
 import os
 import cv2
 import numpy as np
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from sklearn.decomposition import PCA
 from sklearn.metrics import f1_score, classification_report, accuracy_score
@@ -30,13 +31,16 @@ def get_image_from_url(year, x_coord, y_coord):
     """
         get historic map images from website
     """
-
+    # print(year)
     url = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + str(
         year) + "/MapServer/tile/11/" + str(x_coord) + "/" + str(y_coord)
 
-    res = urllib.request.urlretrieve(url)
-    img = cv2.resize(cv2.imread(res[0], 1), (512, 512))
-    return img
+    try:
+        res = urllib.request.urlretrieve(url)
+        img = cv2.imread(res[0], 1)
+        return img
+    except HTTPError:
+        return None
 
 
 def get_images_training(data, year):
@@ -116,6 +120,7 @@ def classify(year=2015, download_data=False):
 
     all_labels = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space', 'park',
                   'recreational area']
+    # color_detection(75400, 75438)
 
     if download_data:
         create_dir(all_labels)
@@ -331,47 +336,73 @@ def read_images(all_labels, train_data=True):
     return images, labels
 
 
-def color_detection(download_data=False, year=2015):
+def color_detection(x_coord, y_coord, year=2020):
     """
         detect green colors and shapes of maps
     """
+    # print("COLOR DETECTION RUNNING")
+    # path = "./data/parks_detected"
+    # shutil.rmtree(path)
+    # os.makedirs(path)
+    # if download_data:
+    #     create_dir(ALL_LABELS)
+    #     get_images_training(Classification.objects.filter(year__lte=year), year)
+    #     get_images_test(year)
 
-    path = "./data/parks_detected"
-    shutil.rmtree(path)
-    os.makedirs(path)
-    if download_data:
-        create_dir(ALL_LABELS)
-        get_images_training(Classification.objects.filter(year__lte=year), year)
-        get_images_test(year)
-
-    train_images = read_images(ALL_LABELS, True)
+    # train_images = read_images(ALL_LABELS, True)
     # train_labels = read_images(ALL_LABELS, True)
     # test_images = read_images(ALL_LABELS, False)
     # print(train_images.shape)
     # print(test_images.shape)
     # all_images = np.concatenate(train_images, test_images)
-    for i, img in enumerate(train_images):
-        img1 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        boundaries = [(36, 25, 25), (70, 255, 255)]
-        #     boundaries = [(37, 0, 0), (179, 255, 255)]
-        lower = np.array(boundaries[0], dtype='uint8')
-        upper = np.array(boundaries[1], dtype='uint8')
-        mask = cv2.inRange(img1, lower, upper)
+    # for i, img in enumerate(train_images):
+    img = get_image_from_url(year, x_coord, y_coord)
 
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2))
-        opened_mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    if img is None:
+        if year >= 2020:
+            raise ObjectDoesNotExist("Tile not found.")
 
-        output = cv2.bitwise_and(img2, img2, mask=opened_mask)
-        contours, _ = cv2.findContours(opened_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(output, contours, -1, (0, 255, 0), 1)
-        areas = []
-        for contour in contours:
-            (x_shape, y_shape, w_shape, h_shape) = cv2.boundingRect(contour)
-            areas.append(w_shape * h_shape)
-            print(x_shape)
-            print(y_shape)
-        if len(areas) > 0:
-            max_area = np.max(areas)
-            if max_area >= 15:
-                cv2.imwrite(path + "/park_" + str(i) + ".jpg", np.hstack([img2, output]))
+        print(year)
+        return color_detection(x_coord, y_coord, year + 1)
+
+    # cv2.imshow("A", img)
+    # cv2.waitKey()
+    img1 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    boundaries = [(36, 25, 25), (70, 255, 255)]
+    # boundaries = [(37, 0, 0), (179, 255, 255)]
+    lower = np.array(boundaries[0], dtype='uint8')
+    upper = np.array(boundaries[1], dtype='uint8')
+    mask = cv2.inRange(img1, lower, upper)
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2))
+    opened_mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+
+    output = cv2.bitwise_and(img2, img2, mask=opened_mask)
+    contours, _ = cv2.findContours(opened_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cv2.drawContours(output, contours, -1, (0, 255, 0), 1)
+    areas = []
+    for contour in contours:
+        (_, _, w_shape, h_shape) = cv2.boundingRect(contour)
+        areas.append(w_shape * h_shape)
+        # print(x_shape)
+        # print(y_shape)
+    if len(areas) > 0:
+        max_area = np.max(areas)
+        if max_area >= 15:
+            # cv2.imshow("Image", img2)
+            # cv2.waitKey()
+            # cv2.imshow("out", output)
+            # cv2.waitKey()
+            # img_res = np.hstack([img2, output])
+            # print(output.shape[0], output.shape[1])
+            num_pixels = output.shape[0] * output.shape[1] * output.shape[2]
+            # print(num_pixels)
+            # print(output)
+            non_zero = np.count_nonzero(output)
+            # print(non_zero)
+            percentage = non_zero/num_pixels
+            # print(percentage)
+            return percentage
+
+    return 0
