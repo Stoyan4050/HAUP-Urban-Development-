@@ -282,9 +282,9 @@ def extract_convert_to_esri():
 
         first_colored_map = 1914
 
-        greenery_percentage = color_detection(x_esri, y_esri, max(year, first_colored_map))
-
         try:
+            greenery_percentage = color_detection(x_esri, y_esri, max(year, first_colored_map))
+
             Classification.objects.create(tile_id=Tile(tile_id, x_esri, y_esri), year=year,
                                           greenery_percentage=greenery_percentage, classified_by="-2")
         except ObjectDoesNotExist:

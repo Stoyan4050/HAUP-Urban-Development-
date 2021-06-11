@@ -2,10 +2,12 @@
 Classifier
 """
 
+from urllib.error import HTTPError
 import urllib.request
 import os
 import cv2
 import numpy as np
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from sklearn.decomposition import PCA
 from sklearn.metrics import f1_score, classification_report, accuracy_score
@@ -33,9 +35,12 @@ def get_image_from_url(year, x_coord, y_coord):
     url = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + str(
         year) + "/MapServer/tile/11/" + str(x_coord) + "/" + str(y_coord)
 
-    res = urllib.request.urlretrieve(url)
-    img = cv2.imread(res[0], 1)
-    return img
+    try:
+        res = urllib.request.urlretrieve(url)
+        img = cv2.imread(res[0], 1)
+        return img
+    except HTTPError:
+        return None
 
 
 def get_images_training(data, year):
@@ -354,6 +359,9 @@ def color_detection(x_coord, y_coord, year=2020):
     img = get_image_from_url(year, x_coord, y_coord)
 
     if img is None:
+        if year >= 2020:
+            raise ObjectDoesNotExist("Tile not found.")
+
         print(year)
         return color_detection(x_coord, y_coord, year + 1)
 
