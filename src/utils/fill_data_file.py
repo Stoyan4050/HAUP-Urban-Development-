@@ -14,7 +14,7 @@ def fill_file():
     """
 
     file_names = []
-    while (True):
+    while True:
         print("Please enter the file wish to read or leave empty, if there are no more files to read")
         file_name = input()
 
