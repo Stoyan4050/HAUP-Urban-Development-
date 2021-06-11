@@ -29,7 +29,7 @@ def get_image_from_url(year, x_coord, y_coord):
     """
         get historic map images from website
     """
-    print(year)
+    # print(year)
     url = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + str(
         year) + "/MapServer/tile/11/" + str(x_coord) + "/" + str(y_coord)
 
@@ -335,7 +335,7 @@ def color_detection(x_coord, y_coord, year=2020):
     """
         detect green colors and shapes of maps
     """
-    print("COLOR DETECTION RUNNING")
+    # print("COLOR DETECTION RUNNING")
     # path = "./data/parks_detected"
     # shutil.rmtree(path)
     # os.makedirs(path)
@@ -352,6 +352,11 @@ def color_detection(x_coord, y_coord, year=2020):
     # all_images = np.concatenate(train_images, test_images)
     # for i, img in enumerate(train_images):
     img = get_image_from_url(year, x_coord, y_coord)
+
+    if img is None:
+        print(year)
+        return color_detection(x_coord, y_coord, year + 1)
+
     # cv2.imshow("A", img)
     # cv2.waitKey()
     img1 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)

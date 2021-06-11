@@ -29,9 +29,9 @@ def create_file():
             print("Aborted")
             return
 
-    with open("../data/Wikidata/data.csv", "w") as data:
+    with open("../data/Wikidata/data.csv", "w", newline="") as data:
         file_writer = csv.writer(data, delimiter=",")
-        file_writer.writerow(["geo", "inception", "label"])
+        file_writer.writerow(["geo", "inception"])
 
 
 if __name__ == "__main__":
