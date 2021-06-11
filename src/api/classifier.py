@@ -30,12 +30,12 @@ def get_image_from_url(year, x_coord, y_coord):
     """
         get historic map images from website
     """
-
+    print(year)
     url = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + str(
         year) + "/MapServer/tile/11/" + str(x_coord) + "/" + str(y_coord)
 
     res = urllib.request.urlretrieve(url)
-    img = cv2.resize(cv2.imread(res[0], 1), (512, 512))
+    img =cv2.imread(res[0], 1)
     return img
 
 
@@ -116,11 +116,12 @@ def classify(year=2015, download_data=False):
 
     all_labels = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space', 'park',
                   'recreational area']
-    color_detection(75400, 75426)
-    # if download_data:
-    #     create_dir(all_labels)
-    #     get_images_training(Classification.objects.filter(year__lte=year), year)
-    #     get_images_test(year)
+    #color_detection(75400, 75438)
+    
+    if download_data:
+        create_dir(all_labels)
+        get_images_training(Classification.objects.filter(year__lte=year), year)
+        get_images_test(year)
 
     train_images, train_labels = read_images(all_labels, True)
     test_images, test_labels = read_images(all_labels, False)
@@ -335,8 +336,7 @@ def color_detection(x_coord, y_coord, year=2020):
     """
         detect green colors and shapes of maps
     """
-    print("CORRECT METHOD!")
-#75400 75426
+    print("COLOR DETECTION RUNNING")
     # path = "./data/parks_detected"
     # shutil.rmtree(path)
     # os.makedirs(path)
@@ -352,7 +352,9 @@ def color_detection(x_coord, y_coord, year=2020):
     # print(test_images.shape)
     # all_images = np.concatenate(train_images, test_images)
     #for i, img in enumerate(train_images):
-    img = get_image_from_url(x_coord,y_coord,year)
+    img = get_image_from_url(year, x_coord, y_coord)
+    # cv2.imshow("A", img)
+    # cv2.waitKey()
     img1 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     boundaries = [(36, 25, 25), (70, 255, 255)]
@@ -371,11 +373,25 @@ def color_detection(x_coord, y_coord, year=2020):
     for contour in contours:
         (x_shape, y_shape, w_shape, h_shape) = cv2.boundingRect(contour)
         areas.append(w_shape * h_shape)
-        print(x_shape)
-        print(y_shape)
+        # print(x_shape)
+        # print(y_shape)
     if len(areas) > 0:
         max_area = np.max(areas)
         if max_area >= 15:
-            img_res = np.hstack([img2, output])
-            cv2.imshow("ing", img_res)
-            cv2.waitKey()
+            #cv2.imshow("Image", img2)
+            #cv2.waitKey()
+            # cv2.imshow("out", output)
+            # cv2.waitKey()
+            #img_res = np.hstack([img2, output])
+            #print(output.shape[0], output.shape[1])
+            num_pixels = output.shape[0] * output.shape[1] * output.shape[2]
+            #print(num_pixels)
+            #print(output)
+            non_zero = np.count_nonzero(output)
+            #print(non_zero)
+            percentage = non_zero/num_pixels
+            #print(percentage)
+            return percentage
+
+    else:
+        return 0
