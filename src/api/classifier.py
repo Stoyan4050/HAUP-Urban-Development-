@@ -3,7 +3,6 @@ Classifier
 """
 
 import urllib.request
-import shutil
 import os
 import cv2
 import numpy as np
@@ -35,7 +34,7 @@ def get_image_from_url(year, x_coord, y_coord):
         year) + "/MapServer/tile/11/" + str(x_coord) + "/" + str(y_coord)
 
     res = urllib.request.urlretrieve(url)
-    img =cv2.imread(res[0], 1)
+    img = cv2.imread(res[0], 1)
     return img
 
 
@@ -116,8 +115,8 @@ def classify(year=2015, download_data=False):
 
     all_labels = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space', 'park',
                   'recreational area']
-    #color_detection(75400, 75438)
-    
+    # color_detection(75400, 75438)
+
     if download_data:
         create_dir(all_labels)
         get_images_training(Classification.objects.filter(year__lte=year), year)
@@ -345,20 +344,20 @@ def color_detection(x_coord, y_coord, year=2020):
     #     get_images_training(Classification.objects.filter(year__lte=year), year)
     #     get_images_test(year)
 
-    #train_images = read_images(ALL_LABELS, True)
+    # train_images = read_images(ALL_LABELS, True)
     # train_labels = read_images(ALL_LABELS, True)
     # test_images = read_images(ALL_LABELS, False)
     # print(train_images.shape)
     # print(test_images.shape)
     # all_images = np.concatenate(train_images, test_images)
-    #for i, img in enumerate(train_images):
+    # for i, img in enumerate(train_images):
     img = get_image_from_url(year, x_coord, y_coord)
     # cv2.imshow("A", img)
     # cv2.waitKey()
     img1 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     boundaries = [(36, 25, 25), (70, 255, 255)]
-        #     boundaries = [(37, 0, 0), (179, 255, 255)]
+    # boundaries = [(37, 0, 0), (179, 255, 255)]
     lower = np.array(boundaries[0], dtype='uint8')
     upper = np.array(boundaries[1], dtype='uint8')
     mask = cv2.inRange(img1, lower, upper)
@@ -371,27 +370,26 @@ def color_detection(x_coord, y_coord, year=2020):
     cv2.drawContours(output, contours, -1, (0, 255, 0), 1)
     areas = []
     for contour in contours:
-        (x_shape, y_shape, w_shape, h_shape) = cv2.boundingRect(contour)
+        (_, _, w_shape, h_shape) = cv2.boundingRect(contour)
         areas.append(w_shape * h_shape)
         # print(x_shape)
         # print(y_shape)
     if len(areas) > 0:
         max_area = np.max(areas)
         if max_area >= 15:
-            #cv2.imshow("Image", img2)
-            #cv2.waitKey()
+            # cv2.imshow("Image", img2)
+            # cv2.waitKey()
             # cv2.imshow("out", output)
             # cv2.waitKey()
-            #img_res = np.hstack([img2, output])
-            #print(output.shape[0], output.shape[1])
+            # img_res = np.hstack([img2, output])
+            # print(output.shape[0], output.shape[1])
             num_pixels = output.shape[0] * output.shape[1] * output.shape[2]
-            #print(num_pixels)
-            #print(output)
+            # print(num_pixels)
+            # print(output)
             non_zero = np.count_nonzero(output)
-            #print(non_zero)
+            # print(non_zero)
             percentage = non_zero/num_pixels
-            #print(percentage)
+            # print(percentage)
             return percentage
 
-    else:
-        return 0
+    return 0
