@@ -103,16 +103,16 @@ class ClassificationManager(models.Manager):
     class ClassificationManager(models.Manager)
     """
 
-    def create_classification(self, tile_id, year, greenery_percentage, classified_by):
+    def create_classification(self, tile, year, classified_by, contains_greenery, greenery_percentage):
         """
-        def create_classification(self, tile_id, year, greenery_percentage, classified_by)
+        def create_classification(self, tile, year, greenery_percentage, classified_by)
         """
 
-        if not tile_id:
-            raise ValueError(ugettext_lazy("No tile with these coordinates exists"))
+        if not tile:
+            raise ValueError(ugettext_lazy("A classification cannot be created without a tile."))
 
-        classification = self.create(tile_id=tile_id, year=year, greenery_percentage=greenery_percentage,
-                                     classified_by=classified_by)
+        classification = self.create(tile=tile, year=year, classified_by=classified_by,
+                                     contains_greenery=contains_greenery, greenery_percentage=greenery_percentage)
         return classification
 
 
@@ -124,13 +124,14 @@ class Classification(models.Model):
         """
         class Meta
         """
-        unique_together = ["year", "tile_id"]
-        ordering = ["year", "tile_id", "greenery_percentage", "classified_by"]
+        unique_together = ["year", "tile"]
+        ordering = ["year", "tile"]
 
     classification_id = models.AutoField(primary_key=True, null=False, unique=True)
     year = models.IntegerField(null=False)
-    tile_id = models.ForeignKey("Tile", db_column="tile_id", on_delete=models.CASCADE, null=False)
-    greenery_percentage = models.FloatField(null=False)
+    tile = models.ForeignKey("Tile", db_column="tile_id", on_delete=models.CASCADE, null=False)
     classified_by = models.IntegerField(null=False)
-    REQUIRED_FIELDS = [tile_id, year, greenery_percentage, classified_by]
+    contains_greenery = models.BooleanField(null=False)
+    greenery_percentage = models.FloatField(null=False)
+    REQUIRED_FIELDS = [tile, year, classified_by, contains_greenery, greenery_percentage]
     objects = ClassificationManager()

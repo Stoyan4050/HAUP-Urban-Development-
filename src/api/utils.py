@@ -49,8 +49,8 @@ def add_labels_for_previous_years():
         ind += 1
         print(ind)
 
-        tile_x = classification.tile_id.tile_id // 75879
-        tile_y = int(classification.tile_id.tile_id) % 75879
+        tile_x = classification.tile.tile_id // 75879
+        tile_y = int(classification.tile.tile_id) % 75879
 
         res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
               "2020" + "/MapServer/tile/11/" + str(tile_y) + "/" + str(tile_x)
@@ -93,9 +93,8 @@ def add_labels_for_previous_years():
                 if year != 2010:
                     try:
                         Classification.objects.create(
-                            tile_id=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y),
-                            year=year + 10,
-                            greenery_percentage=classification.greenery_percentage, classified_by="-5")
+                            tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year + 10,
+                            greenery_percentage=classification.greenery_percentage, classified_by="-2")
                     except ObjectDoesNotExist:
                         print(tile_x, tile_y)
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
@@ -104,9 +103,8 @@ def add_labels_for_previous_years():
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 # print(year)
                 Classification.objects.create(
-                    tile_id=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y),
-                    year=year,
-                    greenery_percentage=classification.greenery_percentage, classified_by="-5")
+                    tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year,
+                    greenery_percentage=classification.greenery_percentage, classified_by="-2")
 
     # for year in range(1910, 2030, 10):
     #
@@ -123,7 +121,7 @@ def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id):
 
             try:
                 Classification.objects.create(
-                    tile_id=Tile.objects.get(x_coordinate=x_coordinate, y_coordinate=y_coordinate),
+                    tile=Tile.objects.get(x_coordinate=x_coordinate, y_coordinate=y_coordinate),
                     year=year, label=label, classified_by=user_id)
             except ObjectDoesNotExist:
                 print(x_coordinate, y_coordinate)
@@ -249,6 +247,7 @@ def extract_convert_to_esri():
 
     points = data_frame.geo.tolist()
     years = [2020 for _ in range(len(data_frame))]
+    greenery = data_frame.contains_greenery.tolist()
 
     if 'inception' in data_frame.columns:
         years = data_frame.inception.tolist()
@@ -256,7 +255,7 @@ def extract_convert_to_esri():
         percentage = 0
         points_length = len(points)
 
-    for location, year in zip(points, years):
+    for location, year, contains_greenery in zip(points, years, greenery):
         if ceil((100 * count) / points_length) > percentage:
             percentage = ceil((100 * count) / points_length)
             print(str(percentage) + "%")
@@ -283,10 +282,13 @@ def extract_convert_to_esri():
         first_colored_map = 1914
 
         try:
-            greenery_percentage = color_detection(x_esri, y_esri, max(year, first_colored_map))
+            if contains_greenery:
+                greenery_percentage = color_detection(x_esri, y_esri, max(year, first_colored_map))
+            else:
+                greenery_percentage = 0
 
-            Classification.objects.create(tile_id=Tile(tile_id, x_esri, y_esri), year=year,
-                                          greenery_percentage=greenery_percentage, classified_by="-2")
+            Classification.objects.create(tile=Tile(tile_id, x_esri, y_esri), year=year, classified_by="-2",
+                                          contains_greenery=contains_greenery, greenery_percentage=greenery_percentage)
         except ObjectDoesNotExist:
             print(x_esri, y_esri)
         except IntegrityError:

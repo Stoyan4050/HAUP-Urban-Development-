@@ -31,7 +31,7 @@ def create_file():
 
     with open("../data/Wikidata/data.csv", "w", newline="") as data:
         file_writer = csv.writer(data, delimiter=",")
-        file_writer.writerow(["geo", "inception"])
+        file_writer.writerow(["geo", "inception", "contains_greenery"])
 
 
 if __name__ == "__main__":
