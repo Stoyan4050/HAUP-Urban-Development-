@@ -462,8 +462,13 @@ class TransformCoordinatesView(View):
         y_tile = floor(y_tile) + 75032
         tile_id = x_tile * 75879 + y_tile
         try:
-            contains_greenery = Classification.objects.get(tile=tile_id, year=year).contains_greenery
-            greenery_percentage = Classification.objects.get(tile=tile_id, year=year).greenery_percentage
+            classification_year = -1
+            classifications = Classification.objects.filter(tile=tile_id, year__lte=year)
+            for classification in classifications.values():
+                if classification["year"] > classification_year:
+                    classification_year = classification["year"]
+            contains_greenery = Classification.objects.get(tile=tile_id, year=classification_year).contains_greenery
+            greenery_percentage = Classification.objects.get(tile=tile_id, year=classification_year).greenery_percentage
         except ObjectDoesNotExist:
             contains_greenery = "Unknown"
             greenery_percentage = "Unknown"
