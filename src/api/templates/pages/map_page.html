@@ -108,7 +108,31 @@
         </nav>
     </div>
     <div id="map">
+        <div class="form-popup" id="myForm">
+            <form class="form-container">
+                <h1>Information</h1>
+                <label class="text-element"><b>Coordinates: </b></label><br>
+                <label class="text-element" id="coordinates" name="coordinates"></label><br>
+                <label class="text-element"><b>Contains Greenery:</b></label>
+                <label class="text-element" id="current_contains_greenery" name="current_contains_greenery"></label><br>
+                <label class="text-element"><b>Greenery percentage:</b></label>
+                <label class="text-element" id="current_greenery_percentage" name="current_greenery_percentage"></label><br>
+                <br><br><h2>Update Tile</h2>
+                <label class="text-element"><b>Contains Greenery:</b></label>
+                <select name="contains_greenery" class="text-element" id="contains_greenery">
+                    <option value="True">True</option>
+                    <option value="False">False</option>
+                </select><br>
+                <label class="text-element"><b>Greenery percentage:</b></label>
+                <input class="text-element" id="greenery_percentage" placeholder="Greenery Percentage"required><br>
+                <button type="button" class="btn" id="update">Update</button>
+                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+            </form>
+        </div>
     </div>
 </body>
-
+<script>
+    function closeForm() {
+    document.getElementById("myForm").style.display = "none";
+}</script>
 </html>

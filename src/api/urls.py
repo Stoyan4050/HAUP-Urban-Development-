@@ -3,9 +3,9 @@ urls.py
 """
 
 from django.urls import path
-from .views import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedAsView, GetClassifiedByView,\
-    GetDataView, GuestView, LoginView, LogoutView, MapView, PasswordChangedView, RegisterView,\
-    SendActivationEmailView, SendChangePasswordEmailView, HowToUseView
+from .views import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedTilesView,\
+    GuestView, HowToUseView, LoginView, LogoutView, MapView, ManualClassificationView, PasswordChangedView, RegisterView,\
+    SendActivationEmailView, SendChangePasswordEmailView, TransformCoordinatesView
 
 app_name = "urban_development"
 
@@ -32,12 +32,12 @@ urlpatterns = [
          name="password_changed_page"),
     path("map/", MapView.as_view(),
          name="map_page"),
-    path("get_classified_as/<parameters>/", GetClassifiedAsView.as_view(),
-         name="get_classified_as_page"),
-    path("get_classified_by/<parameters>/", GetClassifiedByView.as_view(),
-         name="get_classified_by_page"),
-    path("get_data/<parameters>/", GetDataView.as_view(),
-         name="get_data_view"),
+    path("get_classified_tiles/<parameters>/", GetClassifiedTilesView.as_view(),
+         name="get_classified_tiles_page"),
     path("how_to_use/", HowToUseView.as_view(),
-         name="how_to_use")
+         name="how_to_use"),
+    path("transform_coordinates/<parameters>/", TransformCoordinatesView.as_view(),
+         name="transform_coordinates_page"),
+    path("manual_classification/<parameters>/", ManualClassificationView.as_view(),
+         name="manual_classification"),
 ]

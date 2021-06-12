@@ -4,6 +4,7 @@ views.py
 
 import collections
 import json
+from math import floor,ceil
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sites.shortcuts import get_current_site
@@ -17,7 +18,8 @@ from pyproj import Transformer
 from .forms import ChangePasswordForm, RegisterForm, LoginForm, NewPasswordForm
 from .models import Classification, Tile, User
 from .tokens import TOKEN_GENERATOR
-from .utils import extract_available_years, send_email, transform_tile_to_coordinates
+from .utils import extract_available_years, send_email, transform_tile_to_coordinates, \
+                    manual_classify, transform_coordinates_to_tile
 
 regions = {'Drenthe': [75590, 75751, 75128, 75290], 'Flevoland': [75424, 75574, 75228, 75391],
             'Friesland': [75380, 75641, 75043, 75240], 'Gelderland': [75402, 75713, 75316, 75532],
@@ -381,7 +383,7 @@ class MapView(View):
         return render(request, "pages/map_page.html", context=context)
 
 
-class GetClassifiedAsView(View):
+class GetClassifiedTilesView(View):
     """
     class GetClassifiedAsView(View)
     """
@@ -394,39 +396,17 @@ class GetClassifiedAsView(View):
         """
 
         year = json.loads(parameters).get("year")
-        region = json.loads(parameters).get("region")
-        print(region)
         classifications_for_year = Classification.objects.filter(year__lte=year)
 
         if len(classifications_for_year) <= 0:
             return HttpResponseBadRequest("No tiles have been classified for the selected year.")
 
-        all_ids = classifications_for_year.values("tile_id").distinct()
-        public_space_ids = classifications_for_year.filter(contains_greenery=True).values("tile_id").distinct()
-        not_public_space_ids = classifications_for_year.filter(contains_greenery=False).values("tile_id").distinct()
-        if region == "None":
-            all_tiles = Tile.objects.filter(tile_id__in=all_ids.values_list("tile_id", flat=True))
-            public_space_tiles = Tile.objects.filter(tile_id__in=public_space_ids.values_list("tile_id", flat=True))
-            not_public_space_tiles = Tile.objects.filter(
-                tile_id__in=not_public_space_ids.values_list("tile_id", flat=True))
-        else:
-            x_min = regions.get(region)[0]
-            x_max = regions.get(region)[1]
-            y_min = regions.get(region)[2]
-            y_max = regions.get(region)[3]
-            print(x_min, x_max, y_min, y_max)
-            all_tiles = Tile.objects.filter(x_coordinate__gte=x_min, x_coordinate__lte=x_max,
-                                            y_coordinate__gte=y_min, y_coordinate__lte=y_max)
-
-            public_space_tiles = all_tiles.filter(tile_id__in=public_space_ids.values_list("tile_id", flat=True))
-            not_public_space_tiles = all_tiles.filter(tile_id__in=
-                                                      not_public_space_ids.values_list("tile_id", flat=True))
-
-
+        distinct_ids = classifications_for_year.values("tile_id").distinct()
+        distinct_tiles = Tile.objects.filter(tile_id__in=distinct_ids.values_list("tile_id", flat=True))
         transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
         result = {}
 
-        for tile in all_tiles:
+        for tile in distinct_tiles:
             coordinates = transform_tile_to_coordinates(tile.x_coordinate, tile.y_coordinate)
             x_coordinate, y_coordinate = transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
             result[tile.tile_id] = {
@@ -436,146 +416,93 @@ class GetClassifiedAsView(View):
                 "ymax": coordinates["ymax"],
                 "x_coordinate": x_coordinate,
                 "y_coordinate": y_coordinate,
-                "public_space": False,
-                "not_public_space": False,
+                "year": -1,
+                "classified_by": "",
+                "contains_greenery": False,
+                "greenery_percentage": 0,
+                "greenery_rounded": 0,
             }
 
-        for tile in public_space_tiles:
-            result[tile.tile_id]["public_space"] = True
+        for classification in classifications_for_year.values():
+            if result[classification["tile_id"]]["year"] < classification["year"]:
+                result[classification["tile_id"]]["year"] = classification["year"]
 
-        for tile in not_public_space_tiles:
-            result[tile.tile_id]["not_public_space"] = True
+                if classification["classified_by"] == -1:
+                    result[classification["tile_id"]]["classified_by"] = "classifier"
+                elif classification["classified_by"] == -2:
+                    result[classification["tile_id"]]["classified_by"] = "training data"
+                else:
+                    result[classification["tile_id"]]["classified_by"] = "user"
+
+                result[classification["tile_id"]]["contains_greenery"] = classification["contains_greenery"]
+                result[classification["tile_id"]]["greenery_percentage"] = 100 * classification["greenery_percentage"]
+
+                if classification["contains_greenery"] and classification["greenery_percentage"] == 0:
+                    result[classification["tile_id"]]["greenery_rounded"] = 25
+                else:
+                    result[classification["tile_id"]]["greenery_rounded"] = \
+                        int(25 * ceil(100 * classification["greenery_percentage"] / 25))
 
         return JsonResponse(list(result.values()), safe=False)
 
 
-class GetClassifiedByView(View):
-    """
-    class GetClassifiedByView(View)
-    """
-
+class TransformCoordinatesView(View):
     @staticmethod
     def get(_, parameters):
-        """
-        @staticmethod
-        def get(_, parameters)
-        """
+        x_coordinate = json.loads(parameters).get("x_coordinate")
+        y_coordinate = json.loads(parameters).get("y_coordinate")
         year = json.loads(parameters).get("year")
-        region = json.loads(parameters).get("region")
+        x_tile = x_coordinate - 13328.546
+        x_tile /= 406.40102300613496932515337423313
 
-        classifications_for_year = Classification.objects.filter(year__lte=year)
-        if len(classifications_for_year) <= 0:
-            return HttpResponseBadRequest("No tiles have been classified for the selected year.")
+        y_tile = 619342.658 - y_coordinate
+        y_tile /= 406.40607802340702210663198959688
 
-        all_ids = classifications_for_year.values("tile_id").distinct()
-        user_ids = classifications_for_year.filter(
-            classified_by__gt=0).values("tile_id").distinct()
-        classifier_ids = classifications_for_year.filter(
-            classified_by=-1).values("tile_id").distinct()
-        training_data_ids = classifications_for_year.filter(
-            classified_by=-2).values("tile_id").distinct()
-
-        if region == "None":
-            all_tiles = Tile.objects.filter(tile_id__in=all_ids.values_list("tile_id", flat=True))
-
-        else:
-            x_min = regions.get(region)[0]
-            x_max = regions.get(region)[1]
-            y_min = regions.get(region)[2]
-            y_max = regions.get(region)[3]
-
-            all_tiles = Tile.objects.filter(tile_id__in=all_ids.values_list("tile_id", flat=True),
-                                            x_coordinate__gte=x_min, x_coordinate__lte=x_max,
-                                            y_coordinate__gte=y_min, y_coordinate__lte=y_max)
-
-        user_tiles = all_tiles.filter(
-            tile_id__in=user_ids.values_list("tile_id", flat=True))
-        classifier_tiles = all_tiles.filter(
-            tile_id__in=classifier_ids.values_list("tile_id", flat=True))
-        training_data_tiles = all_tiles.filter(
-            tile_id__in=training_data_ids.values_list("tile_id", flat=True))
-
+        x_tile = floor(x_tile) + 75120
+        y_tile = floor(y_tile) + 75032
+        tile_id = x_tile * 75879 + y_tile
+        try:
+            contains_greenery = Classification.objects.get(tile=tile_id, year=year).contains_greenery
+            greenery_percentage = Classification.objects.get(tile=tile_id, year=year).greenery_percentage
+        except ObjectDoesNotExist:
+            contains_greenery = "Unknown"
+            greenery_percentage = "Unknown"
         transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
-        result = {}
-
-        for tile in all_tiles:
-            coordinates = transform_tile_to_coordinates(tile.x_coordinate, tile.y_coordinate)
-            x_coordinate, y_coordinate = transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
-            result[tile.tile_id] = {
-                "xmin": coordinates["xmin"],
-                "ymin": coordinates["ymin"],
-                "xmax": coordinates["xmax"],
-                "ymax": coordinates["ymax"],
-                "x_coordinate": x_coordinate,
-                "y_coordinate": y_coordinate,
-                "user": False,
-                "classifier": False,
-                "training_data": False,
-            }
-
-        for tile in user_tiles:
-            result[tile.tile_id]["user"] = True
-
-        for tile in classifier_tiles:
-            result[tile.tile_id]["classifier"] = True
-
-        for tile in training_data_tiles:
-            result[tile.tile_id]["training_data"] = True
-
-        return JsonResponse(list(result.values()), safe=False)
-
-
-class GetDataView(View):
-    """
-    class GetDataView(View)
-    """
-
-    @staticmethod
-    def get(_, parameters):
-        """
-        @staticmethod
-        def get(_, parameters)
-        """
-
-        year = json.loads(parameters).get("year")
-        classifications_for_year = Classification.objects.filter(year__lte=year)
-
-        total = classifications_for_year.values("tile_id").distinct()
-        public_space = classifications_for_year.filter(
-            contains_greenery=True).values("tile_id").distinct()
-        not_public_space = classifications_for_year.filter(
-            contains_greenery=False).values("tile_id").distinct()
-        mixed = public_space.filter(
-            tile_id__in=not_public_space.values_list("tile_id", flat=True))
-        user = classifications_for_year.filter(
-            classified_by__gt=0).values("tile_id").distinct()
-        classifier = classifications_for_year.filter(
-            classified_by=-1).values("tile_id").distinct()
-        training_data = classifications_for_year.filter(
-            classified_by=-2).values("tile_id").distinct()
-        user_classifier = user.filter(
-            tile_id__in=classifier.values_list("tile_id", flat=True)).values("tile_id").distinct()
-        user_training_data = user.filter(
-            tile_id__in=training_data.values_list("tile_id", flat=True)).values("tile_id").distinct()
-        classifier_training_data = classifier.filter(
-            tile_id__in=training_data.values_list("tile_id", flat=True)).values("tile_id").distinct()
-        user_classifier_training_data = user_classifier.filter(
-            tile_id__in=training_data.values_list("tile_id", flat=True)).values("tile_id").distinct()
-
         result = {
-            "total": len(total),
-            "public_space": len(public_space),
-            "not_public_space": len(not_public_space),
-            "mixed": len(mixed),
-            "user": len(user),
-            "classifier": len(classifier),
-            "training_data": len(training_data),
-            "user_classifier": len(user_classifier),
-            "user_training_data": len(user_training_data),
-            "classifier_training_data": len(classifier_training_data),
-            "user_classifier_training_data": len(user_classifier_training_data),
+            "x_tile": x_tile,
+            "y_tile": y_tile,
+            "tile_id": tile_id,
+            "x_coordinate": transformer.transform(x_coordinate, y_coordinate)[0],
+            "y_coordinate": transformer.transform(x_coordinate, y_coordinate)[1],
+            "contains_greenery": contains_greenery,
+            "greenery_percentage": greenery_percentage
         }
+        return JsonResponse(result, safe=False)
 
+
+class ManualClassificationView(View):
+    @staticmethod
+    def get(_, parameters):
+        x_coordinate = json.loads(parameters).get("latitude")
+        y_coordinate = json.loads(parameters).get("longitude")
+        x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
+
+        year = json.loads(parameters).get("year")
+        user = json.loads(parameters).get("classified_by")
+        greenery_percentage = json.loads(parameters).get("greenery_percentage")
+        contains_greenery = json.loads(parameters).get("contains_greenery")
+        coordinates = transform_tile_to_coordinates(x_tile, y_tile)
+        manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery)
+        result = {
+            "xmin": coordinates["xmin"],
+            "ymin": coordinates["ymin"],
+            "xmax": coordinates["xmax"],
+            "ymax": coordinates["ymax"],
+            "contains_greenery": contains_greenery,
+            "greenery_percentage": greenery_percentage,
+            "x_coordinate": x_coordinate,
+            "y_coordinate": y_coordinate
+        }
         return JsonResponse(result, safe=False)
 
 

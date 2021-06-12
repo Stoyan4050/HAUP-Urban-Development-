@@ -168,6 +168,35 @@ def send_email(uid, domain, email_subject, email_template):
     return False
 
 
+def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
+
+    # print(x_tile, y_tile)
+    # print(User.objects.get(email=user).id)
+    x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
+    try:
+        Classification.objects.update_or_create(tile_id=Tile.objects.get(x_coordinate=x_tile, y_coordinate=y_tile).tile_id,
+                                                year=year, greenery_percentage=greenery_percentage,
+                                                contains_greenery=contains_greenery,
+                                                classified_by=User.objects.get(email=user).id)
+    except ObjectDoesNotExist:
+        print("Ooopsy")
+
+
+def transform_coordinates_to_tile(x_coordinate, y_coordinate):
+    transformer = Transformer.from_crs("EPSG:4326", "EPSG:28992")
+    x_esri, y_esri = transformer.transform(x_coordinate, y_coordinate)
+    x_esri -= 13328.546
+    x_esri /= 406.40102300613496932515337423313
+
+    y_esri = 619342.658 - y_esri
+    y_esri /= 406.40607802340702210663198959688
+
+    x_tile = floor(x_esri) + 75120
+    y_tile = floor(y_esri) + 75032
+
+    return x_tile, y_tile
+
+
 def transform_tile_to_coordinates(x_tile, y_tile):
     """
     def transform_tile_to_coordinates(x_tile, y_tile)
@@ -176,25 +205,25 @@ def transform_tile_to_coordinates(x_tile, y_tile):
     x_offset = 406.40102300613496932515337423313
     y_offset = 406.40607802340702210663198959688
 
-    xmin = x_tile - 75120
-    xmin *= x_offset
-    xmin = xmin + 13328.546
+    x_min = x_tile - 75120
+    x_min *= x_offset
+    x_min = x_min + 13328.546
 
-    ymax = y_tile - 75032
-    ymax *= y_offset
-    ymax = 619342.658 - ymax
+    y_max = y_tile - 75032
+    y_max *= y_offset
+    y_max = 619342.658 - y_max
 
-    xmax = xmin + x_offset
-    ymin = ymax - y_offset
+    x_max = x_min + x_offset
+    y_min = y_max - y_offset
 
-    x_coordinate = (xmin + xmax) / 2
-    y_coordinate = (ymin + ymax) / 2
+    x_coordinate = (x_min + x_max) / 2
+    y_coordinate = (y_min + y_max) / 2
 
     return {
-        "xmin": xmin,
-        "ymin": ymin,
-        "xmax": xmax,
-        "ymax": ymax,
+        "xmin": x_min,
+        "ymin": y_min,
+        "xmax": x_max,
+        "ymax": y_max,
         "x_coordinate": x_coordinate,
         "y_coordinate": y_coordinate,
     }
