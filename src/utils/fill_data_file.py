@@ -13,7 +13,7 @@ def fill_file():
     def fill_file()
     """
 
-    file_names = []
+    file_names = {}
     while True:
         print("Please enter the file wish to read or leave empty, if there are no more files to read")
         file_name = input()
@@ -21,12 +21,23 @@ def fill_file():
         if file_name == "":
             break
 
-        file_names.append(file_name)
+        contains_greenery = None
+
+        while contains_greenery is None:
+            print("Please enter 'True', if the data is of greenery and 'False', otherwise")
+            user_input = input()
+
+            if user_input.lower() == "true":
+                contains_greenery = True
+            elif user_input.lower() == "false":
+                contains_greenery = False
+
+        file_names[file_name] = contains_greenery
 
     if file_names:
         with open("../data/Wikidata/data.csv", "a", newline="") as f_object:
             writer_object = writer(f_object)
-            for file_name in file_names:
+            for file_name, contains_greenery in file_names.items():
                 data_frame = pandas.read_csv("../data/Wikidata/" + file_name)
                 points = data_frame.geo.tolist()
                 years = ["Unknown" for _ in range(len(data_frame))]
@@ -35,7 +46,7 @@ def fill_file():
                     years = data_frame.inception.tolist()
 
                 for index in range(len(points)):
-                    args = [points[index], years[index]]
+                    args = [points[index], years[index], contains_greenery]
                     writer_object.writerow(args)
 
             f_object.close()
