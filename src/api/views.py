@@ -493,6 +493,16 @@ class ManualClassificationView(View):
         contains_greenery = json.loads(parameters).get("contains_greenery")
         coordinates = transform_tile_to_coordinates(x_tile, y_tile)
         manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery)
+        if contains_greenery == "True" and greenery_percentage == 0:
+            contains_greenery = "true"
+            greenery_rounded = 25
+        elif contains_greenery == "False":
+            contains_greenery = "false"
+            greenery_rounded = 0
+        else:
+            contains_greenery = "true"
+            greenery_rounded = int(25 * ceil(100 * float(greenery_percentage) / 25))
+        print(greenery_rounded)
         result = {
             "xmin": coordinates["xmin"],
             "ymin": coordinates["ymin"],
@@ -500,6 +510,7 @@ class ManualClassificationView(View):
             "ymax": coordinates["ymax"],
             "contains_greenery": contains_greenery,
             "greenery_percentage": greenery_percentage,
+            "greenery_rounded": greenery_rounded,
             "x_coordinate": x_coordinate,
             "y_coordinate": y_coordinate
         }

@@ -514,12 +514,23 @@ require([
       updateUrl('data')
     })
     $('#update').click(async function (event) {
+      edits = {
+        addFeatures: [],
+      }
       var year = $('#year option:selected').val().trim()
       var classified_by = document.getElementById("user-name").innerHTML.trim().split(' ').join('').split("\n")[2]
       var latitude = document.getElementById("coordinates").innerHTML.trim().split(", ")[0]
       var longitude = document.getElementById("coordinates").innerHTML.trim().split(", ")[1]
-      var greenery_percentage = document.getElementById("greenery_percentage").value
-      var contains_greenery = document.getElementById("contains_greenery").value
+      var greenery_percentage
+      var contains_greenery
+
+      if(document.getElementById("contains_greenery").value.localeCompare("False")==0){
+        contains_greenery = "False"
+        greenery_percentage = 0
+      } else {
+        greenery_percentage = document.getElementById("greenery_percentage").value
+        contains_greenery = document.getElementById("contains_greenery").value
+      }
 
       var parameters = {
         year: year, classified_by: classified_by,
@@ -529,6 +540,7 @@ require([
       const response = await fetch('/urban_development/manual_classification/' + JSON.stringify(parameters),{signal: abortController.signal})
       try {
           var json = await response.json()
+          console.log(json)
           var graphic = new Graphic({
             geometry: Polygon.fromExtent(
               new Extent(
@@ -544,6 +556,7 @@ require([
           graphic.setAttribute('Latitude', json.y_coordinate)
           graphic.setAttribute('Contains greenery', json.contains_greenery)
           graphic.setAttribute('Greenery percentage', json.greenery_percentage)
+          graphic.setAttribute('Greenery rounded', json.greenery_rounded)
           edits.addFeatures.push(graphic)
           classifiedAsLayer.applyEdits(edits)
         } catch {

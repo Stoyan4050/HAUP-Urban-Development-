@@ -119,11 +119,11 @@
                 <label class="text-element" id="current_greenery_percentage" name="current_greenery_percentage"></label><br>
                 <br><br><h2>Update Tile</h2>
                 <label class="text-element"><b>Contains Greenery:</b></label>
-                <select name="contains_greenery" class="text-element" id="contains_greenery">
+                <select name="contains_greenery" class="text-element" id="contains_greenery" onchange="showHide()">
                     <option value="True">True</option>
                     <option value="False">False</option>
                 </select><br>
-                <label class="text-element"><b>Greenery percentage:</b></label>
+                <label class="text-element" id="text_greenery_percentage"><b>Greenery percentage:</b></label>
                 <input class="text-element" id="greenery_percentage" placeholder="Greenery Percentage"required><br>
                 <button type="button" class="btn" id="update">Update</button>
                 <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
@@ -132,6 +132,16 @@
     </div>
 </body>
 <script>
+    function showHide(){
+        console.log(document.getElementById("contains_greenery").value)
+        if(document.getElementById("contains_greenery").value.localeCompare("True")==0){
+            document.getElementById("text_greenery_percentage").style.display='inline'
+            document.getElementById("greenery_percentage").style.display='inline'
+        } else {
+            document.getElementById("text_greenery_percentage").style.display='none'
+            document.getElementById("greenery_percentage").style.display='none'
+        }
+    }
     function closeForm() {
     document.getElementById("myForm").style.display = "none";
 }</script>
