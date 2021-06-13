@@ -4,8 +4,7 @@ views.py
 
 import collections
 import json
-from math import floor,ceil
-
+from math import ceil, floor
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,15 +17,9 @@ from pyproj import Transformer
 from .forms import ChangePasswordForm, RegisterForm, LoginForm, NewPasswordForm
 from .models import Classification, Tile, User
 from .tokens import TOKEN_GENERATOR
-from .utils import extract_available_years, send_email, transform_tile_to_coordinates, \
-                    manual_classify, transform_coordinates_to_tile
+from .utils import extract_available_years, send_email, transform_tile_to_coordinates
 
-regions = {'Drenthe': [75590, 75751, 75128, 75290], 'Flevoland': [75424, 75574, 75228, 75391],
-            'Friesland': [75380, 75641, 75043, 75240], 'Gelderland': [75402, 75713, 75316, 75532],
-            'Groningen': [75598, 75771, 75032, 75226], 'Limburg': [75499, 75613, 75520, 75805],
-            'Noord-Brabant': [75264, 75581, 75506, 75672], 'Noord-Holland': [75205, 75455, 75133, 75552],
-            'Overijssel': [75534, 75750, 75225, 75425], 'Zuid-Holland': [75205, 75408, 75368, 75552],
-            'Utrecht': [75368, 75509, 75376, 75498], 'Zeeland': [75120, 75278, 75526, 75675]}
+
 class BaseView(View):
     """
     class BaseView(View)
