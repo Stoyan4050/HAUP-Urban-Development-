@@ -76,10 +76,10 @@ def classify_cnn(year=2020):
     x_val = np.array(val_images) / 255
 
     img_size = 32
-    x_train.reshape(-1, img_size, img_size, 1)
+    x_train.reshape((-1, img_size, img_size, 1))
     y_train = np.array(train_labels)
 
-    x_val.reshape(-1, img_size, img_size, 1)
+    x_val.reshape((-1, img_size, img_size, 1))
     y_val = np.array(val_labels)
 
     print(x_train.shape)
@@ -157,7 +157,7 @@ def classify_cnn(year=2020):
 
     django.db.connections.close_all()
     test_data = classifier_svm.get_images_test(year)
-    test_coord, test_images = classifier_svm.getLabelsImgs(test_data)
+    test_coord, test_images = classifier.get_labels_imgs(test_data)
 
     predictions = model.predict_classes(test_images)
 
