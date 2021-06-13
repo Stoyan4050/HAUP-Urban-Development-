@@ -132,6 +132,17 @@ def get_images_test(year):
     return test_imgs
 
 
+def reshape_data(data):
+    """
+        reshape the provided data
+    """
+
+    mte, nte, rte, kte = data.shape
+    data.reshape(mte, nte * rte * kte)
+
+    return data
+
+
 def classify(year=2020):
     """
         classify using SVM
@@ -143,42 +154,18 @@ def classify(year=2020):
     # classifier_params.train_data_imgs = []
     # classifier_params.global_counter = 0
     # params = classifier_params(year, data=[], counter=0)
-    train_data = np.array(get_images_training(
-        Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year))
 
-    # train_data_10per = random_sample(train_data)
-    # print(train_data)
-    # print(train_data_10per)
-    train_labels, train_images = classifier.get_labels_imgs(train_data)
+    train_labels, train_images = classifier.get_labels_imgs(np.array(get_images_training(
+        Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year)))
     # print(train_images, "imgs")
 
     # print(train_labels, train_images)
     print("Training data extracted!")
-    # img = get_image_from_url(2020, 75400, 75410)
-    # cv2.imshow("img", img)
-    # cv2.waitKey()
-    # path = "./training_data"
-    # valid_images = [".jpg", ".png"]
-    # for f in os.listdir(path):
-    #     ext = os.path.splitext(f)[1]
-    #     if ext.lower() not in valid_images:
-    #         continue
-    #     imgs_train.append(cv2.imread((os.path.join(path, f)),1))
 
-    # path_test = "./test_data"
-    # valid_images = [".jpg", ".png"]
-    # for f in os.listdir(path_test):
-    #     ext = os.path.splitext(f)[1]
-    #     if ext.lower() not in valid_images:
-    #         continue
-    #     imgs_test.append(cv2.resize((cv2.imread((os.path.join(path_test, f)),1)), (32,32)))
-
-    # train_images = imgs_train
     django.db.connections.close_all()
     # django.db.connections.execute('set max_allowed_packet=67108864')
 
-    test_data = get_images_test(year)
-    test_coord, test_images = classifier.get_labels_imgs(test_data)
+    test_coord, test_images = classifier.get_labels_imgs(get_images_test(year))
 
     # print(test_images)
     train_images = np.array(train_images)
@@ -186,18 +173,16 @@ def classify(year=2020):
     # print("TEST", test_images)
     print("Training imgs loaded. Classification starts!")
     # print(train_images)
-    # m, n, r, k = train_images.shape
-
-    # train_imgs_reshaped = train_images.reshape(m, n * r * k)
+    reshape_data(train_images)
 
     # Array that holds the best set of parameters for each model
     best_estimators = np.empty(0)
 
     # Array that holds the mean score obtained during hyperparamter tuning for each model
-    hyperparameter_tuning_scores = np.empty(0)
+    # hyperparameter_tuning_scores = np.empty(0)
 
     # Array containing the score of the highest rated estimator for each model
-    best_scores = np.empty(0)
+    # best_scores = np.empty(0)
 
     # names = {"KNeighborsClassifier", "SVM", "SVM_Tuned", "DecisionTreeClassifier", "LogisticRegression"}
     models = {
@@ -225,12 +210,11 @@ def classify(year=2020):
     # best_estimators = np.append(best_estimators, best_model_estimator)
     # best_scores = np.append(best_scores, best_model_score)
 
-    print(hyperparameter_tuning_scores, "- Hyper_Parameter_Tuning_Scores")
-    print(best_estimators, "- Best Estimator")
-    print(best_scores, "Best scores")
+    # print(hyperparameter_tuning_scores, "- Hyper_Parameter_Tuning_Scores")
+    # print(best_estimators, "- Best Estimator")
+    # print(best_scores, "Best scores")
 
-    mte, nte, rte, kte = test_images.shape
-    test_imgs_reshaped = test_images.reshape(mte, nte * rte * kte)
+    test_imgs_reshaped = reshape_data(test_images)
     # print("After reshaping " + str(test_imgs_reshaped.shape))
 
     # best_model = best_estimators[np.argmax(hyperparameter_tuning_scores)]
@@ -274,8 +258,16 @@ def classify(year=2020):
 
     print(test_coord)
     django.db.connections.close_all()
+    upload_predictions(prediction, test_coord, year)
     # django.db.connections.execute('set max_allowed_packet=67108864')
-    for i in range(len(prediction)):
+
+
+def upload_predictions(prediction, test_coord, year):
+    """"
+        Upload predictions to the database
+    """
+
+    for i in enumerate(prediction):
         # print(test_coord[i][1])
         # print(test_coord[i][0])
         Classification.objects.create(tile_id=Tile.objects.get(x_coordinate=test_coord[i][1],

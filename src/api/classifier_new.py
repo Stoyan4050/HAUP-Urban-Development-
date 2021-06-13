@@ -35,13 +35,11 @@ def change_labels(arr):
     return np.array(new_arr)
 
 
-def classify_cnn(year=2020):
+def get_training_validation(train_data):
     """
-        classifying using cnn
+        get training and validaton set
     """
 
-    train_data = np.array(classifier_svm.get_images_training(
-        Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year))
     validation = []
     np.random.shuffle(train_data)
     percent10 = len(train_data) / 10
@@ -55,15 +53,23 @@ def classify_cnn(year=2020):
         else:
             training.append((tile, label))
 
-    training = np.array(training)
-    validation = np.array(validation)
+    return np.array(training), np.array(validation)
 
-    train_labels, train_images = classifier_svm.getLabelsImgs(training)
+
+def classify_cnn(year=2020):
+    """
+        classifying using cnn
+    """
+
+    training, validation = get_training_validation(np.array(classifier_svm.get_images_training(
+        Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year)))
+
+    train_labels, train_images = classifier.get_labels_imgs(training)
     train_labels = change_labels(train_labels)
     print("Train", train_labels)
     print("Train2", train_images)
 
-    val_labels, val_images = classifier_svm.getLabelsImgs(validation)
+    val_labels, val_images = classifier.get_labels_imgs(validation)
     val_labels = change_labels(val_labels)
 
     x_train = np.array(train_images) / 255
@@ -155,7 +161,7 @@ def classify_cnn(year=2020):
 
     predictions = model.predict_classes(test_images)
 
-    for i in range(len(predictions)):
+    for i in enumerate(predictions):
         class_label = False
         if predictions[i] == 1:
             class_label = True
