@@ -1,24 +1,30 @@
-from keras.optimizer_v2.adam import Adam
-from api import classifier_SVM
-from django.db.models import Q
-
-from .models import Classification, Tile
-
-
+"""
+    Classifier CNN
+"""
 import numpy as np
 import django
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 
+from keras.optimizer_v2.adam import Adam
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
-import matplotlib.pyplot as plt
+from api import classifier_SVM
+from django.db.models import Q
+
+
+from .models import Classification, Tile
 
 django.setup()
 
 
 def change_labels(arr):
+    """
+        changing the labels from True/False to Integers
+    """
+
     new_arr = []
     for i in arr:
         if i == "True":
@@ -30,8 +36,11 @@ def change_labels(arr):
 
 
 def classify_cnn(year=2020):
+    """
+        classifying using cnn
+    """
 
-    train_data = np.array(classifier_SVM.getImagesTraining(
+    train_data = np.array(classifier_SVM.get_images_training(
         Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year))
     validation = []
     np.random.shuffle(train_data)
@@ -39,12 +48,12 @@ def classify_cnn(year=2020):
     counter = 0
 
     training = []
-    for f, l in train_data:
+    for tile, label in train_data:
         counter += 1
         if counter < percent10:
-            validation.append((f, l))
+            validation.append((tile, label))
         else:
-            training.append((f, l))
+            training.append((tile, label))
 
     training = np.array(training)
     validation = np.array(validation)
@@ -59,8 +68,6 @@ def classify_cnn(year=2020):
 
     x_train = np.array(train_images) / 255
     x_val = np.array(val_images) / 255
-
-    #
 
     img_size = 32
     x_train.reshape(-1, img_size, img_size, 1)
@@ -119,8 +126,6 @@ def classify_cnn(year=2020):
     model.compile(optimizer=opt, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=['accuracy'])
 
-    print(x_train.shape, y_train.shape, "TRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIN")
-
     history = model.fit(x_train, y_train, epochs=500, validation_data=(x_val, y_val))
 
     acc = history.history['accuracy']
@@ -145,7 +150,7 @@ def classify_cnn(year=2020):
     plt.show()
 
     django.db.connections.close_all()
-    test_data = classifier_SVM.getImagesTest(year)
+    test_data = classifier_SVM.get_images_test(year)
     test_coord, test_images = classifier_SVM.getLabelsImgs(test_data)
 
     predictions = model.predict_classes(test_images)

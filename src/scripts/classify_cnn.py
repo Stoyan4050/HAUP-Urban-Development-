@@ -1,3 +1,8 @@
+"""
+    Classify with CNN
+"""
+
+
 from api.classifier_new import classify_cnn
 
 

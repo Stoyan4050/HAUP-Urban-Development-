@@ -1,5 +1,11 @@
+"""
+    SVM classifier
+"""
+
+import urllib.request
 import cv2
 import numpy as np
+import django
 
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
@@ -15,14 +21,14 @@ from django.db.models import Q
 
 from .models import Classification, Tile
 
-import urllib.request
-import django
-
-
 django.setup()
 
 
-def getImageFromURL(year, x_coord, y_coord):
+def get_image_from_url(year, x_coord, y_coord):
+    """
+        get images from with urls
+    """
+
     # print(year, x_coord, y_coord, "DATA")
     url = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + str(
         year) + "/MapServer/tile/11/" + str(x_coord) + "/" + str(y_coord)
@@ -32,26 +38,29 @@ def getImageFromURL(year, x_coord, y_coord):
     return img
 
 
-def getImgsURL(i, year, data):
-    # print(params.data)
-    c = data[i]
+def get_imgs_url(i, year, data):
+    """
+        get images from the data
+    """
+    element = data[i]
 
-    tile = c.tile
-    # print(year)
-    img = getImageFromURL(year, tile.y_coordinate, tile.x_coordinate)
-    # print(counter)
-    # return img
-    # print("Y")
-    return (img, c.contains_greenery)
+    tile = element.tile
+    img = get_image_from_url(year, tile.y_coordinate, tile.x_coordinate)
+
+    return img, element.contains_greenery
 
 
-def getImagesTraining(data1, year):
+def get_images_training(data1, year):
+    """
+        get training images
+    """
+
     data = data1
     training_imgs = []
     counter = 0
     print("Taking images", year, data)
     for i in range(len(data)):
-        training_imgs.append(getImgsURL(i, year, data))
+        training_imgs.append(get_imgs_url(i, year, data))
         print(counter)
         counter += 1
 
@@ -60,7 +69,7 @@ def getImagesTraining(data1, year):
 
     return training_imgs
     #     print(i)
-    #     p = Process(target=getImgsURL, args=(i, ))
+    #     p = Process(target=get_imgs_url, args=(i, ))
     #     processes.append(p)
     #     p.start()
     #
@@ -68,7 +77,7 @@ def getImagesTraining(data1, year):
     #     process.join()
 
     # pool = multiprocessing.Pool()
-    # pool.map(getImgsURL, range(0, len(data)))
+    # pool.map(get_imgs_url, range(0, len(data)))
     # pool.close()
     # for i in range(0, len(data)):
     #     #print(c.year)
@@ -77,7 +86,7 @@ def getImagesTraining(data1, year):
     #     c = data[i]
     #     tile = c.tile_id
     #         #print(year)
-    #     img = getImageFromURL(year, tile.y_coordinate, tile.x_coordinate)
+    #     img = get_image_from_url(year, tile.y_coordinate, tile.x_coordinate)
     #         #print(counter)
     #     training_imgs.append((img, c.label))
     # print(counter)
@@ -90,7 +99,11 @@ def getImagesTraining(data1, year):
     # return training_imgs
 
 
-def getImagesTest(year):
+def get_images_test(year):
+    """
+        get test images
+    """
+
     Classification.objects.filter(classified_by=-1).delete()
     data_temp = Classification.objects.values("tile_id").distinct()
     data = Tile.objects.filter(~Q(tile_id__in=data_temp.values_list("tile", flat=True)))
@@ -103,7 +116,7 @@ def getImagesTest(year):
         # if tileYear == year:
         # if counter > 100000 and counter < 105000:
         # print(year)
-        img = getImageFromURL(year, tile.y_coordinate, tile.x_coordinate)
+        img = get_image_from_url(year, tile.y_coordinate, tile.x_coordinate)
         # print(counter)
         coord = (tile.y_coordinate, tile.x_coordinate)
         test_imgs.append((img, coord))
@@ -119,30 +132,42 @@ def getImagesTest(year):
 
 
 def random_sample(arr):
+    """
+        get random sample of the data
+    """
+
     arr = np.array(arr)
     # print(arr)
-    res = arr[np.random.choice(len(arr), size=int(len(arr)/2), replace=False)]
+    res = arr[np.random.choice(len(arr), size=int(len(arr) / 2), replace=False)]
     return res
 
 
 def getLabelsImgs(data):
+    """
+        separate images and labels from the data
+    """
+
     labels = []
     imgs = []
-    for img, lb in data:
-        labels.append(lb)
+    for img, label in data:
+        labels.append(label)
         imgs.append(img)
     return np.array(labels), np.array(imgs)
 
 
 def classify(year=2020):
+    """
+        classify using SVM
+    """
 
-    # train_data = getImagesTraining(Classification.objects.filter(year__lte=year), year)
+    # train_data = get_images_training(Classification.objects.filter(year__lte=year), year)
     # classifier_params.data_selected = []
     # classifier_params.year_selected = 2020
     # classifier_params.train_data_imgs = []
     # classifier_params.global_counter = 0
     # params = classifier_params(year, data=[], counter=0)
-    train_data = np.array(getImagesTraining(Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year))
+    train_data = np.array(get_images_training(
+        Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year))
 
     # train_data_10per = random_sample(train_data)
     # print(train_data)
@@ -152,7 +177,7 @@ def classify(year=2020):
 
     # print(train_labels, train_images)
     print("Training data extracted!")
-    # img = getImageFromURL(2020, 75400, 75410)
+    # img = get_image_from_url(2020, 75400, 75410)
     # cv2.imshow("img", img)
     # cv2.waitKey()
     # path = "./training_data"
@@ -175,7 +200,7 @@ def classify(year=2020):
     django.db.connections.close_all()
     # django.db.connections.execute('set max_allowed_packet=67108864')
 
-    test_data = getImagesTest(year)
+    test_data = get_images_test(year)
     test_coord, test_images = getLabelsImgs(test_data)
 
     # print(test_images)
@@ -184,7 +209,7 @@ def classify(year=2020):
     # print("TEST", test_images)
     print("Training imgs loaded. Classification starts!")
     # print(train_images)
-    m, n, r, k = train_images.shape
+    # m, n, r, k = train_images.shape
 
     # train_imgs_reshaped = train_images.reshape(m, n * r * k)
 
@@ -235,33 +260,33 @@ def classify(year=2020):
 
     # pipe = Pipeline([("pca", PCA(0.99)), ("SVM_Tuned", models["SVM_Tuned"])])
 
-    Xtrain, Xtest, Ytrain, Ytest = train_test_split(train_images, train_labels, test_size=0.4, random_state=42,
+    xtrain, xtest, ytrain, ytest = train_test_split(train_images, train_labels, test_size=0.4, random_state=42,
                                                     shuffle=True, stratify=train_images)
 
-    m, n, r, k = train_images.shape
+    first_param, second_param, third_param, fourth_param = train_images.shape
 
     # train_imgs_reshaped = train_images.reshape(m, n * r * k)
 
-    Xtrain2D = Xtrain.reshape(m, n * r * k)
-    Xtest2D = Xtest.reshape(m, n * r * k)
+    xtrain2_d = xtrain.reshape(first_param, second_param * third_param * fourth_param)
+    xtest2_d = xtest.reshape(first_param, second_param * third_param * fourth_param)
     for name, model in models.items():
         print(name)
-        model.fit(Xtrain2D, Ytrain)
+        model.fit(xtrain2_d, ytrain)
 
     names = np.empty(0)
     scores = np.empty(0)
-    meanErrors = np.empty(0)
+    mean_errors = np.empty(0)
 
     for name, model in models.items():
-        prediction = model.predict(Xtest2D)
-        f1_score_value = f1_score(Ytest, prediction, average="weighted")
+        prediction = model.predict(xtest2_d)
+        f1_score_value = f1_score(ytest, prediction, average="weighted")
         print(name)
         print("- f1_score", f1_score_value)
         names = np.append(names, name)
         scores = np.append(scores, f1_score_value)
 
-        score = cross_val_score(model, Xtrain2D, Ytrain, cv=10)
-        meanErrors = np.append(meanErrors, np.mean(score))
+        score = cross_val_score(model, xtrain2_d, ytrain, cv=10)
+        mean_errors = np.append(mean_errors, np.mean(score))
         print(score)
 
     pipe = make_pipeline(best_estimators[0], best_estimators[1])
@@ -283,6 +308,9 @@ def classify(year=2020):
 
 
 def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, train_images):
+    """
+        Perform hyperparameter tuning
+    """
 
     # print(train_images)
     # print(train_labels)
@@ -297,27 +325,27 @@ def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, 
 
     for train_index, test_index in k_fold.split(train_images):
         # print(train_index)
-        Xtrain, Xtest = train_images[vector(train_index)], train_images[vector(test_index)]
-        Ytrain, Ytest = train_labels[vector(train_index)], train_labels[vector(test_index)]
+        xtrain, xtest = train_images[vector(train_index)], train_images[vector(test_index)]
+        ytrain, ytest = train_labels[vector(train_index)], train_labels[vector(test_index)]
 
         pipe = Pipeline([("pca", PCA()), (estimator_name, estimator)])
         search = GridSearchCV(pipe, estimator_params, cv=5, return_train_score=True, n_jobs=-1,
                               verbose=2, scoring="f1_macro")
 
-        search.fit(Xtrain, Ytrain)
+        search.fit(xtrain, ytrain)
 
         est = search.best_estimator_
         # print("ESST", est)
         # print("BESST", search.best_score_)
 
         est_pipe = make_pipeline(est)
-        est_pipe.fit(Xtrain, Ytrain)
-        prediction = est_pipe.predict(Xtest)
+        est_pipe.fit(xtrain, ytrain)
+        prediction = est_pipe.predict(xtest)
 
-        f1_score_est = f1_score(Ytest, prediction, average="macro")
+        f1_score_est = f1_score(ytest, prediction, average="macro")
         # print("f1_score_: ", f1_score_est)
 
-        if (f1_score_est > best_model_score):
+        if f1_score_est > best_model_score:
             best_model_score = f1_score_est
             best_model_estimator = est
 
@@ -331,13 +359,20 @@ def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, 
     return mean_score, best_model_score, best_model_estimator
 
 
-class classifier_params:
+class ClassifierParams:
+    """
+        Class classfier_params used for multiprocessing
+    """
     year = 2020
     counter = 0
     train_imgs = []
     data = []
 
     def __init__(self, year, data, counter):
+        """
+            add parameters
+        """
+
         self.year_selected = year
         self.data = data
         self.counter = counter
