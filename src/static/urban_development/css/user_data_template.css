@@ -1,132 +1,138 @@
 /* Tags */
 
 body {
-  background-color: #f3f4f6;
-  display: flex;
-  flex-flow: column;
-  min-height: 100vh;
-  margin: 0;
+    background-color: #f3f4f6;
+    display: flex;
+    flex-flow: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+ul {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+li {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 /* IDs */
 
 #header {
-  text-align: center;
+    text-align: center;
 }
 
 #title-container {
-  display: inline-block;
+    display: inline-block;
 }
 
 #title {
-  background-color: white;
-  padding: 0 10px;
-  margin: 6vh 0 0 0;
-  font-size: 1.6rem;
+    background-color: white;
+    padding: 0 10px;
+    margin: 6vh 0 0 0;
+    font-size: 1.6rem;
 }
 
 #main {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #content-box {
-  padding: 2rem;
-  margin: 0;
-  border: 1px solid #e5e7eb;
-  text-align: center;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    padding: 2rem;
+    margin: 0;
+    border: 1px solid #e5e7eb;
+    text-align: center;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 #page-name {
-  margin: 0 0 2rem 0;
-  font-size: 1.6rem;
+    margin: 0 0 2rem 0;
+    font-size: 1.6rem;
 }
 
 #hyperlinks-container {
-  margin-bottom: 2rem;
+    margin-bottom: 2rem;
 }
 
 /* Classes */
 
 .form-content {
-  margin-bottom: 1.5rem;
-  text-align: left;
-  width: 25rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+    width: 25rem;
 }
 
 .form-field-box {
-  width: 100%;
+    width: 100%;
 }
 
 .form-field-box + .form-field-box {
-  margin-top: 1rem;
+    margin-top: 1rem;
 }
 
 .form-label-container {
-  margin-bottom: 0.4rem;
+    margin-bottom: 0.4rem;
 }
 
 .form-input-container {
-  display: flex;
+    display: flex;
 }
 
 .form-input-container input {
-  flex-grow: 1;
-  padding: 0.8rem 0.6rem;
+    flex-grow: 1;
+    padding: 0.8rem 0.6rem;
 }
 
 .login-btn {
-  width: 15rem;
-  padding: 0.8rem;
-  background-color: #bfdbfe;
-  color: #1e3a8a;
-  transition: 0.25s all;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
+    width: 15rem;
+    padding: 0.8rem;
+    background-color: #bfdbfe;
+    color: #1e3a8a;
+    transition: 0.25s all;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
 }
 
 .login-btn:hover {
-  background-color: #93c5fd;
+    background-color: #93c5fd;
 }
 
 .hidden-row {
-  display: none;
-}
-
-.help-message {
-  font-size: 0.6vw;
-}
-
-.error-message {
-  color: red;
-  font-size: 0.6vw;
+    display: none;
 }
 
 .blank-row {
-  height: 1.2vh;
+    height: 1.2vh;
 }
 
-.form-errors {
-  padding: 0.8rem;
-  background-color: #fee2e2;
-  color: #b91c1c;
-  margin-bottom: 1.5rem;
+.error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.message {
+    padding: 0.8rem;
+    margin-bottom: 1.5rem;
 }
 
 .form-hyperlink {
-  display: block;
-  color: #333;
-  text-decoration: none;
+    display: block;
+    color: #333;
+    text-decoration: none;
 }
 
 .form-hyperlink:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .form-hyperlink + .form-hyperlink {
-  margin-top: 0.5rem;
+    margin-top: 0.5rem;
 }
