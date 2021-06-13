@@ -17,7 +17,8 @@ from pyproj import Transformer
 from .forms import ChangePasswordForm, RegisterForm, LoginForm, NewPasswordForm
 from .models import Classification, Tile, User
 from .tokens import TOKEN_GENERATOR
-from .utils import extract_available_years, send_email, transform_tile_to_coordinates
+from .utils import extract_available_years, send_email, transform_tile_to_coordinates, \
+    transform_coordinates_to_tile, manual_classify
 
 
 class BaseView(View):
@@ -440,8 +441,14 @@ class GetClassifiedTilesView(View):
 
 
 class TransformCoordinatesView(View):
+    """
+    class TransformCoordinatesView(View):
+    """
     @staticmethod
     def get(_, parameters):
+        """
+        def get(_, parameters):
+        """
         x_coordinate = json.loads(parameters).get("x_coordinate")
         y_coordinate = json.loads(parameters).get("y_coordinate")
         year = json.loads(parameters).get("year")
@@ -479,8 +486,14 @@ class TransformCoordinatesView(View):
 
 
 class ManualClassificationView(View):
+    """
+    class ManualClassificationView(View):
+    """
     @staticmethod
     def get(_, parameters):
+        """
+        def get(_, parameters):
+        """
         x_coordinate = json.loads(parameters).get("latitude")
         y_coordinate = json.loads(parameters).get("longitude")
         x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)

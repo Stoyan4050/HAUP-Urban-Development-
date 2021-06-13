@@ -136,7 +136,7 @@ def create_tiles():
     tilenames = data_frame.tilename.tolist()
     percentage = 0
 
-    for i in range(0, len(tilenames)):
+    for i in enumerate(tilenames):
         if ceil((100 * i) / len(tilenames)) > percentage:
             percentage = ceil((100 * i) / len(tilenames))
             print(str(percentage) + "%")
@@ -320,12 +320,16 @@ def send_email(uid, domain, email_subject, email_template):
 
 
 def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
+    """
+    def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
+    """
 
     # print(x_tile, y_tile)
     # print(User.objects.get(email=user).id)
     x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
     try:
-        Classification.objects.update_or_create(tile_id=Tile.objects.get(x_coordinate=x_tile, y_coordinate=y_tile).tile_id,
+        Classification.objects.update_or_create(tile_id=Tile.objects.
+                                                get(x_coordinate=x_tile, y_coordinate=y_tile).tile_id,
                                                 year=year, greenery_percentage=greenery_percentage,
                                                 contains_greenery=contains_greenery,
                                                 classified_by=User.objects.get(email=user).id)
@@ -334,6 +338,9 @@ def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage,
 
 
 def transform_coordinates_to_tile(x_coordinate, y_coordinate):
+    """
+    def transform_coordinates_to_tile(x_coordinate, y_coordinate):
+    """
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:28992")
     x_esri, y_esri = transformer.transform(x_coordinate, y_coordinate)
     x_esri -= 13328.546

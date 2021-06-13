@@ -4,8 +4,8 @@ urls.py
 
 from django.urls import path
 from .views import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedTilesView,\
-    GuestView, HowToUseView, LoginView, LogoutView, MapView, ManualClassificationView, PasswordChangedView, RegisterView,\
-    SendActivationEmailView, SendChangePasswordEmailView, TransformCoordinatesView
+    GuestView, HowToUseView, LoginView, LogoutView, MapView, ManualClassificationView, PasswordChangedView, \
+    RegisterView, SendActivationEmailView, SendChangePasswordEmailView, TransformCoordinatesView
 
 app_name = "urban_development"
 
