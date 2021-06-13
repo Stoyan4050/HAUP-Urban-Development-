@@ -19,6 +19,7 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from django.db.models import Q
 
+from api import classifier
 from .models import Classification, Tile
 
 django.setup()
@@ -131,30 +132,6 @@ def get_images_test(year):
     return test_imgs
 
 
-def random_sample(arr):
-    """
-        get random sample of the data
-    """
-
-    arr = np.array(arr)
-    # print(arr)
-    res = arr[np.random.choice(len(arr), size=int(len(arr) / 2), replace=False)]
-    return res
-
-
-def getLabelsImgs(data):
-    """
-        separate images and labels from the data
-    """
-
-    labels = []
-    imgs = []
-    for img, label in data:
-        labels.append(label)
-        imgs.append(img)
-    return np.array(labels), np.array(imgs)
-
-
 def classify(year=2020):
     """
         classify using SVM
@@ -172,7 +149,7 @@ def classify(year=2020):
     # train_data_10per = random_sample(train_data)
     # print(train_data)
     # print(train_data_10per)
-    train_labels, train_images = getLabelsImgs(train_data)
+    train_labels, train_images = classifier.get_labels_imgs(train_data)
     # print(train_images, "imgs")
 
     # print(train_labels, train_images)
@@ -201,7 +178,7 @@ def classify(year=2020):
     # django.db.connections.execute('set max_allowed_packet=67108864')
 
     test_data = get_images_test(year)
-    test_coord, test_images = getLabelsImgs(test_data)
+    test_coord, test_images = classifier.get_labels_imgs(test_data)
 
     # print(test_images)
     train_images = np.array(train_images)

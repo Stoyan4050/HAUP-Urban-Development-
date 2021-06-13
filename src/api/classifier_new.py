@@ -11,8 +11,8 @@ from keras.optimizer_v2.adam import Adam
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
-from api import classifier_SVM
 from django.db.models import Q
+from api import classifier_svm, classifier
 
 
 from .models import Classification, Tile
@@ -40,7 +40,7 @@ def classify_cnn(year=2020):
         classifying using cnn
     """
 
-    train_data = np.array(classifier_SVM.get_images_training(
+    train_data = np.array(classifier_svm.get_images_training(
         Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year))
     validation = []
     np.random.shuffle(train_data)
@@ -58,12 +58,12 @@ def classify_cnn(year=2020):
     training = np.array(training)
     validation = np.array(validation)
 
-    train_labels, train_images = classifier_SVM.getLabelsImgs(training)
+    train_labels, train_images = classifier_svm.getLabelsImgs(training)
     train_labels = change_labels(train_labels)
     print("Train", train_labels)
     print("Train2", train_images)
 
-    val_labels, val_images = classifier_SVM.getLabelsImgs(validation)
+    val_labels, val_images = classifier_svm.getLabelsImgs(validation)
     val_labels = change_labels(val_labels)
 
     x_train = np.array(train_images) / 255
@@ -77,7 +77,7 @@ def classify_cnn(year=2020):
     y_val = np.array(val_labels)
 
     print(x_train.shape)
-    print((x_val.shape))
+    print(x_val.shape)
 
     datagen = ImageDataGenerator(
         featurewise_center=False,  # set input mean to 0 over the dataset
@@ -150,8 +150,8 @@ def classify_cnn(year=2020):
     plt.show()
 
     django.db.connections.close_all()
-    test_data = classifier_SVM.get_images_test(year)
-    test_coord, test_images = classifier_SVM.getLabelsImgs(test_data)
+    test_data = classifier_svm.get_images_test(year)
+    test_coord, test_images = classifier_svm.getLabelsImgs(test_data)
 
     predictions = model.predict_classes(test_images)
 
