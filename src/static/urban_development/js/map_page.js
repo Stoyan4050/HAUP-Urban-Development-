@@ -298,24 +298,24 @@ require([
       }
 
       $('#data').append("<span class='text-element data-element'>Total classified tiles: " + classifiedTiles + "</span><br><br><br>")
-      $('#data').append("<span class='text-element data-element' id='public-space-tiles'>Tiles classified as not containing greenery: " + noGreenery + "</span><br>")
-      $('#data').append("<span class='text-element data-element' id='public-space-tiles'>Tiles classified as containing greenery: " + greenery + "</span><br><br><br>")
-      $('#data').append("<span class='text-element data-element' id='public-space-tiles'>Tiles classified as containing 0% - 25% greenery: " + quarter1 + "</span><br>")
-      $('#data').append("<span class='text-element data-element' id='not-public-space-tiles'>Tiles classified as containing 25% - 50% greenery: " + quarter2 + "</span><br>")
-      $('#data').append("<span class='text-element data-element' id='not-public-space-tiles'>Tiles classified as containing 50% - 75% greenery: " + quarter3 + "</span><br>")
-      $('#data').append("<span class='text-element data-element' id='not-public-space-tiles'>Tiles classified as containing 75% - 100% greenery: " + quarter4 + "</span><br><br><br>")
-      $('#data').append("<span class='text-element data-element id='user-tiles'>Tiles classified by user: " + classifiedByUser + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='no-greenery'>Tiles classified as not containing greenery: " + noGreenery + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='greenery'>Tiles classified as containing greenery: " + greenery + "</span><br><br><br>")
+      $('#data').append("<span class='text-element data-element' id='quarter1'>Tiles classified as containing 0% - 25% greenery: " + quarter1 + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='quarter2'>Tiles classified as containing 25% - 50% greenery: " + quarter2 + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='quarter3'>Tiles classified as containing 50% - 75% greenery: " + quarter3 + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='quarter4'>Tiles classified as containing 75% - 100% greenery: " + quarter4 + "</span><br><br><br>")
+      $('#data').append("<span class='text-element data-element' id='user-tiles'>Tiles classified by user: " + classifiedByUser + "</span><br>")
       $('#data').append("<span class='text-element data-element' id='classifier-tiles'>Tiles classified by classifier: " + classifiedByClassifier + "</span><br>")
       $('#data').append("<span class='text-element data-element' id='training-data-tiles'>Tiles classified by training data: " + classifiedByTrainingData + "</span><br>")
 
-      if (json['total'] > 0) {
+      if (classifiedTiles > 0) {
         function setupSpan(id, value) {
           function roundToTwoDecimalPlaces(x) {
             return +(Math.round(x + 'e+2') + 'e-2')
           }
 
           if (value > 0) {
-            const exact = (100 * value) / json['total']
+            const exact = (100 * value) / classifiedTiles
             const rounded = roundToTwoDecimalPlaces(exact)
             $('#' + id).append(
               ' (' + (rounded == exact ? '=' : '≈') + rounded + '%)'
@@ -323,19 +323,15 @@ require([
           }
         }
 
-        setupSpan('public-space-tiles', publicSpace)
-        setupSpan('not-public-space-tiles', notPublicSpace)
-        setupSpan('mixed-tiles', json['mixed'])
-        setupSpan('user-tiles', user)
-        setupSpan('classifier-tiles', classifier)
-        setupSpan('training-data-tiles', trainingData)
-        setupSpan('user-classifier-tiles', userClassifier)
-        setupSpan('user-training-data-tiles', userTrainingData)
-        setupSpan('classifier-training-data-tiles', classifierTrainingData)
-        setupSpan(
-          'user-classifier-training-data-tiles',
-          json['user_classifier_training_data']
-        )
+        setupSpan('no-greenery', noGreenery)
+        setupSpan('greenery', greenery)
+        setupSpan('quarter1', quarter1)
+        setupSpan('quarter2', quarter2)
+        setupSpan('quarter3', quarter3)
+        setupSpan('quarter4', quarter4)
+        setupSpan('user-tiles', classifiedByUser)
+        setupSpan('classifier-tiles', classifiedByClassifier)
+        setupSpan('training-data-tiles', classifiedByTrainingData)
       }
     } catch (exception) {
       alert('Error.')
