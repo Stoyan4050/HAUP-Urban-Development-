@@ -1,5 +1,5 @@
 from keras.optimizer_v2.adam import Adam
-from api import classifier
+from src.api import classifier
 
 from sklearn.metrics import classification_report
 
@@ -26,11 +26,8 @@ import tensorflow as tf
 
 def classify_cnn(year=2020):
     print("WOrking!!!")
-    data = Classification.objects.all()
 
-    print(data, "DDDDDD")
-    return
-    train_data = np.array(classifier.getImagesTraining(Classification.objects.filter(~Q(classified_by=-1), year__lte=2015), year))
+    train_data = np.array(classifier.getImagesTraining(Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year))
     validation = []
     np.random.shuffle(train_data)
     percent10 = train_data / 10

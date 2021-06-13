@@ -273,8 +273,6 @@ def classify(year=2020):
         meanErrors = np.append(meanErrors, np.mean(score))
         print(score)
 
-    return
-
     pipe = make_pipeline(best_estimators[0], best_estimators[1])
     #pipe.fit(train_imgs_reshaped, train_labels)
     prediction = pipe.predict(test_imgs_reshaped)
