@@ -85,41 +85,22 @@ require([
         var x_coordinate = event.mapPoint.x
         var y_coordinate = event.mapPoint.y
         var year = $('#year option:selected').val().trim()
-        var parameters = {x_coordinate: x_coordinate, y_coordinate: y_coordinate, year: year }
-        // window.alert(parameters)
+        var parameters = { x_coordinate: x_coordinate, y_coordinate: y_coordinate, year: year }
         const response = await fetch('/urban_development/transform_coordinates/' + JSON.stringify(parameters), {signal: abortController.signal})
         try {
           var json = await response.json()
           var user = document.getElementById("user-name").innerHTML.trim().split(' ').join('').split("\n")[2]
           if (user.localeCompare("guest") != 0) {
-            var coordinates = json["x_coordinate"] + ", " + json["y_coordinate"]
-            var contains_greenery = json["contains_greenery"]
-            var greenery_percentage = json["greenery_percentage"]
-            $('#myForm').remove()
-            $('#map-container').append("<div class='form-popup' id='myForm'></div>")
-            $('#myForm').append("<form class='form-container' id='form-container'></form>")
-            $('#form-container').append("<h1>Information</h1><br>")
-            $('#form-container').append("<span class='text-element data-element'><b>Coordinates:</b></span><br>")
-            $('#form-container').append("<span class='text-element data-element ' id='coordinates'>" + coordinates + "</span><br>")
-            $('#form-container').append("<span class='text-element data-element'><b>Contains Greenery:</b></span><br>")
-            $('#form-container').append("<span class='text-element data-element' id='current_contains_greenery'>" + contains_greenery + "</span><br>")
-            $('#form-container').append("<span class='text-element data-element'><b>Greenery percentage:</b></span><br>")
-            $('#form-container').append("<span class='text-element data-element' id='current_greenery_percentage'>" + greenery_percentage + "</span><br>")
-            $('#form-container').append("<h2>Update Tile</h2><br>")
-            $('#form-container').append("<span class='text-element data-element'><b>Contains Greenery:</b></span><br>")
-            $('#form-container').append("<select class='text-element' id='contains_greenery' onchange='showHide()'></select><br>")
-            $('#contains_greenery').append("<option value='True'>True</option>")
-            $('#contains_greenery').append("<option value='False'>False</option>")
-            $('#form-container').append("<span class='text-element data-element' id='text_greenery'><b>Greenery percentage:</b><br></span>")
-            $('#form-container').append("<input class='text-element' id='greenery_percentage' required>")
-            $('#form-container').append("<span class='text-element data-element' id='bre'><br></span>")
-            $('#form-container').append("<button type='button' class='btn' id='updateButton'>Update</button>")
-            $('#form-container').append("<button type='button' class='btn cancel' id='close' onclick='closeForm()'>Close</button>")
-          } else {
+            document.getElementById("myForm").style.display='block'
+            document.getElementById("coordinates").innerHTML = json["x_coordinate"] + ", " + json["y_coordinate"];
+            document.getElementById("current_contains_greenery").innerHTML = json["contains_greenery"];
+            document.getElementById("current_greenery_percentage").innerHTML = json["greenery_percentage"];
+           } else {
             window.alert("Please login");
           }
         } catch (exception) {
-          alert('Error.')
+          alert(exception)
+          alert('Error oops.')
         }
       }
       })
@@ -156,22 +137,18 @@ require([
     let abortController = new AbortController()
 
     $('#map-view-button').click(function () {
-      $('#myForm').remove()
       abortController.abort()
     })
 
     $('#data-view-button').click(function () {
-      $('#myForm').remove()
       abortController.abort()
     })
 
     $('#year').change(function () {
-      $('#myForm').remove()
       abortController.abort()
     })
 
     $('#overlay').change(function () {
-      $('#myForm').remove()
       abortController.abort()
     })
 
@@ -282,11 +259,11 @@ require([
     }
   }
 
-  async function setupDataView() {
+  async function setupDataView(form) {
     $('#data').remove()
     var dataDiv = $("<div id='data'></div>")
     $('.page-container').append(dataDiv)
-
+    $('.page-container').append(form)
     let abortController = new AbortController()
 
     $('#map-view-button').click(function () {
@@ -294,6 +271,7 @@ require([
     })
 
     $('#data-view-button').click(function () {
+      document.getElementById("myForm").style.display='none'
       abortController.abort()
     })
 
@@ -435,6 +413,7 @@ require([
     $('#map-view-button').click(function (event) {
       if (viewType === VIEW_TYPES.map) return
       $('#map-view-button').prop('disabled', true)
+      var form = document.getElementById("myForm")
       $('#data').remove()
       $('#overlay').val('None').change()
       $('#overlay-cell').show()
@@ -443,6 +422,7 @@ require([
       var mapDiv = $("<div id='map'></div>")
       map = new Map(mapDiv)
       mapContainer.append(map)
+      mapContainer.append(form)
       $('.page-container').append(mapContainer)
       addMap()
       setupMapView(mapView)
@@ -452,33 +432,31 @@ require([
     $('#data-view-button').click(function (event) {
       if (viewType === VIEW_TYPES.data) return
       $('#data-view-button').prop('disabled', true)
+      var form = document.getElementById("myForm")
       $('#map-container').remove()
       $('#overlay-cell').hide()
       $('#map-view-button').prop('disabled', false)
-      setupDataView()
+      setupDataView(form)
       updateUrl('data')
       viewType = VIEW_TYPES.data
     })
-    $('#updateButton').click(async  function (event) {
-      console.log("KUR")
+    $('#updateButton').click(async function (){
       edits = {
         addFeatures: [],
       }
       var year = $('#year option:selected').val().trim()
-      var classified_by = document.getElementById("user-name").innerHTML.trim().split(' ').join('').split("\n")[2]
-      var latitude = document.getElementById("coordinates").innerHTML.trim().split(", ")[0]
-      var longitude = document.getElementById("coordinates").innerHTML.trim().split(", ")[1]
+      var classified_by = document.getElementById('user-name').innerHTML.trim().split(' ').join('').split('\n')[2]
+      var latitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[0]
+      var longitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[1]
       var greenery_percentage
       var contains_greenery
-
-      if(document.getElementById("contains_greenery").value.localeCompare("False")==0){
-        contains_greenery = "False"
+      if(document.getElementById('contains_greenery').value.localeCompare('False')==0){
+        contains_greenery = 'False'
         greenery_percentage = 0
-      } else {
-        greenery_percentage = document.getElementById("greenery_percentage").value
-        contains_greenery = document.getElementById("contains_greenery").value
-      }
-
+        } else {
+            greenery_percentage = document.getElementById('greenery_percentage').value
+            contains_greenery = document.getElementById('contains_greenery').value
+          }
       var parameters = {
         year: year,
         classified_by: classified_by,
@@ -488,31 +466,30 @@ require([
         contains_greenery: contains_greenery
       }
       const response = await fetch('/urban_development/manual_classification/' + JSON.stringify(parameters),{signal: abortController.signal})
-      try {
-        var json = await response.json()
-        console.log(json)
-        var graphic = new Graphic({
-          geometry: Polygon.fromExtent(
+        try {
+          var json = await response.json()
+          var graphic = new Graphic({
+            geometry: Polygon.fromExtent(
               new Extent(
-                  json.xmin, // xmin
-                  json.ymin, // ymin
-                  json.xmax, // xmax
-                  json.ymax, // ymax
-                  { wkid: 28992 }
-              )
-          ), // spatial reference
-        })
-        graphic.setAttribute('Longitude', json.x_coordinate)
-        graphic.setAttribute('Latitude', json.y_coordinate)
-        graphic.setAttribute('Contains greenery', json.contains_greenery)
-        graphic.setAttribute('Greenery percentage', json.greenery_percentage)
-        graphic.setAttribute('Greenery rounded', json.greenery_rounded)
-        edits.addFeatures.push(graphic)
-        classifiedAsLayer.applyEdits(edits)
-      } catch(exception) {
-          alert(exception)
-          alert('Update was unsuccessful.')
-        }
+                json.xmin, // xmin
+                json.ymin, // ymin
+                json.xmax, // xmax
+                json.ymax, // ymax
+                { wkid: 28992 }
+                )
+            ),
+          })
+          graphic.setAttribute('Longitude', json.x_coordinate)
+          graphic.setAttribute('Latitude', json.y_coordinate)
+          graphic.setAttribute('Contains greenery', json.contains_greenery)
+          graphic.setAttribute('Greenery percentage', json.greenery_percentage)
+          graphic.setAttribute('Greenery rounded', json.greenery_rounded)
+          edits.addFeatures.push(graphic)
+          classifiedAsLayer.applyEdits(edits)
+          } catch(exception) {
+            alert(exception)
+            alert('Update was unsuccessful.')
+          }
     })
   })
 })
@@ -521,20 +498,21 @@ require([
 function showHide(){
   if($('#contains_greenery').val().localeCompare("True")==0){
     $('#updateButton').remove()
-    $('#close').remove()
-    $('#form-container').append("<span class='text-element data-element' id='text_greenery'>Greenery percentage:<br></span>")
-    $('#form-container').append("<input class='text-element' id='greenery_percentage'>")
-    $('#form-container').append("<span class='text-element data-element' id='bre'><br></span>")
+    $('#closeButton').remove()
+    $('#form-container').append("<span class='popupInfo' id='text_greenery_percentage'>Greenery percentage:<br></span>")
+    $('#form-container').append("<input class='popupInfo' id='greenery_percentage'>")
+    $('#form-container').append("<span class='popupInfo' id='bre'><br></span>")
     $('#form-container').append("<button type='button' class='btn' id='updateButton'>Update</button>")
-    $('#form-container').append("<button type='button' class='btn cancel' id='close' onclick='closeForm()'>Close</button>")
+    $('#form-container').append("<button type='button' class='btn cancel' id='closeButton' onclick='closeForm()'>Close</button>")
   } else {
     $('#text_greenery').remove()
     $('#bre').remove()
     $('#greenery_percentage').remove()
+    $('#text_greenery_percentage').remove()
   }
 }
 function closeForm() {
-  $('#myForm').remove()
+  $('#myForm').style.visibility = 'hidden';
 }
 function setupClassifiedAsLayer(FeatureLayer) {
   var template = {
