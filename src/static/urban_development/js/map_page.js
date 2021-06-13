@@ -25,27 +25,16 @@ require([
   FeatureLayer,
   Extent,
   Polygon,
-  Editor
 ) {
   function setupMapView() {
     mapView = new MapView({
-      container: 'map',
+      container: 'map-container',
       map: map,
       zoom: 3,
       extent: new Extent(13328.546, 306816.384, 278302.013, 619342.658, {
         wkid: 28992,
       }),
     })
-
-    // const editor = new Editor({
-    //     layerInfos: [{
-    //         enabled: true,
-    //         addEnabled: false,
-    //         updateEnabled: true,
-    //         deleteEnabled: true,cl
-    //     }],
-    //     view: mapView,
-    // });
 
     const legend = new Legend({ view: mapView })
     const layerList = new LayerList({
@@ -64,8 +53,8 @@ require([
     var coordinatesWidget = document.createElement('div')
     coordinatesWidget.className = 'esri-widget esri-component'
     coordinatesWidget.style.padding = '7px 15px 5px'
+    coordinatesWidget.style.marginBottom = '11px'
 
-    // mapView.ui.add(editor, "top-right");
     mapView.ui.add(coordinatesWidget, 'bottom-left')
     mapView.ui.add(layerList, 'bottom-right')
 
@@ -141,7 +130,7 @@ require([
     var year = $('#year option:selected').val().trim()
     const parameters = { year: year }
     const response = await fetch(
-      '/urban_development/get_classified_as/' + JSON.stringify(parameters),
+      '/urban_development/get_classified_tiles/' + JSON.stringify(parameters),
       { signal: abortController.signal }
     )
 
@@ -161,15 +150,16 @@ require([
               json[i].ymin, // ymin
               json[i].xmax, // xmax
               json[i].ymax, // ymax
-              { wkid: 28992 }
+              { wkid: 28992 }, // spatial reference
             )
-          ), // spatial reference
+          ),
         })
 
         graphic.setAttribute('Longitude', json[i].x_coordinate)
         graphic.setAttribute('Latitude', json[i].y_coordinate)
-        graphic.setAttribute('Public space', json[i].public_space)
-        graphic.setAttribute('Not public space', json[i].not_public_space)
+        graphic.setAttribute('Contains greenery', json[i].contains_greenery)
+        graphic.setAttribute('Greenery percentage', json[i].greenery_percentage)
+        graphic.setAttribute('Greenery rounded', json[i].greenery_rounded)
 
         edits.addFeatures.push(graphic)
       }
@@ -204,7 +194,7 @@ require([
     var year = $('#year option:selected').val().trim()
     const parameters = { year: year }
     const response = await fetch(
-      '/urban_development/get_classified_by/' + JSON.stringify(parameters),
+      '/urban_development/get_classified_tiles/' + JSON.stringify(parameters),
       { signal: abortController.signal }
     )
 
@@ -224,16 +214,14 @@ require([
               json[i].ymin, // ymin
               json[i].xmax, // xmax
               json[i].ymax, // ymax
-              { wkid: 28992 }
+              { wkid: 28992 }, // spatial reference
             )
-          ), // spatial reference
+          ),
         })
 
         graphic.setAttribute('Longitude', json[i].x_coordinate)
         graphic.setAttribute('Latitude', json[i].y_coordinate)
-        graphic.setAttribute('By user', json[i].user)
-        graphic.setAttribute('By classifier', json[i].classifier)
-        graphic.setAttribute('By training data', json[i].training_data)
+        graphic.setAttribute('Classified by', json[i].classified_by)
 
         edits.addFeatures.push(graphic)
       }
@@ -249,7 +237,7 @@ require([
   async function setupDataView() {
     $('#data').remove()
     var dataDiv = $("<div id='data'></div>")
-    $(document.body).append(dataDiv)
+    $('.page-container').append(dataDiv)
 
     let abortController = new AbortController()
 
@@ -272,95 +260,53 @@ require([
     var year = $('#year option:selected').val().trim()
     const parameters = { year: year }
     const response = await fetch(
-      '/urban_development/get_data/' + JSON.stringify(parameters),
+      '/urban_development/get_classified_tiles/' + JSON.stringify(parameters),
       { signal: abortController.signal }
     )
 
     try {
       var json = await response.json()
 
-      $('#data').append(
-        "<span class='text-element data-element'>Total classified tiles: " +
-          json['total'] +
-          '</span><br>'
-      )
+      const classifiedTiles = Object.keys(json).length
+      var noGreenery = 0, greenery = 0, quarter1 = 0, quarter2 = 0, quarter3 = 0, quarter4 = 0
+      var classifiedByUser = 0, classifiedByClassifier = 0, classifiedByTrainingData = 0
 
-      const publicSpace = json['public_space'] - json['mixed']
-      const notPublicSpace = json['not_public_space'] - json['mixed']
+      for (var i = 0; i < classifiedTiles; i++) {
+        if (json[i].contains_greenery) {
+          greenery++;
 
-      $('#data').append(
-        "<br><span class='text-element data-element' id='public-space-tiles'>Tiles classified as public space: " +
-          publicSpace +
-          '</span><br>'
-      )
-      $('#data').append(
-        "<span class='text-element data-element' id='not-public-space-tiles'>Tiles classified as not public space: " +
-          notPublicSpace +
-          '</span><br>'
-      )
-      $('#data').append(
-        "<span class='text-element data-element' id='mixed-tiles'>Tiles classified as mixed: " +
-          json['mixed'] +
-          '</span><br>'
-      )
+          if (json[i].greenery_rounded == 25) {
+            quarter1++
+          } else if (json[i].greenery_rounded == 50) {
+            quarter2++
+          } else if (json[i].greenery_rounded == 75) {
+            quarter3++
+          } else if (json[i].greenery_rounded == 100) {
+            quarter4++
+          }
+        } else {
+          noGreenery++
+        }
 
-      const user =
-        json['user'] -
-        json['user_classifier'] -
-        json['user_training_data'] +
-        json['user_classifier_training_data']
-      const classifier =
-        json['classifier'] -
-        json['user_classifier'] -
-        json['classifier_training_data'] +
-        json['user_classifier_training_data']
-      const trainingData =
-        json['training_data'] -
-        json['user_training_data'] -
-        json['classifier_training_data'] +
-        json['user_classifier_training_data']
-      const userClassifier =
-        json['total'] - user - classifier - json['training_data']
-      const userTrainingData =
-        json['total'] - user - trainingData - json['classifier']
-      const classifierTrainingData =
-        json['total'] - classifier - trainingData - json['user']
+        if (json[i].classified_by == "user") {
+          classifiedByUser++
+        } else if (json[i].classified_by == "classifier") {
+          classifiedByClassifier++
+        } else if (json[i].classified_by == "training data") {
+          classifiedByTrainingData++
+        }
+      }
 
-      $('#data').append(
-        "<br><span class='text-element data-element id='user-tiles'>Tiles classified by user: " +
-          user +
-          '</span><br>'
-      )
-      $('#data').append(
-        "<span class='text-element data-element' id='classifier-tiles'>Tiles classified by classifier: " +
-          classifier +
-          '</span><br>'
-      )
-      $('#data').append(
-        "<span class='text-element data-element' id='training-data-tiles'>Tiles classified by training data: " +
-          trainingData +
-          '</span><br>'
-      )
-      $('#data').append(
-        "<span class='text-element data-element' id='user-classifier-tiles'>Tiles classified by user and classifier: " +
-          userClassifier +
-          '</span><br>'
-      )
-      $('#data').append(
-        "<span class='text-element data-element' id='user-training-data-tiles'>Tiles classified by user and training data: " +
-          userTrainingData +
-          '</span><br>'
-      )
-      $('#data').append(
-        "<span class='text-element data-element' id='classifier-training-data-tiles'>Tiles classified by classifier and training data: " +
-          classifierTrainingData +
-          '</span><br>'
-      )
-      $('#data').append(
-        "<span class='text-element data-element' id='user-classifier-training-data-tiles'>Tiles classified by user, classifier and training data: " +
-          json['user_classifier_training_data'] +
-          '</span><br>'
-      )
+      $('#data').append("<span class='text-element data-element'>Total classified tiles: " + classifiedTiles + "</span><br><br><br>")
+      $('#data').append("<span class='text-element data-element' id='public-space-tiles'>Tiles classified as not containing greenery: " + noGreenery + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='public-space-tiles'>Tiles classified as containing greenery: " + greenery + "</span><br><br><br>")
+      $('#data').append("<span class='text-element data-element' id='public-space-tiles'>Tiles classified as containing 0% - 25% greenery: " + quarter1 + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='not-public-space-tiles'>Tiles classified as containing 25% - 50% greenery: " + quarter2 + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='not-public-space-tiles'>Tiles classified as containing 50% - 75% greenery: " + quarter3 + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='not-public-space-tiles'>Tiles classified as containing 75% - 100% greenery: " + quarter4 + "</span><br><br><br>")
+      $('#data').append("<span class='text-element data-element id='user-tiles'>Tiles classified by user: " + classifiedByUser + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='classifier-tiles'>Tiles classified by classifier: " + classifiedByClassifier + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='training-data-tiles'>Tiles classified by training data: " + classifiedByTrainingData + "</span><br>")
 
       if (json['total'] > 0) {
         function setupSpan(id, value) {
@@ -409,9 +355,13 @@ require([
   $(document).ready(function () {
     // Grab query parameters, e.g. if a url is like ?view=map then we can get
     // the "view" value by running searchParams.get('view')
+    var VIEW_TYPES = {
+      map: 'map',
+      data: 'data',
+    }
     var searchParams = new URLSearchParams(window.location.search)
     // Will be either 'map`or 'data'
-    var viewType = searchParams.get('view') || 'map'
+    var viewType = searchParams.get('view') || VIEW_TYPES.map
     // Depending on the view type in the url, we either load the map or the data view
     if (viewType === 'map') {
       addMap()
@@ -439,29 +389,32 @@ require([
       }
     })
     $('#map-view-button').click(function (event) {
+      if (viewType === VIEW_TYPES.map) return
       $('#map-view-button').prop('disabled', true)
       $('#data').remove()
       $('#overlay').val('None').change()
       $('#overlay-cell').show()
       $('#data-view-button').prop('disabled', false)
-
+      var mapContainer = $('<div id="map-container"></div>')
       var mapDiv = $("<div id='map'></div>")
-
       map = new Map(mapDiv)
+      mapContainer.append(map)
+      $('.page-container').append(mapContainer)
       addMap()
-      $(document.body).append(mapDiv)
-
       setupMapView(mapView)
       updateUrl('map')
+      viewType = VIEW_TYPES.map
     })
     $('#data-view-button').click(function (event) {
+      if (viewType === VIEW_TYPES.data) return
       $('#data-view-button').prop('disabled', true)
-      $('#map').remove()
+      $('#map-container').remove()
       $('#overlay-cell').hide()
       $('#map-view-button').prop('disabled', false)
 
       setupDataView()
       updateUrl('data')
+      viewType = VIEW_TYPES.data
     })
   })
 })
@@ -471,34 +424,20 @@ function setupClassifiedAsLayer(FeatureLayer) {
     title: 'Tile | EPSG: 4326',
     content:
       '<div>Coordinates: {Longitude}, {Latitude}<br>\
-                        <br>\
-                        Classified as:<br>\
-                        public space: {Public space}<br>\
-                        not public space: {Not public space}</div>',
+                        Contains greenery: {Contains greenery}<br>\
+                        Greenery percentage: {Greenery percentage}%</div>',
   }
 
   var renderer = {
     type: 'unique-value',
-    field: 'Public space',
-    field2: 'Not public space',
+    field: 'Contains greenery',
+    field2: 'Greenery rounded',
     fieldDelimiter: ':',
     defaultSymbol: { type: 'simple-fill' },
     uniqueValueInfos: [
       {
-        value: 'true:false',
-        label: 'public space',
-        symbol: {
-          type: 'simple-fill',
-          color: [0, 255, 0, 0.5],
-          style: 'solid',
-          outline: {
-            style: 'none',
-          },
-        },
-      },
-      {
-        value: 'false:true',
-        label: 'not public space',
+        value: 'false:0',
+        label: 'not containinig greenery',
         symbol: {
           type: 'simple-fill',
           color: [255, 0, 0, 0.5],
@@ -509,11 +448,47 @@ function setupClassifiedAsLayer(FeatureLayer) {
         },
       },
       {
-        value: 'true:true',
-        label: 'both',
+        value: 'true:25',
+        label: 'containing 0% - 25% greenery',
         symbol: {
           type: 'simple-fill',
-          color: [0, 0, 255, 0.5],
+          color: [0, 255, 0, 0.25],
+          style: 'solid',
+          outline: {
+            style: 'none',
+          },
+        },
+      },
+      {
+        value: 'true:50',
+        label: 'containing 25% - 50% greenery',
+        symbol: {
+          type: 'simple-fill',
+          color: [0, 255, 0, 0.45],
+          style: 'solid',
+          outline: {
+            style: 'none',
+          },
+        },
+      },
+      {
+        value: 'true:75',
+        label: 'containing 50% - 75% greenery',
+        symbol: {
+          type: 'simple-fill',
+          color: [0, 255, 0, 0.65],
+          style: 'solid',
+          outline: {
+            style: 'none',
+          },
+        },
+      },
+      {
+        value: 'true:100',
+        label: 'containing 75% - 100% greenery',
+        symbol: {
+          type: 'simple-fill',
+          color: [0, 255, 0, 0.85],
           style: 'solid',
           outline: {
             style: 'none',
@@ -540,12 +515,16 @@ function setupClassifiedAsLayer(FeatureLayer) {
         type: 'double',
       },
       {
-        name: 'Public space',
+        name: 'Contains greenery',
         type: 'string',
       },
       {
-        name: 'Not public space',
-        type: 'string',
+        name: 'Greenery percentage',
+        type: 'double',
+      },
+      {
+        name: 'Greenery rounded',
+        type: 'integer',
       },
     ],
     source: [],
@@ -564,84 +543,17 @@ function setupClassifiedByLayer(FeatureLayer) {
     title: 'Tile | EPSG: 4326',
     content:
       '<div>Coordinates: {Longitude}, {Latitude}<br>\
-                        <br>\
-                        Classified by:<br>\
-                        user: {By user}<br>\
-                        classifier: {By classifier}<br>\
-                        training data: {By training data}</div>',
+                        Classified by: {Classified by}',
   }
 
   var renderer = {
     type: 'unique-value',
-    field: 'By user',
-    field2: 'By classifier',
-    field3: 'By training data',
-    fieldDelimiter: ':',
+    field: 'Classified by',
     defaultSymbol: { type: 'simple-fill' },
     uniqueValueInfos: [
       {
-        value: 'true:false:false',
-        label: 'user',
-        symbol: {
-          type: 'simple-fill',
-          color: [255, 0, 0, 0.5],
-          style: 'solid',
-          outline: {
-            style: 'none',
-          },
-        },
-      },
-      {
-        value: 'false:true:false',
-        label: 'classifier',
-        symbol: {
-          type: 'simple-fill',
-          color: [0, 255, 0, 0.5],
-          style: 'solid',
-          outline: {
-            style: 'none',
-          },
-        },
-      },
-      {
-        value: 'false:false:true',
-        label: 'training data',
-        symbol: {
-          type: 'simple-fill',
-          color: [0, 0, 255, 0.5],
-          style: 'solid',
-          outline: {
-            style: 'none',
-          },
-        },
-      },
-      {
-        value: 'true:true:false',
-        label: 'user and classifier',
-        symbol: {
-          type: 'simple-fill',
-          color: [255, 255, 0, 0.5],
-          style: 'solid',
-          outline: {
-            style: 'none',
-          },
-        },
-      },
-      {
-        value: 'true:false:true',
-        label: 'user and training data',
-        symbol: {
-          type: 'simple-fill',
-          color: [255, 0, 255, 0.5],
-          style: 'solid',
-          outline: {
-            style: 'none',
-          },
-        },
-      },
-      {
-        value: 'false:true:true',
-        label: 'classifier and training data',
+        value: 'user',
+        label: 'a user',
         symbol: {
           type: 'simple-fill',
           color: [0, 255, 255, 0.5],
@@ -652,11 +564,23 @@ function setupClassifiedByLayer(FeatureLayer) {
         },
       },
       {
-        value: 'true:true:true',
-        label: 'user, classifier and training data',
+        value: 'classifier',
+        label: 'the classifier',
         symbol: {
           type: 'simple-fill',
-          color: [255, 255, 255, 0.5],
+          color: [255, 0, 255, 0.5],
+          style: 'solid',
+          outline: {
+            style: 'none',
+          },
+        },
+      },
+      {
+        value: 'training data',
+        label: 'the training data',
+        symbol: {
+          type: 'simple-fill',
+          color: [255, 255, 0, 0.5],
           style: 'solid',
           outline: {
             style: 'none',
@@ -683,15 +607,7 @@ function setupClassifiedByLayer(FeatureLayer) {
         type: 'double',
       },
       {
-        name: 'By user',
-        type: 'string',
-      },
-      {
-        name: 'By classifier',
-        type: 'string',
-      },
-      {
-        name: 'By training data',
+        name: 'Classified by',
         type: 'string',
       },
     ],

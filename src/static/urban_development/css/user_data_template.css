@@ -33,17 +33,23 @@ body {
 }
 
 #content-box {
-  /* background-color: white; */
-  /* display: inline-block; */
   padding: 2rem;
   margin: 0;
-  /* border: solid;
-    border-color: black;
-    border-width: 5px; */
   border: 1px solid #e5e7eb;
   text-align: center;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
+
+#page-name {
+  margin: 0 0 2rem 0;
+  font-size: 1.6rem;
+}
+
+#hyperlinks-container {
+  margin-bottom: 2rem;
+}
+
+/* Classes */
 
 .form-content {
   margin-bottom: 1.5rem;
@@ -87,13 +93,21 @@ body {
   background-color: #93c5fd;
 }
 
-#page-name {
-  margin: 0 0 2rem 0;
-  font-size: 1.6rem;
+.hidden-row {
+  display: none;
 }
 
-#hyperlinks-container {
-  margin-bottom: 2rem;
+.help-message {
+  font-size: 0.6vw;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.6vw;
+}
+
+.blank-row {
+  height: 1.2vh;
 }
 
 .form-errors {
@@ -115,23 +129,4 @@ body {
 
 .form-hyperlink + .form-hyperlink {
   margin-top: 0.5rem;
-}
-
-/* Classes */
-
-.hidden-row {
-  display: none;
-}
-
-.help-message {
-  font-size: 0.6vw;
-}
-
-.error-message {
-  color: red;
-  font-size: 0.6vw;
-}
-
-.blank-row {
-  height: 1.2vh;
 }

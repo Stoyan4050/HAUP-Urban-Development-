@@ -17,6 +17,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from pyproj import Transformer
+from .classifier import color_detection
 from .models import Tile, Classification, User
 from .tokens import TOKEN_GENERATOR
 
@@ -48,8 +49,8 @@ def add_labels_for_previous_years():
         ind += 1
         print(ind)
 
-        tile_x = classification.tile_id.tile_id // 75879
-        tile_y = int(classification.tile_id.tile_id) % 75879
+        tile_x = classification.tile.tile_id // 75879
+        tile_y = int(classification.tile.tile_id) % 75879
 
         res = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + \
               "2020" + "/MapServer/tile/11/" + str(tile_y) + "/" + str(tile_x)
@@ -92,9 +93,8 @@ def add_labels_for_previous_years():
                 if year != 2010:
                     try:
                         Classification.objects.create(
-                            tile_id=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y),
-                            year=year + 10,
-                            greenery_percentage=classification.greenery_percentage, classified_by="-5")
+                            tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year + 10,
+                            greenery_percentage=classification.greenery_percentage, classified_by="-2")
                     except ObjectDoesNotExist:
                         print(tile_x, tile_y)
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
@@ -103,9 +103,8 @@ def add_labels_for_previous_years():
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 # print(year)
                 Classification.objects.create(
-                    tile_id=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y),
-                    year=year,
-                    greenery_percentage=classification.greenery_percentage, classified_by="-5")
+                    tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year,
+                    greenery_percentage=classification.greenery_percentage, classified_by="-2")
 
     # for year in range(1910, 2030, 10):
     #
@@ -122,7 +121,7 @@ def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id):
 
             try:
                 Classification.objects.create(
-                    tile_id=Tile.objects.get(x_coordinate=x_coordinate, y_coordinate=y_coordinate),
+                    tile=Tile.objects.get(x_coordinate=x_coordinate, y_coordinate=y_coordinate),
                     year=year, label=label, classified_by=user_id)
             except ObjectDoesNotExist:
                 print(x_coordinate, y_coordinate)
@@ -247,8 +246,8 @@ def extract_convert_to_esri():
     data_frame = pandas.read_csv("./data/Wikidata/data.csv")
 
     points = data_frame.geo.tolist()
-    greenery_percentages = data_frame.greenery_percentage.tolist()
     years = [2020 for _ in range(len(data_frame))]
+    greenery = data_frame.contains_greenery.tolist()
 
     if 'inception' in data_frame.columns:
         years = data_frame.inception.tolist()
@@ -256,8 +255,7 @@ def extract_convert_to_esri():
         percentage = 0
         points_length = len(points)
 
-    for location, year, greenery_percentage in zip(points, years, greenery_percentages):
-
+    for location, year, contains_greenery in zip(points, years, greenery):
         if ceil((100 * count) / points_length) > percentage:
             percentage = ceil((100 * count) / points_length)
             print(str(percentage) + "%")
@@ -267,7 +265,7 @@ def extract_convert_to_esri():
         x_esri, y_esri = transformer.transform(x_coordinate, y_coordinate)
 
         if isinstance(year, str):
-            year = str(year.split("-")[0])
+            year = int(str(year.split("-")[0]))
         else:
             year = 2020
 
@@ -281,24 +279,20 @@ def extract_convert_to_esri():
         y_esri = floor(y_esri) + 75032
         tile_id = x_esri * 75879 + y_esri
 
-        # try:
-        #     Classification.objects.create(tile_id=tile_id, year=year,
-        #                                   contains_greenery=contains_greenery, classified_by="-2")
-        # except ObjectDoesNotExist:
-        #     print(x_esri, y_esri)
+        first_colored_map = 1914
 
         try:
-            Classification.objects.create(tile_id=Tile.objects.get(x_coordinate=x_esri, y_coordinate=y_esri), year=year,
-                                          greenery_percentage=greenery_percentage, classified_by="-2")
+            if contains_greenery:
+                greenery_percentage = color_detection(x_esri, y_esri, max(year, first_colored_map))
+            else:
+                greenery_percentage = 0
+
+            Classification.objects.create(tile=Tile(tile_id, x_esri, y_esri), year=year, classified_by="-2",
+                                          contains_greenery=contains_greenery, greenery_percentage=greenery_percentage)
         except ObjectDoesNotExist:
             print(x_esri, y_esri)
         except IntegrityError:
-            if greenery_percentage > 0:
-                classification = Classification.objects.get(tile_id=tile_id, year=year)
-                classification.contains_greenery = True
-                classification.save()
-                # Classification.objects.replace(tile_id=Tile.objects.get(x_coordinate=x_esri, y_coordinate=y_esri),
-                #                                year=year, contains_greenery=contains_greenery, classified_by="-2")
+            print(x_esri, y_esri)
 
 
 def send_email(uid, domain, email_subject, email_template):
