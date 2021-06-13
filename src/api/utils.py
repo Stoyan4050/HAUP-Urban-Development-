@@ -127,6 +127,19 @@ def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id):
                 print(x_coordinate, y_coordinate)
 
 
+def calculate_percentage_greenery(x_esri, y_esri, year, contains_greenery):
+    """
+    def calculate_percentage_greenery(x_esri, y_esri, year, contains_greenery)
+    """
+
+    first_colored_map = 1914
+
+    if contains_greenery:
+        return color_detection(x_esri, y_esri, max(year, first_colored_map))
+
+    return 0
+
+
 def create_tiles():
     """
     def create_tiles()
@@ -279,13 +292,8 @@ def extract_convert_to_esri():
         y_esri = floor(y_esri) + 75032
         tile_id = x_esri * 75879 + y_esri
 
-        first_colored_map = 1914
-
         try:
-            if contains_greenery:
-                greenery_percentage = color_detection(x_esri, y_esri, max(year, first_colored_map))
-            else:
-                greenery_percentage = 0
+            greenery_percentage = calculate_percentage_greenery(x_esri, y_esri, year, contains_greenery)
 
             Classification.objects.create(tile=Tile(tile_id, x_esri, y_esri), year=year, classified_by="-2",
                                           contains_greenery=contains_greenery, greenery_percentage=greenery_percentage)
