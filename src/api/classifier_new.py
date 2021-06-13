@@ -26,8 +26,9 @@ def change_labels(arr):
     """
 
     new_arr = []
+    # print(arr)
     for i in arr:
-        if i == "True":
+        if i:
             new_arr.append(1)
         else:
             new_arr.append(0)
@@ -66,8 +67,8 @@ def classify_cnn(year=2020):
 
     train_labels, train_images = classifier.get_labels_imgs(training)
     train_labels = change_labels(train_labels)
-    print("Train", train_labels)
-    print("Train2", train_images)
+    # print("Train", train_labels)
+    # print("Train2", train_images)
 
     val_labels, val_images = classifier.get_labels_imgs(validation)
     val_labels = change_labels(val_labels)
@@ -117,17 +118,6 @@ def classify_cnn(year=2020):
 
     model.summary()
 
-    print(x_train.shape, "Train data!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
-    # m, n, r, k = train_images.shape
-    # x_train = x_train.reshape(m, n * r * k)
-    # x_train = np.array(x_train)
-    #
-    #
-    #
-    # m1, n1, r1, k1 = x_val.shape
-    # x_val = np.array(x_val.reshape(m1, n1 * r1 * k1))
-
     opt = Adam(lr=0.000001)
     model.compile(optimizer=opt, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=['accuracy'])
@@ -153,7 +143,7 @@ def classify_cnn(year=2020):
     plt.plot(epochs_range, val_loss, label='Validation Loss')
     plt.legend(loc='upper right')
     plt.title('Training and Validation Loss')
-    plt.show()
+    # plt.show()
 
     django.db.connections.close_all()
     test_data = classifier_svm.get_images_test(year)
@@ -161,15 +151,15 @@ def classify_cnn(year=2020):
 
     predictions = model.predict_classes(test_images)
 
-    for i in enumerate(predictions):
+    for count, prediction in enumerate(predictions):
         class_label = False
-        if predictions[i] == 1:
+        if prediction == 1:
             class_label = True
 
         # print(test_coord[i][1])
         # print(test_coord[i][0])
-        Classification.objects.create(tile=Tile.objects.get(x_coordinate=test_coord[i][1],
-                                                            y_coordinate=test_coord[i][0]),
+        Classification.objects.create(tile=Tile.objects.get(x_coordinate=test_coord[count][1],
+                                                            y_coordinate=test_coord[count][0]),
                                       year=year, greenery_percentage=0,
                                       contains_greenery=class_label,
                                       classified_by="-1")

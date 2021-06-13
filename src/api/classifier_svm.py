@@ -30,7 +30,6 @@ def get_image_from_url(year, x_coord, y_coord):
         get images from with urls
     """
 
-    # print(year, x_coord, y_coord, "DATA")
     url = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + str(
         year) + "/MapServer/tile/11/" + str(x_coord) + "/" + str(y_coord)
 
@@ -59,14 +58,14 @@ def get_images_training(data1, year):
     data = data1
     training_imgs = []
     counter = 0
-    print("Taking images", year, data)
+    # print("Taking images", year, data)
     for i in range(len(data)):
         training_imgs.append(get_imgs_url(i, year, data))
         print(counter)
         counter += 1
 
-        if counter > 20:
-            return training_imgs
+        # if counter > 20:
+        #     return training_imgs
 
     return training_imgs
     #     print(i)
@@ -112,21 +111,14 @@ def get_images_test(year):
     test_imgs = []
     counter = 0
     for tile in data[111111:]:
-        # print(c.year)
 
-        # if tileYear == year:
-        # if counter > 100000 and counter < 105000:
-        # print(year)
         img = get_image_from_url(year, tile.y_coordinate, tile.x_coordinate)
-        # print(counter)
         coord = (tile.y_coordinate, tile.x_coordinate)
         test_imgs.append((img, coord))
-        # print(counter)
 
-        if counter > 50:
+        if counter > 11000:
             break
 
-        # print(counter)
         counter += 1
 
     return test_imgs

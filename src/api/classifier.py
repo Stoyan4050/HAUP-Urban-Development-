@@ -92,7 +92,6 @@ def random_sample(arr):
     """
 
     arr = np.array(arr)
-    # print(arr)
     res = arr[np.random.choice(len(arr), size=int(len(arr) / 2), replace=False)]
     return res
 
