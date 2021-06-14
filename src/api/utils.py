@@ -323,18 +323,23 @@ def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage,
     """
     def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
     """
-
-    # print(x_tile, y_tile)
-    # print(User.objects.get(email=user).id)
     x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
+
     try:
-        Classification.objects.update_or_create(tile_id=Tile.objects.
-                                                get(x_coordinate=x_tile, y_coordinate=y_tile).tile_id,
-                                                year=year, greenery_percentage=greenery_percentage,
-                                                contains_greenery=contains_greenery,
-                                                classified_by=User.objects.get(email=user).id)
+        Classification.objects.create(tile_id=Tile.objects.
+                                      get(x_coordinate=x_tile, y_coordinate=y_tile).tile_id,
+                                      year=year, greenery_percentage=greenery_percentage,
+                                      contains_greenery=contains_greenery,
+                                      classified_by=User.objects.get(email=user).id)
+
+    except IntegrityError:
+        Classification.objects.filter(year=year, tile_id=Tile.objects.get(x_coordinate=x_tile,
+                                                                          y_coordinate=y_tile).tile_id)\
+            .update(greenery_percentage=greenery_percentage, contains_greenery=contains_greenery,
+                    classified_by=User.objects.get(email=user).id)
+
     except ObjectDoesNotExist:
-        print("Ooopsy")
+        print("Unsuccessfully updated tiles.")
 
 
 def transform_coordinates_to_tile(x_coordinate, y_coordinate):

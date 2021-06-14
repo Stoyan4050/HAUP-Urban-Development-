@@ -13,13 +13,13 @@ body {
   
 h1 {
   margin-left: 5px;
-  font-size: 25pt;
+  font-size: 23pt;
   font-family: Arial, sans-serif;
 }
 
 h2 {
   margin-left: 5px;
-  font-size: 25pt;
+  font-size: 23pt;
   font-family: Arial, sans-serif;
 }
 
@@ -75,24 +75,23 @@ nav .nav-left {
 
 #updateButton {
   background-color: #04AA6D;
-  tab-size: 12px;
   color: white;
   padding: 16px 20px;
   border: none;
   cursor: pointer;
-  width: 250px;
+  width: 17vw;
   margin-top:20px;
   margin-bottom:10px;
   opacity: 0.8;
 }
 
 #closeButton {
-  background-color: red;
+  background-color: black;
   color: white;
   padding: 16px 20px;
   border: none;
   cursor: pointer;
-  width: 250px;
+  width: 17vw;
   margin-bottom:10px;
   opacity: 0.8;
 }
@@ -107,7 +106,12 @@ nav .nav-left {
 }
 
 #coordinates{
+  width: 270px;
   display: block;
+}
+
+#myForm{
+  width: 20vw;
 }
 /* Classes */
 
@@ -189,7 +193,7 @@ nav .nav-left {
   justify-content: center;
   box-sizing: border-box;
   position: relative;
-  background-image: url('../images/background-color.png');
+  /*background-image: url('../images/background-color.png');*/
   background-repeat: no-repeat;
   background-size: cover;
   width: 100%;
@@ -275,7 +279,7 @@ nav .nav-left {
 }
 .popupInfo{
   font-family: 'Times New Roman';
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   margin-left: 5px;
 }
 .esri-ui-inner-container.esri-ui-corner-container {

@@ -95,23 +95,21 @@
                 <label class="popupInfo" id="current_contains_greenery" name="current_contains_greenery"></label><br>
                 <label class="popupInfo"><b>Greenery percentage:</b></label>
                 <label class="popupInfo" id="current_greenery_percentage" name="current_greenery_percentage"></label><br>
-                <br><br><h2>Update Tile</h2><br><br>
-                <label class="popupInfo"><b>Contains Greenery:</b></label><br>
+                <label class="popupInfo"><b>Classified by:</b></label>
+                <label class="popupInfo" id="classified_by" name="classified_by"></label><br>
+                <br><br><h2 id="h2">Update Tile</h2><br><br>
+                <label class="popupInfo" id="text_contains_greenery"><b>Contains Greenery:</b></label><br>
                 <select name="popupInfo" class="popupInfo" id="contains_greenery" onchange="showHide()">
                     <option value="True">True</option>
                     <option value="False">False</option>
                 </select><br>
-                <label class="popupInfo" id="text_greenery_percentage"><b>Greenery percentage:</b></label>
+                <label class="popupInfo" id="text_greenery_percentage"><b>Greenery percentage:</b></label><br>
                 <input class="popupInfo" id="greenery_percentage" placeholder="Greenery Percentage"required><br>
                 <button type="button" class="btn" id="updateButton">Update</button>
-                <button type="button" class="btn cancel" id="closeButton"onclick="closeForm()">Close</button>
+                <button type="button" class="btn cancel" id="closeButton" onclick="closeForm()">Close</button>
             </form>
         </div>
     </div>
 </div>
-<script>
- function closeForm() {
-    document.getElementById("myForm").style.display = "none";
-}</script>
 </body>
 </html>

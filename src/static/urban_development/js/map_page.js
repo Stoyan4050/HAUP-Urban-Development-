@@ -42,7 +42,7 @@ require([
       listItemCreatedFunction: function (event) {
         var item = event.item
 
-        // Don't show the legend twice
+        // Don't show  the legend twice
         if (item.layer.geometryType === 'polygon') {
           item.title = 'Classification legend'
           item.panel = legend
@@ -95,8 +95,19 @@ require([
             document.getElementById("coordinates").innerHTML = json["x_coordinate"] + ", " + json["y_coordinate"];
             document.getElementById("current_contains_greenery").innerHTML = json["contains_greenery"];
             document.getElementById("current_greenery_percentage").innerHTML = json["greenery_percentage"];
+            document.getElementById("classified_by").innerHTML = json["classified_by"];
            } else {
-            window.alert("Please login");
+            document.getElementById("myForm").style.display='block'
+            document.getElementById("h2").style.display='none'
+            document.getElementById("text_contains_greenery").style.display='none'
+            document.getElementById("contains_greenery").style.display='none'
+            document.getElementById("text_greenery_percentage").style.display='none'
+            document.getElementById("greenery_percentage").style.display='none'
+            document.getElementById("updateButton").style.display='none'
+            document.getElementById("coordinates").innerHTML = json["x_coordinate"] + ", " + json["y_coordinate"];
+            document.getElementById("classified_by").innerHTML = json["classified_by"];
+            document.getElementById("current_contains_greenery").innerHTML = json["contains_greenery"];
+            document.getElementById("current_greenery_percentage").innerHTML = json["greenery_percentage"];
           }
         } catch (exception) {
           alert(exception)
@@ -493,26 +504,17 @@ require([
     })
   })
 })
-
-
 function showHide(){
   if($('#contains_greenery').val().localeCompare("True")==0){
-    $('#updateButton').remove()
-    $('#closeButton').remove()
-    $('#form-container').append("<span class='popupInfo' id='text_greenery_percentage'>Greenery percentage:<br></span>")
-    $('#form-container').append("<input class='popupInfo' id='greenery_percentage'>")
-    $('#form-container').append("<span class='popupInfo' id='bre'><br></span>")
-    $('#form-container').append("<button type='button' class='btn' id='updateButton'>Update</button>")
-    $('#form-container').append("<button type='button' class='btn cancel' id='closeButton' onclick='closeForm()'>Close</button>")
+    document.getElementById("text_greenery_percentage").style.display='block'
+    document.getElementById("greenery_percentage").style.display='block'
   } else {
-    $('#text_greenery').remove()
-    $('#bre').remove()
-    $('#greenery_percentage').remove()
-    $('#text_greenery_percentage').remove()
+    document.getElementById("text_greenery_percentage").style.display='none'
+    document.getElementById("greenery_percentage").style.display='none'
   }
 }
 function closeForm() {
-  $('#myForm').style.visibility = 'hidden';
+  document.getElementById("myForm").style.display = 'none';
 }
 function setupClassifiedAsLayer(FeatureLayer) {
   var template = {

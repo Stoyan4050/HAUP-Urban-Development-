@@ -469,9 +469,17 @@ class TransformCoordinatesView(View):
                     classification_year = classification["year"]
             contains_greenery = Classification.objects.get(tile=tile_id, year=classification_year).contains_greenery
             greenery_percentage = Classification.objects.get(tile=tile_id, year=classification_year).greenery_percentage
+            classified_by = Classification.objects.get(tile=tile_id, year=classification_year).classified_by
+            if classified_by <= -2:
+                classified_by = "Training data"
+            elif classified_by == -1:
+                classified_by = "Algorithm"
+            else:
+                classified_by = "User"
         except ObjectDoesNotExist:
             contains_greenery = "Unknown"
             greenery_percentage = "Unknown"
+            classified_by = "Unknown"
         transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
         result = {
             "x_tile": x_tile,
@@ -480,6 +488,7 @@ class TransformCoordinatesView(View):
             "x_coordinate": transformer.transform(x_coordinate, y_coordinate)[0],
             "y_coordinate": transformer.transform(x_coordinate, y_coordinate)[1],
             "contains_greenery": contains_greenery,
+            "classified_by": classified_by,
             "greenery_percentage": greenery_percentage
         }
         return JsonResponse(result, safe=False)
