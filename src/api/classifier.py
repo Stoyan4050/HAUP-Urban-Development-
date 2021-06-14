@@ -343,8 +343,8 @@ def color_detection(x_coord, y_coord, year=2020):
         # print(x_shape)
         # print(y_shape)
     if len(areas) > 0:
-        max_area = np.max(areas)
-        #if max_area >= 15:
+        # max_area = np.max(areas)
+        # if max_area >= 15:
         # cv2.imshow("Image", img2)
         # cv2.waitKey()
         # cv2.imshow("out", output)
