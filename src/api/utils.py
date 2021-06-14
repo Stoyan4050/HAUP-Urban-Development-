@@ -94,37 +94,28 @@ def add_labels_for_previous_years():
                     try:
                         Classification.objects.create(
                             tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year + 10,
-                            greenery_percentage=classification.greenery_percentage, classified_by="-2")
+                            greenery_percentage=classification.greenery_percentage,
+                            contains_greenery=classification.contains_greenery, classified_by="-5")
                     except ObjectDoesNotExist:
                         print(tile_x, tile_y)
+                    except IntegrityError:
+                        print("Integrity error")
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 break
             if year == 1900:
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 # print(year)
-                Classification.objects.create(
-                    tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year,
-                    greenery_percentage=classification.greenery_percentage, classified_by="-2")
+                try:
+                    Classification.objects.create(
+                        tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year,
+                        greenery_percentage=classification.greenery_percentage,
+                        contains_greenery=classification.contains_greenery, classified_by="-5")
+                except IntegrityError:
+                    print("Integrity error")
 
     # for year in range(1910, 2030, 10):
     #
     #     print(str(year - 10) + ": " + str(np.percentile(arr[int((year - 1910) / 10)], 90)) + "\n")
-
-
-def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id):
-    """
-    def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id)
-    """
-
-    for x_coordinate in range(start_x, start_x + length_x - 1):
-        for y_coordinate in range(start_y, start_y + length_y - 1):
-
-            try:
-                Classification.objects.create(
-                    tile=Tile.objects.get(x_coordinate=x_coordinate, y_coordinate=y_coordinate),
-                    year=year, label=label, classified_by=user_id)
-            except ObjectDoesNotExist:
-                print(x_coordinate, y_coordinate)
 
 
 def calculate_percentage_greenery(x_esri, y_esri, year, contains_greenery):
