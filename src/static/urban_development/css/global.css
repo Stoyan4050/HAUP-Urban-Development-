@@ -1,8 +1,5 @@
 @media screen and (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        padding: 10px 2rem;
-    }
+    /* Tags */
 
     nav {
         padding: 0;
@@ -10,7 +7,14 @@
         flex-direction: column-reverse;
     }
 
-  /*IDs*/
+    /* Classes */
+
+    .navbar {
+        flex-direction: column;
+        padding: 10px 2rem;
+    }
+
+    /*IDs*/
 
     #email-cell {
         margin-bottom: 1.5rem;

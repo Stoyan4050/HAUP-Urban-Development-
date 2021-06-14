@@ -33,7 +33,7 @@ class BaseView(View):
         """
 
         if request.user.is_authenticated:
-            return redirect("urban_development:map_page")
+            return redirect("urban_development:main_page")
 
         return redirect("urban_development:login_page")
 
@@ -51,7 +51,7 @@ class GuestView(View):
         """
 
         logout(request)
-        return redirect("urban_development:map_page")
+        return redirect("urban_development:main_page")
 
 
 class LoginView(View):
@@ -92,7 +92,7 @@ class LoginView(View):
 
             if user is not None:
                 login(request, user)
-                return redirect("urban_development:map_page")
+                return redirect("urban_development:main_page")
 
         self._context["form"] = form
         return render(request, "pages/login_page.html", context=self._context)
@@ -358,9 +358,9 @@ class PasswordChangedView(View):
         return render(request, "templates/user_data_template.html", context=self._context)
 
 
-class MapView(View):
+class MainView(View):
     """
-    class MapView(View)
+    class MainView(View)
     """
 
     @staticmethod
@@ -373,7 +373,7 @@ class MapView(View):
         context = {
             "years": collections.OrderedDict(sorted(extract_available_years().items(), reverse=True)),
         }
-        return render(request, "pages/map_page.html", context=context)
+        return render(request, "pages/main_page.html", context=context)
 
 
 class GetClassifiedTilesView(View):
@@ -422,10 +422,12 @@ class GetClassifiedTilesView(View):
 
                 if classification["classified_by"] == -1:
                     result[classification["tile_id"]]["classified_by"] = "classifier"
-                elif classification["classified_by"] == -2:
+                elif classification["classified_by"] <= -2:
                     result[classification["tile_id"]]["classified_by"] = "training data"
-                else:
+                elif classification["classified_by"] > 0:
                     result[classification["tile_id"]]["classified_by"] = "user"
+                else:
+                    result[classification["tile_id"]]["classified_by"] = ""
 
                 result[classification["tile_id"]]["contains_greenery"] = classification["contains_greenery"]
                 result[classification["tile_id"]]["greenery_percentage"] = 100 * classification["greenery_percentage"]
@@ -437,18 +439,3 @@ class GetClassifiedTilesView(View):
                         int(25 * ceil(100 * classification["greenery_percentage"] / 25))
 
         return JsonResponse(list(result.values()), safe=False)
-
-
-class HowToUseView(View):
-    """
-    class HowToUseView(View)
-    """
-
-    @staticmethod
-    def get(request):
-        """
-        @staticmethod
-        def get(request)
-        """
-
-        return render(request, "pages/how_to_use.html")
