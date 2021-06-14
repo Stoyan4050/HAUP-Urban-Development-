@@ -110,6 +110,7 @@ def add_labels_for_previous_years():
     #
     #     print(str(year - 10) + ": " + str(np.percentile(arr[int((year - 1910) / 10)], 90)) + "\n")
 
+
 def create_tiles():
     """
     def create_tiles()

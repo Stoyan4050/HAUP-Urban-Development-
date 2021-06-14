@@ -150,6 +150,7 @@ def classify(year=2015, download_data=False):
     print(accuracy_score(test_labels, prediction))
     print(classification_report(test_labels, prediction, target_names=label_encoder.classes_))
 
+
 def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, train_images):
     """
         tune hyper parameter
@@ -193,6 +194,7 @@ def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, 
     print("Best score:", best_model_score, "\n")
     print("Best estimator:", best_model_estimator)
     return mean_score, best_model_score, best_model_estimator
+
 
 def create_dir(all_labels):
     """
@@ -241,7 +243,7 @@ def train_cnn(year=2015, download_data=False, train_network=True):
 
     train_images, train_labels = read_images(ALL_LABELS, True)
 
-    test_images = read_images(ALL_LABELS, False)
+    # test_images = read_images(ALL_LABELS, False)
     # test_labels = read_images(ALL_LABELS, False)
     # print(len(train_images))
     # print("Training data extracted!")
@@ -257,7 +259,6 @@ def train_cnn(year=2015, download_data=False, train_network=True):
     batch_size = 32
     checkpoint_path = "./model_checkpoint/cp-{epoch:04d}.ckpt"
     # checkpoint_dir = os.path.dirname(checkpoint_path)
-
 
     if train_network:
         model = Sequential()
@@ -402,7 +403,7 @@ def color_detection(x_coord, y_coord, year=2020):
             non_zero = np.count_nonzero(output)
             # print(non_zero)
 
-            percentage = non_zero/num_pixels
+            percentage = non_zero / num_pixels
             # print(percentage)
             return percentage
 

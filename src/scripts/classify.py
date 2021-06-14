@@ -10,4 +10,3 @@ def run():
     def run()
     """
     classify()
-
