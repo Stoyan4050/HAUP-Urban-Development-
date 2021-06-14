@@ -86,6 +86,25 @@ class ColorDetectionTest(SimpleTestCase):
         self.assertTrue(image_percentage * 100 < 35)
         self.assertEqual(0.32403564453125, image_percentage)
 
+    def test_forty_green(self):
+        """
+        def test_forty_green
+        """
+        image_percentage = color_detection(75506, 75552, 2020)
+        self.assertTrue(image_percentage * 100 > 40)
+        self.assertTrue(image_percentage * 100 < 45)
+        self.assertEqual(0.4395802815755208, image_percentage)
+
+    def test_fifty_green(self):
+        """
+        def test_fifty_green
+        """
+        image_percentage = color_detection(75449, 75543, 2020)
+        print(image_percentage)
+        self.assertTrue(image_percentage * 100 > 49)
+        self.assertTrue(image_percentage * 100 < 52)
+        self.assertEqual(0.5019989013671875, image_percentage)
+
     def test_sixty_green(self):
         """
         def test_sixty_green
