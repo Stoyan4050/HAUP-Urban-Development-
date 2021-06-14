@@ -11,9 +11,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from sklearn.decomposition import PCA
 
-from sklearn.metrics import f1_score, classification_report, accuracy_score
-from sklearn.model_selection import GridSearchCV, KFold
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.metrics import classification_report, accuracy_score
+from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils import shuffle
@@ -149,51 +148,6 @@ def classify(year=2015, download_data=False):
 
     print(accuracy_score(test_labels, prediction))
     print(classification_report(test_labels, prediction, target_names=label_encoder.classes_))
-
-
-def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, train_images):
-    """
-        tune hyper parameter
-    """
-
-    k_fold = KFold(n_splits=12)
-
-    best_model_estimator = Pipeline([("pca", PCA()), (estimator_name, estimator)])
-    sum_scores = 0
-    best_model_score = 0.0
-
-    vector = np.vectorize(np.int16)
-
-    for train_index, test_index in k_fold.split(train_images):
-        x_train, x_test = train_images[vector(train_index)], train_images[vector(test_index)]
-        y_train, y_test = train_labels[vector(train_index)], train_labels[vector(test_index)]
-
-        pipe = Pipeline([("pca", PCA()), (estimator_name, estimator)])
-        search = GridSearchCV(pipe, estimator_params, cv=5, return_train_score=True, n_jobs=-1, verbose=2,
-                              scoring="f1_macro")
-
-        search.fit(x_train, y_train)
-
-        est = search.best_estimator_
-
-        est_pipe = make_pipeline(est)
-        est_pipe.fit(x_train, y_train)
-        prediction = est_pipe.predict(x_test)
-
-        f1_score_est = f1_score(y_test, prediction, average="macro")
-
-        if f1_score_est > best_model_score:
-            best_model_score = f1_score_est
-            best_model_estimator = est
-
-        sum_scores = sum_scores + f1_score_est
-
-    mean_score = sum_scores / k_fold.get_n_splits()
-
-    print("Mean score:", mean_score, "\n")
-    print("Best score:", best_model_score, "\n")
-    print("Best estimator:", best_model_estimator)
-    return mean_score, best_model_score, best_model_estimator
 
 
 def create_dir(all_labels):
