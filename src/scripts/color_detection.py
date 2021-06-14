@@ -2,7 +2,7 @@
 color_detection.py
 """
 
-from api.classifier import color_detection
+from classification.classifier import color_detection
 
 
 def run():

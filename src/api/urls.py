@@ -4,8 +4,8 @@ urls.py
 
 from django.urls import path
 from .views import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedTilesView,\
-    GuestView, LoginView, LogoutView, MainView, PasswordChangedView, RegisterView,\
-    SendActivationEmailView, SendChangePasswordEmailView
+    GuestView, LoginView, LogoutView, MainView, ManualClassificationView, PasswordChangedView, \
+    RegisterView, SendActivationEmailView, SendChangePasswordEmailView, TransformCoordinatesView
 
 app_name = "urban_development"
 
@@ -34,4 +34,8 @@ urlpatterns = [
          name="main_page"),
     path("get_classified_tiles/<parameters>/", GetClassifiedTilesView.as_view(),
          name="get_classified_tiles_page"),
+    path("transform_coordinates/<parameters>/", TransformCoordinatesView.as_view(),
+         name="transform_coordinates_page"),
+    path("manual_classification/<parameters>/", ManualClassificationView.as_view(),
+         name="manual_classification"),
 ]

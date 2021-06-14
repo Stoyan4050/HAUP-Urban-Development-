@@ -37,84 +37,84 @@ require([
     function setupInfoView() {
         clearPage()
 
-        var headerDiv = $("<div class='page-title' id='header-div'></div>")
+        var headerDiv = $('<div class="page-title" id="header-div"></div>')
         $('.title-container').append(headerDiv)
 
-        var titlediv = $("<div class='title-text'></div>")
+        var titlediv = $('<div class="title-text"></div>')
         headerDiv.append(titlediv)
 
-        titlediv.append("<h2>How to use HAUP<br>Urban Development</h2>")
-        titlediv.append("<h3>To view parks on historic maps</h3>")
+        titlediv.append('<h2>How to use HAUP<br>Urban Development</h2>')
+        titlediv.append('<h3>To view parks on historic maps</h3>')
 
         var imageDiv = $('<div></div>')
         headerDiv.append(imageDiv)
 
-        imageDiv.append("<img src='../../../static/urban_development/images/tree.png' class='tree'>")
-        imageDiv.append("<img src='../../../static/urban_development/images/bench.png' class='bench'>")
+        imageDiv.append('<img src="../../../static/urban_development/images/tree.png" class="tree">')
+        imageDiv.append('<img src="../../../static/urban_development/images/bench.png" class="bench">')
 
-        var infoDiv = $("<div class='steps' id='info-div'></div>")
+        var infoDiv = $('<div class="steps" id="info-div"></div>')
         $('.page-container').append(infoDiv)
 
-        infoDiv.append("<button type='button' class='collapsible'>How to view greenery on historical maps</button>")
+        infoDiv.append('<button type="button" class="collapsible">How to view greenery on historical maps</button>')
 
-        var div1 = $("<div class='content'></div>")
+        var div1 = $('<div class="content"></div>')
         infoDiv.append(div1)
 
-        var list1 = $("<ol class='steps-list'></ol>")
+        var list1 = $('<ol class="steps-list"></ol>')
         div1.append(list1)
 
-        list1.append("<li class='steps-items'>In the menu bar at the top, select 'Map View'.</li>")
-        list1.append("<li class='steps-items'>On the map view page, in the menu bar at the top, select the year of map you want to view.</li>")
-        list1.append("<li class='steps-items'>In the menu bar at the top, select the type of classification you want to view.\
-            'Classified as' provides a overlay on the map with the different types of classifications.\
-            'Classified by' provides an overlay depending on who determined the classification. Default is the\
-            classification by the classifier algorithm of the tool.</li>")
+        list1.append('<li class="steps-items">In the menu bar at the top, select "Map View".</li>')
+        list1.append('<li class="steps-items">On the map view page, in the menu bar at the top, select the year of map you want to view.</li>')
+        list1.append('<li class="steps-items">In the menu bar at the top, select the type of classification you want to view.\
+            "Classified as" provides a overlay on the map with the different types of classifications.\
+            "Classified by" provides an overlay depending on who determined the classification. Default is the\
+            classification by the classifier algorithm of the tool.</li>')
 
-        infoDiv.append("<button type='button' class='collapsible'>How to view the (statistical) data of greenery on historical maps</button>")
+        infoDiv.append('<button type="button" class="collapsible">How to view the (statistical) data of greenery on historical maps</button>')
 
-        var div2 = $("<div class='content'></div>")
+        var div2 = $('<div class="content"></div>')
         infoDiv.append(div2)
 
-        var list2 = $("<ol class='steps-list'></ol>")
+        var list2 = $('<ol class="steps-list"></ol>')
         div2.append(list2)
 
-        list2.append("<li class='steps-items'>In the menu bar at the top, select 'Data View'.</li>")
-        list2.append("<li class='steps-items'>On the data view page, in the menu bar at the top, select the year of the\
-            (statistical) data you want to view.</li>")
-        list2.append("<li class='steps-items'>On the data view page, you can see statistics regarding the percentages of the\
-            map classified as a certain label, as well as statistics concerning what or who classified (sections of) the map.</li>")
+        list2.append('<li class="steps-items">In the menu bar at the top, select "Data View".</li>')
+        list2.append('<li class="steps-items">On the data view page, in the menu bar at the top, select the year of the\
+            (statistical) data you want to view.</li>')
+        list2.append('<li class="steps-items">On the data view page, you can see statistics regarding the percentages of the\
+            map classified as a certain label, as well as statistics concerning what or who classified (sections of) the map.</li>')
 
-        infoDiv.append("<button type='button' class='collapsible'>How to manually classify sections on a map</button>")
+        infoDiv.append('<button type="button" class="collapsible">How to manually classify sections on a map</button>')
 
-        var div3 = $("<div class='content'></div>")
+        var div3 = $('<div class="content"></div>')
         infoDiv.append(div3)
 
-        div3.append("<p class='steps-items'>This functionality is not yet available.</p>")
+        div3.append('<p class="steps-items">This functionality is not yet available.</p>')
 
-        var footerDiv = $("<div class='footer' id='footer-div'></div>")
+        var footerDiv = $('<div class="footer" id="footer-div"></div>')
         $('.page-container').append(footerDiv)
 
         var date = new Date().getFullYear()
-        footerDiv.append("<p>" + date + " Urban Development</p>")
+        footerDiv.append('<p>' + date + ' Urban Development</p>')
 
-        var collapsible = document.getElementsByClassName("collapsible");
+        var collapsible = document.getElementsByClassName('collapsible')
         for (var i = 0; i < collapsible.length; i++) {
-            collapsible[i].addEventListener("click", function () {
-                this.classList.toggle("active");
-                var content = this.nextElementSibling;
-                if (content.style.display === "block") {
-                    content.style.display = "none";
+            collapsible[i].addEventListener('click', function () {
+                this.classList.toggle('active')
+                var content = this.nextElementSibling
+                if (content.style.display === 'block') {
+                    content.style.display = 'none'
                 } else {
-                    content.style.display = "block";
+                    content.style.display = 'block'
                 }
-            });
+            })
         }
     }
 
     function setupMapView() {
         clearPage()
 
-        $('.page-container').append("<div id='map'></div>")
+        $('.page-container').append('<div id="map"></div>')
 
         map = new Map('map')
 
@@ -163,13 +163,53 @@ require([
             showCoordinates(mapView.toMap({ x: event.x, y: event.y }))
         })
 
+        mapView.on('click', async function (event) {
+            if($('#overlay option:selected').val().trim() === 'Classified as') {
+                var x_coordinate = event.mapPoint.x
+                var y_coordinate = event.mapPoint.y
+                var year = $('#year option:selected').val().trim()
+                var parameters = { x_coordinate: x_coordinate, y_coordinate: y_coordinate, year: year }
+                const response = await fetch('/urban_development/transform_coordinates/' + JSON.stringify(parameters))
+
+                try {
+                    var json = await response.json()
+
+                    var user = document.getElementById('user-name').innerHTML.trim().split(' ').join('').split('\n')[2]
+                    
+                    if (user === 'guest') {
+                        $('#update-title').css('display', 'none')
+                        $('#text-contains-greenery').css('display', 'none')
+                        $('#contains-greenery').css('display', 'none')
+                        $('#text-greenery-percentage').css('display', 'none')
+                        $('#greenery-percentage').css('display', 'none')
+                        $('#update-button').css('display', 'none')
+                    }
+                    
+
+                    $('#coordinates').html(json['x_coordinate'] + ', ' + json['y_coordinate'])
+                    $('#current-contains-greenery').html(json['contains_greenery'])
+                    $('#classified-by').html(json['classified_by'])
+
+                    if(json['greenery_percentage'] != 'unknown'){
+                        json['greenery_percentage'] = Math.round(json['greenery_percentage'] * 100) + '%'
+                    }
+                    
+                    $('#current-greenery-percentage').html(json['greenery_percentage'])
+                    
+                    $('#form-div').css('display', 'block')
+                } catch (exception) {
+                    alert('Error.')
+                }
+            }
+        })
+
         addMap()
     }
 
     async function setupDataView() {
         clearPage()
 
-        var dataDiv = $("<div id='data'></div>")
+        var dataDiv = $('<div id="data"></div>')
         $('.page-container').append(dataDiv)
 
         let abortController = new AbortController()
@@ -203,7 +243,7 @@ require([
 
             for (var i = 0; i < classifiedTiles; i++) {
                 if (json[i].contains_greenery) {
-                    greenery++;
+                    greenery++
 
                     if (json[i].greenery_rounded == 25) {
                         quarter1++
@@ -218,25 +258,25 @@ require([
                     noGreenery++
                 }
 
-                if (json[i].classified_by == "user") {
+                if (json[i].classified_by == 'user') {
                     classifiedByUser++
-                } else if (json[i].classified_by == "classifier") {
+                } else if (json[i].classified_by == 'classifier') {
                     classifiedByClassifier++
-                } else if (json[i].classified_by == "training data") {
+                } else if (json[i].classified_by == 'training data') {
                     classifiedByTrainingData++
                 }
             }
 
-            $('#data').append("<span class='text-element data-element'>Total classified tiles: " + classifiedTiles + "</span><br><br><br>")
-            $('#data').append("<span class='text-element data-element' id='no-greenery'>Tiles classified as not containing greenery: " + noGreenery + "</span><br>")
-            $('#data').append("<span class='text-element data-element' id='greenery'>Tiles classified as containing greenery: " + greenery + "</span><br><br><br>")
-            $('#data').append("<span class='text-element data-element' id='quarter1'>Tiles classified as containing 0% - 25% greenery: " + quarter1 + "</span><br>")
-            $('#data').append("<span class='text-element data-element' id='quarter2'>Tiles classified as containing 25% - 50% greenery: " + quarter2 + "</span><br>")
-            $('#data').append("<span class='text-element data-element' id='quarter3'>Tiles classified as containing 50% - 75% greenery: " + quarter3 + "</span><br>")
-            $('#data').append("<span class='text-element data-element' id='quarter4'>Tiles classified as containing 75% - 100% greenery: " + quarter4 + "</span><br><br><br>")
-            $('#data').append("<span class='text-element data-element' id='user-tiles'>Tiles classified by user: " + classifiedByUser + "</span><br>")
-            $('#data').append("<span class='text-element data-element' id='classifier-tiles'>Tiles classified by classifier: " + classifiedByClassifier + "</span><br>")
-            $('#data').append("<span class='text-element data-element' id='training-data-tiles'>Tiles classified by training data: " + classifiedByTrainingData + "</span><br>")
+            $('#data').append('<span class="text-element data-element">Total classified tiles: ' + classifiedTiles + '</span><br><br><br>')
+            $('#data').append('<span class="text-element data-element" id="no-greenery">Tiles classified as not containing greenery: ' + noGreenery + '</span><br>')
+            $('#data').append('<span class="text-element data-element" id="greenery">Tiles classified as containing greenery: ' + greenery + '</span><br><br><br>')
+            $('#data').append('<span class="text-element data-element" id="quarter1">Tiles classified as containing 0% - 25% greenery: ' + quarter1 + '</span><br>')
+            $('#data').append('<span class="text-element data-element" id="quarter2">Tiles classified as containing 25% - 50% greenery: ' + quarter2 + '</span><br>')
+            $('#data').append('<span class="text-element data-element" id="quarter3">Tiles classified as containing 50% - 75% greenery: ' + quarter3 + '</span><br>')
+            $('#data').append('<span class="text-element data-element" id="quarter4">Tiles classified as containing 75% - 100% greenery: ' + quarter4 + '</span><br><br><br>')
+            $('#data').append('<span class="text-element data-element" id="user-tiles">Tiles classified by user: ' + classifiedByUser + '</span><br>')
+            $('#data').append('<span class="text-element data-element" id="classifier-tiles">Tiles classified by classifier: ' + classifiedByClassifier + '</span><br>')
+            $('#data').append('<span class="text-element data-element" id="training-data-tiles">Tiles classified by training data: ' + classifiedByTrainingData + '</span><br>')
 
             if (classifiedTiles > 0) {
                 function setupSpan(id, value) {
@@ -262,7 +302,7 @@ require([
                 setupSpan('training-data-tiles', classifiedByTrainingData)
             }
         } catch (exception) {
-            alert('No tiles have been classified for the selected year.')
+            alert('Error.')
         }
     }
 
@@ -349,8 +389,112 @@ require([
 
             classifiedAsLayer.applyEdits(edits)
             map.add(classifiedAsLayer)
+
+            var mapDiv = $('#map')
+
+            var formDiv = $('<div id="form-div"></div>')
+            mapDiv.append(formDiv)
+
+            var form = $('<form id="form"></form>')
+            formDiv.append(form)
+            form.append('<br><h1>Information</h1><br>')
+            form.append('<label class="popup-info"><b>Coordinates:</b></label><br>')
+            form.append('<label class="popup-info" id="coordinates"></label><br>')
+            form.append('<label class="popup-info"><b>Contains greenery:</b></label>')
+            form.append('<label class="popup-info" id="current-contains-greenery"></label><br>')
+            form.append('<label class="popup-info"><b>Greenery percentage:</b></label>')
+            form.append('<label class="popup-info" id="current-greenery-percentage"></label><br>')
+            form.append('<label class="popup-info"><b>Classified by:</b></label>')
+            form.append('<label class="popup-info" id="classified-by"></label><br>')
+            form.append('<br><h2 id="update-title">Update tile</h2><br>')
+            form.append('<label class="popup-info" id="text-contains-greenery"><b>Contains greenery:</b></label><br>')
+
+            var select = $('<select class="popup-info" id="contains-greenery"></select><br>')
+            form.append(select)
+
+            select.append('<option value="True">True</option>')
+            select.append('<option value="False">False</option>')
+
+            $('#contains-greenery').on('change', function () {
+                if($('#contains-greenery option:selected').val().trim() === 'True') {
+                    $('#text-greenery-percentage').css('display', 'inline-block')
+                    $('#greenery-percentage').css('display', 'inline-block')
+                  } else {
+                    $('#text-greenery-percentage').css('display', 'none')
+                    $('#greenery-percentage').css('display', 'none')
+                  }
+            })
+            
+            form.append('<label class="popup-info" id="text-greenery-percentage"><b>Greenery percentage:</b></label><br>')
+            form.append('<input class="popup-info" id="greenery-percentage" placeholder="Greenery percentage" required><br>')
+            form.append('<button type="button" id="update-button">Update</button>')
+
+            $('#update-button').on('click', async function () {
+                var year = $('#year option:selected').val().trim()
+                var classifiedBy = document.getElementById('user-name').innerHTML.trim().split(' ').join('').split('\n')[2]
+                var latitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[0]
+                var longitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[1]
+                
+                var containsGreenery = document.getElementById('contains-greenery').value
+                var greeneryPercentage
+                
+                if (containsGreenery === 'False') {
+                    greeneryPercentage = 0
+                } else {
+                    greeneryPercentage = document.getElementById('greenery-percentage').value / 100
+                }
+
+                var parameters = {
+                    longitude: longitude,
+                    latitude: latitude,
+                    year: year,
+                    classified_by: classifiedBy,
+                    contains_greenery: containsGreenery,
+                    greenery_percentage: greeneryPercentage,
+                }
+                
+                const response = await fetch('/urban_development/manual_classification/' + JSON.stringify(parameters),{signal: abortController.signal})
+
+                try {
+                    var json = await response.json()
+                    
+                    edits = {
+                        addFeatures: [],
+                    }
+
+                    var graphic = new Graphic({
+                        geometry: Polygon.fromExtent(
+                            new Extent(
+                                json.xmin, // xmin
+                                json.ymin, // ymin
+                                json.xmax, // xmax
+                                json.ymax, // ymax
+                                { wkid: 28992 }
+                            )
+                        ),
+                    })
+
+                    graphic.setAttribute('Longitude', json.x_coordinate)
+                    graphic.setAttribute('Latitude', json.y_coordinate)
+                    graphic.setAttribute('Contains greenery', json.contains_greenery)
+                    graphic.setAttribute('Greenery percentage', json.greenery_percentage)
+                    graphic.setAttribute('Greenery rounded', json.greenery_rounded)
+                    
+                    edits.addFeatures.push(graphic)
+                    
+                    classifiedAsLayer.applyEdits(edits)
+                } catch(exception) {
+                    alert('Error.')
+                }
+            })
+
+            form.append('<button type="button" id="close-button">Close</button>')
+
+            $('#close-button').on('click', function() {
+                $('#form-div').css('display', 'none')
+            })
         } catch (exception) {
-            alert('No tiles have been classified for the selected year.')
+            alert('Error.')
             $('#overlay').val('None').change()
         }
     }
@@ -413,7 +557,7 @@ require([
             classifiedByLayer.applyEdits(edits)
             map.add(classifiedByLayer)
         } catch (exception) {
-            alert('No tiles have been classified for the selected year.')
+            alert('Error.')
             $('#overlay').val('None').change()
         }
     }
@@ -430,6 +574,8 @@ require([
 
         $('#year').change(function (event) {
             if ($('#overlay-cell').is(':visible')) {
+                $('#form-div').remove()
+
                 addMap()
             } else {
                 setupDataView()
@@ -438,6 +584,8 @@ require([
 
         $('#overlay').change(function (event) {
             if ($('#overlay-cell').is(':visible')) {
+                $('#form-div').remove()
+
                 map.remove(classifiedAsLayer)
                 map.remove(classifiedByLayer)
 
@@ -481,11 +629,6 @@ require([
 })
 
 function setupClassifiedAsLayer(FeatureLayer) {
-    var template = {
-        title: 'Tile | EPSG: 4326',
-        content: '<div>Coordinates: {Longitude}, {Latitude}<br>Contains greenery: {Contains greenery}<br>Greenery percentage: {Greenery percentage}%</div>',
-    }
-
     var renderer = {
         type: 'unique-value',
         field: 'Contains greenery',
@@ -586,7 +729,6 @@ function setupClassifiedAsLayer(FeatureLayer) {
             },
         ],
         source: [],
-        popupTemplate: template,
         renderer: renderer,
         geometryType: 'polygon',
         spatialReference: { wkid: 28992 },
@@ -597,11 +739,6 @@ function setupClassifiedAsLayer(FeatureLayer) {
 }
 
 function setupClassifiedByLayer(FeatureLayer) {
-    var template = {
-        title: 'Tile | EPSG: 4326',
-        content: '<div>Coordinates: {Longitude}, {Latitude}<br>Classified by: {Classified by}',
-    }
-
     var renderer = {
         type: 'unique-value',
         field: 'Classified by',
@@ -668,7 +805,6 @@ function setupClassifiedByLayer(FeatureLayer) {
             },
         ],
         source: [],
-        popupTemplate: template,
         renderer: renderer,
         geometryType: 'polygon',
         spatialReference: { wkid: 28992 },

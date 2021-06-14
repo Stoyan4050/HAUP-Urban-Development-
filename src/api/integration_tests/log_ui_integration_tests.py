@@ -4,13 +4,8 @@ log_ui_integration_tests.py
 
 from selenium import webdriver
 from selenium.webdriver.support.select import By
-# from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait as Wait
-# from selenium.common.exceptions import ElementNotInteractableException
 from selenium.webdriver.support import expected_conditions as EC
-# from cssselect import GenericTranslator
-# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-# import os
 
 
 def browser():

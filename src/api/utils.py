@@ -1,6 +1,7 @@
 """
 utils.py
 """
+
 import urllib
 from math import floor, ceil
 import random
@@ -17,7 +18,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from pyproj import Transformer
-from .classifier import color_detection
+from classification.classifier import color_detection
 from .models import Tile, Classification, User
 from .tokens import TOKEN_GENERATOR
 
@@ -94,28 +95,35 @@ def add_labels_for_previous_years():
                     try:
                         Classification.objects.create(
                             tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year + 10,
-                            greenery_percentage=classification.greenery_percentage,
-                            contains_greenery=classification.contains_greenery, classified_by="-5")
+                            greenery_percentage=classification.greenery_percentage, classified_by="-2")
                     except ObjectDoesNotExist:
                         print(tile_x, tile_y)
-                    except IntegrityError:
-                        print("Integrity error")
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 break
             if year == 1900:
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 # print(year)
-                try:
-                    Classification.objects.create(
-                        tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year,
-                        greenery_percentage=classification.greenery_percentage,
-                        contains_greenery=classification.contains_greenery, classified_by="-5")
-                except IntegrityError:
-                    print("Integrity error")
+                Classification.objects.create(
+                    tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year,
+                    greenery_percentage=classification.greenery_percentage, classified_by="-2")
 
     # for year in range(1910, 2030, 10):
     #
     #     print(str(year - 10) + ": " + str(np.percentile(arr[int((year - 1910) / 10)], 90)) + "\n")
+
+
+def calculate_greenery_rounded(contains_greenery, greenery_percentage):
+    """
+    def calculate_greenery_rounded(contains_greenery, greenery_percentage)
+    """
+
+    if not contains_greenery:
+        return 0
+
+    if contains_greenery and greenery_percentage == 0:
+        return 25
+
+    return int(25 * ceil(100 * greenery_percentage / 25))
 
 
 def calculate_percentage_greenery(x_esri, y_esri, year, contains_greenery):
@@ -140,7 +148,7 @@ def create_tiles():
     tilenames = data_frame.tilename.tolist()
     percentage = 0
 
-    for i in range(0, len(tilenames)):
+    for i in enumerate(tilenames):
         if ceil((100 * i) / len(tilenames)) > percentage:
             percentage = ceil((100 * i) / len(tilenames))
             print(str(percentage) + "%")
@@ -316,6 +324,47 @@ def send_email(uid, domain, email_subject, email_template):
         return True
 
     return False
+
+
+def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
+    """
+    def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
+    """
+    x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
+
+    try:
+        Classification.objects.create(tile_id=Tile.objects.
+                                      get(x_coordinate=x_tile, y_coordinate=y_tile).tile_id,
+                                      year=year, greenery_percentage=greenery_percentage,
+                                      contains_greenery=contains_greenery,
+                                      classified_by=User.objects.get(email=user).id)
+
+    except IntegrityError:
+        Classification.objects.filter(year=year, tile_id=Tile.objects.get(x_coordinate=x_tile,
+                                                                          y_coordinate=y_tile).tile_id)\
+            .update(greenery_percentage=greenery_percentage, contains_greenery=contains_greenery,
+                    classified_by=User.objects.get(email=user).id)
+
+    except ObjectDoesNotExist:
+        print("Unsuccessfully updated tiles.")
+
+
+def transform_coordinates_to_tile(x_coordinate, y_coordinate):
+    """
+    def transform_coordinates_to_tile(x_coordinate, y_coordinate):
+    """
+    transformer = Transformer.from_crs("EPSG:4326", "EPSG:28992")
+    x_esri, y_esri = transformer.transform(x_coordinate, y_coordinate)
+    x_esri -= 13328.546
+    x_esri /= 406.40102300613496932515337423313
+
+    y_esri = 619342.658 - y_esri
+    y_esri /= 406.40607802340702210663198959688
+
+    x_tile = floor(x_esri) + 75120
+    y_tile = floor(y_esri) + 75032
+
+    return x_tile, y_tile
 
 
 def transform_tile_to_coordinates(x_tile, y_tile):

@@ -2,7 +2,7 @@
 train_cnn.py
 """
 
-from api.classifier import train_cnn
+from classification.classifier import train_cnn
 
 
 def run():

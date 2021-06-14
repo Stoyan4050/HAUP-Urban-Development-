@@ -2,7 +2,7 @@
 classify.py
 """
 
-from api.classifier import classify
+from classification.classifier import classify
 
 
 def run():
@@ -10,4 +10,4 @@ def run():
     def run()
     """
 
-    classify(download_data=True)
+    classify()
