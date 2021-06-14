@@ -4,7 +4,7 @@ urls.py
 
 from django.urls import path
 from .views import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedTilesView,\
-    GuestView, HowToUseView, LoginView, LogoutView, MapView, ManualClassificationView, PasswordChangedView, \
+    GuestView, LoginView, LogoutView, MainView, ManualClassificationView, PasswordChangedView, \
     RegisterView, SendActivationEmailView, SendChangePasswordEmailView, TransformCoordinatesView
 
 app_name = "urban_development"
@@ -30,12 +30,10 @@ urlpatterns = [
          name="send_change_password_email_page"),
     path("password_changed/<slug:uidb64>/<slug:token>/", PasswordChangedView.as_view(),
          name="password_changed_page"),
-    path("map/", MapView.as_view(),
-         name="map_page"),
+    path("main/", MainView.as_view(),
+         name="main_page"),
     path("get_classified_tiles/<parameters>/", GetClassifiedTilesView.as_view(),
          name="get_classified_tiles_page"),
-    path("how_to_use/", HowToUseView.as_view(),
-         name="how_to_use"),
     path("transform_coordinates/<parameters>/", TransformCoordinatesView.as_view(),
          name="transform_coordinates_page"),
     path("manual_classification/<parameters>/", ManualClassificationView.as_view(),

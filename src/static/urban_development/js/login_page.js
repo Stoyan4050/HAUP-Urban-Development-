@@ -1,31 +1,21 @@
-// function change() {
-//     let inputRow = window.event.target.parentNode.parentNode;
-//     let errorRow = inputRow.parentNode.firstElementChild;
-//     let blankRow = errorRow.nextElementSibling;
+function change() {
+    document.getElementById("form-error").style.display = "none";
+}
 
-//     errorRow.className = "hidden-row";
-//     blankRow.className = "hidden-row";
-// }
+function gainFocus() {
+    let inputRow = window.event.target.parentNode.parentNode;
+    let informationRow = inputRow.nextElementSibling;
+    
+    if (informationRow.className === "hidden-row help-message") {
+        informationRow.className = "message";
+    }
+}
 
-// function gainFocus() {
-//     let inputRow = window.event.target.parentNode.parentNode;
-//     let informationRow = inputRow.nextElementSibling;
-//     let blankRow = informationRow.nextElementSibling;
+function loseFocus() {
+    let inputRow = window.event.target.parentNode.parentNode;
+    let informationRow = inputRow.nextElementSibling;
 
-//     if (informationRow.firstElementChild.className === "help-message") {
-//         informationRow.style.display = "table-row";
-//         blankRow.className = "hidden-row";
-//     } else {
-//         informationRow.style.display = "none";
-//         blankRow.className = "blank-row";
-//     }
-// }
-
-// function loseFocus() {
-//     let inputRow = window.event.target.parentNode.parentNode;
-//     let informationRow = inputRow.nextElementSibling;
-//     let blankRow = informationRow.nextElementSibling;
-
-//     informationRow.style.display = "none";
-//     blankRow.className = "blank-row";
-// }
+    if (informationRow.className === "message") {
+        informationRow.className = "hidden-row help-message";
+    }
+}

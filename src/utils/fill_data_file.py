@@ -37,6 +37,7 @@ def fill_file():
     if file_names:
         with open("../data/Wikidata/data.csv", "a", newline="") as f_object:
             writer_object = writer(f_object)
+
             for file_name, contains_greenery in file_names.items():
                 data_frame = pandas.read_csv("../data/Wikidata/" + file_name)
                 points = data_frame.geo.tolist()

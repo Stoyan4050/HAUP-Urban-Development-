@@ -2,11 +2,12 @@
 classify.py
 """
 
-from src.api.classifier import classify
+from classification.classifier import classify
 
 
 def run():
     """
     def run()
     """
+
     classify()

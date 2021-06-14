@@ -4,7 +4,7 @@ views.py
 
 import collections
 import json
-from math import ceil, floor
+from math import floor
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,8 +17,8 @@ from pyproj import Transformer
 from .forms import ChangePasswordForm, RegisterForm, LoginForm, NewPasswordForm
 from .models import Classification, Tile, User
 from .tokens import TOKEN_GENERATOR
-from .utils import extract_available_years, send_email, transform_tile_to_coordinates, \
-    transform_coordinates_to_tile, manual_classify
+from .utils import calculate_greenery_rounded, extract_available_years, send_email,\
+     transform_tile_to_coordinates, transform_coordinates_to_tile, manual_classify
 
 
 class BaseView(View):
@@ -34,7 +34,7 @@ class BaseView(View):
         """
 
         if request.user.is_authenticated:
-            return redirect("urban_development:map_page")
+            return redirect("urban_development:main_page")
 
         return redirect("urban_development:login_page")
 
@@ -52,7 +52,7 @@ class GuestView(View):
         """
 
         logout(request)
-        return redirect("urban_development:map_page")
+        return redirect("urban_development:main_page")
 
 
 class LoginView(View):
@@ -93,7 +93,7 @@ class LoginView(View):
 
             if user is not None:
                 login(request, user)
-                return redirect("urban_development:map_page")
+                return redirect("urban_development:main_page")
 
         self._context["form"] = form
         return render(request, "pages/login_page.html", context=self._context)
@@ -359,9 +359,9 @@ class PasswordChangedView(View):
         return render(request, "templates/user_data_template.html", context=self._context)
 
 
-class MapView(View):
+class MainView(View):
     """
-    class MapView(View)
+    class MainView(View)
     """
 
     @staticmethod
@@ -374,7 +374,7 @@ class MapView(View):
         context = {
             "years": collections.OrderedDict(sorted(extract_available_years().items(), reverse=True)),
         }
-        return render(request, "pages/map_page.html", context=context)
+        return render(request, "pages/main_page.html", context=context)
 
 
 class GetClassifiedTilesView(View):
@@ -390,6 +390,7 @@ class GetClassifiedTilesView(View):
         """
 
         year = json.loads(parameters).get("year")
+
         classifications_for_year = Classification.objects.filter(year__lte=year)
 
         if len(classifications_for_year) <= 0:
@@ -403,6 +404,7 @@ class GetClassifiedTilesView(View):
         for tile in distinct_tiles:
             coordinates = transform_tile_to_coordinates(tile.x_coordinate, tile.y_coordinate)
             x_coordinate, y_coordinate = transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
+
             result[tile.tile_id] = {
                 "xmin": coordinates["xmin"],
                 "ymin": coordinates["ymin"],
@@ -411,7 +413,7 @@ class GetClassifiedTilesView(View):
                 "x_coordinate": x_coordinate,
                 "y_coordinate": y_coordinate,
                 "year": -1,
-                "classified_by": "",
+                "classified_by": "unknown",
                 "contains_greenery": False,
                 "greenery_percentage": 0,
                 "greenery_rounded": 0,
@@ -423,19 +425,17 @@ class GetClassifiedTilesView(View):
 
                 if classification["classified_by"] == -1:
                     result[classification["tile_id"]]["classified_by"] = "classifier"
-                elif classification["classified_by"] == -2:
+                elif classification["classified_by"] <= -2:
                     result[classification["tile_id"]]["classified_by"] = "training data"
-                else:
+                elif classification["classified_by"] > 0:
                     result[classification["tile_id"]]["classified_by"] = "user"
+                else:
+                    result[classification["tile_id"]]["classified_by"] = "unknown"
 
                 result[classification["tile_id"]]["contains_greenery"] = classification["contains_greenery"]
                 result[classification["tile_id"]]["greenery_percentage"] = 100 * classification["greenery_percentage"]
-
-                if classification["contains_greenery"] and classification["greenery_percentage"] == 0:
-                    result[classification["tile_id"]]["greenery_rounded"] = 25
-                else:
-                    result[classification["tile_id"]]["greenery_rounded"] = \
-                        int(25 * ceil(100 * classification["greenery_percentage"] / 25))
+                result[classification["tile_id"]]["greenery_rounded"] = calculate_greenery_rounded(
+                    classification["contains_greenery"], classification["greenery_percentage"])
 
         return JsonResponse(list(result.values()), safe=False)
 
@@ -444,53 +444,68 @@ class TransformCoordinatesView(View):
     """
     class TransformCoordinatesView(View):
     """
+
     @staticmethod
     def get(_, parameters):
         """
+        @staticmethod
         def get(_, parameters):
         """
-        x_coordinate = json.loads(parameters).get("x_coordinate")
-        y_coordinate = json.loads(parameters).get("y_coordinate")
+
         year = json.loads(parameters).get("year")
-        x_tile = x_coordinate - 13328.546
+        x_parameter = json.loads(parameters).get("x_coordinate")
+        y_parameter = json.loads(parameters).get("y_coordinate")
+
+        x_tile = x_parameter - 13328.546
         x_tile /= 406.40102300613496932515337423313
 
-        y_tile = 619342.658 - y_coordinate
+        y_tile = 619342.658 - y_parameter
         y_tile /= 406.40607802340702210663198959688
 
         x_tile = floor(x_tile) + 75120
         y_tile = floor(y_tile) + 75032
+
         tile_id = x_tile * 75879 + y_tile
+
         try:
-            classification_year = -1
             classifications = Classification.objects.filter(tile=tile_id, year__lte=year)
+
+            classification_year = -1
             for classification in classifications.values():
                 if classification["year"] > classification_year:
                     classification_year = classification["year"]
+
             contains_greenery = Classification.objects.get(tile=tile_id, year=classification_year).contains_greenery
             greenery_percentage = Classification.objects.get(tile=tile_id, year=classification_year).greenery_percentage
             classified_by = Classification.objects.get(tile=tile_id, year=classification_year).classified_by
-            if classified_by <= -2:
-                classified_by = "Training data"
-            elif classified_by == -1:
-                classified_by = "Algorithm"
+
+            if classified_by == -1:
+                classified_by = "classifier"
+            elif classified_by <= -2:
+                classified_by = "training data"
+            elif classified_by > 0:
+                classified_by = "user"
             else:
-                classified_by = "User"
+                classified_by = "unknown"
         except ObjectDoesNotExist:
-            contains_greenery = "Unknown"
-            greenery_percentage = "Unknown"
-            classified_by = "Unknown"
+            contains_greenery = "unknown"
+            greenery_percentage = "unknown"
+            classified_by = "unknown"
+
         transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
+        x_coordinate, y_coordinate = transformer.transform(x_parameter, y_parameter)
+
         result = {
             "x_tile": x_tile,
             "y_tile": y_tile,
             "tile_id": tile_id,
-            "x_coordinate": transformer.transform(x_coordinate, y_coordinate)[0],
-            "y_coordinate": transformer.transform(x_coordinate, y_coordinate)[1],
-            "contains_greenery": contains_greenery,
+            "x_coordinate": x_coordinate,
+            "y_coordinate": y_coordinate,
             "classified_by": classified_by,
-            "greenery_percentage": greenery_percentage
+            "contains_greenery": contains_greenery,
+            "greenery_percentage": greenery_percentage,
         }
+
         return JsonResponse(result, safe=False)
 
 
@@ -498,55 +513,43 @@ class ManualClassificationView(View):
     """
     class ManualClassificationView(View):
     """
+
     @staticmethod
     def get(_, parameters):
         """
+        @staticmethod
         def get(_, parameters):
         """
+
         x_coordinate = json.loads(parameters).get("latitude")
         y_coordinate = json.loads(parameters).get("longitude")
-        x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
-
         year = json.loads(parameters).get("year")
         user = json.loads(parameters).get("classified_by")
         greenery_percentage = json.loads(parameters).get("greenery_percentage")
         contains_greenery = json.loads(parameters).get("contains_greenery")
-        coordinates = transform_tile_to_coordinates(x_tile, y_tile)
+
         manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery)
-        if contains_greenery == "True" and greenery_percentage == 0:
-            contains_greenery = "true"
-            greenery_rounded = 25
-        elif contains_greenery == "False":
-            contains_greenery = "false"
-            greenery_rounded = 0
+
+        contains_greenery = contains_greenery.lower()
+
+        if contains_greenery in ('true', 'false'):
+            greenery_rounded = calculate_greenery_rounded(contains_greenery == "true", greenery_percentage)
         else:
-            contains_greenery = "true"
-            greenery_rounded = int(25 * ceil(100 * float(greenery_percentage) / 25))
-        print(greenery_rounded)
+            greenery_rounded = 0
+
+        x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
+        coordinates = transform_tile_to_coordinates(x_tile, y_tile)
+
         result = {
             "xmin": coordinates["xmin"],
             "ymin": coordinates["ymin"],
             "xmax": coordinates["xmax"],
             "ymax": coordinates["ymax"],
+            "x_coordinate": x_coordinate,
+            "y_coordinate": y_coordinate,
             "contains_greenery": contains_greenery,
             "greenery_percentage": greenery_percentage,
             "greenery_rounded": greenery_rounded,
-            "x_coordinate": x_coordinate,
-            "y_coordinate": y_coordinate
         }
+
         return JsonResponse(result, safe=False)
-
-
-class HowToUseView(View):
-    """
-    class HowToUseView(View)
-    """
-
-    @staticmethod
-    def get(request):
-        """
-        @staticmethod
-        def get(request)
-        """
-
-        return render(request, "pages/how_to_use.html")

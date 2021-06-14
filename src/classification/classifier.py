@@ -1,5 +1,5 @@
 """
-Classifier
+classifier.py
 """
 
 from urllib.error import HTTPError
@@ -10,7 +10,6 @@ import numpy as np
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from sklearn.decomposition import PCA
-
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
@@ -20,7 +19,7 @@ import tensorflow as tf
 from tensorflow.keras import Sequential, layers
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 import matplotlib.pyplot as plt
-from .models import Classification
+from api.models import Classification
 
 ALL_LABELS = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space',
               'park', 'recreational area']
@@ -99,7 +98,6 @@ def random_sample(arr):
 
 def get_labels_imgs(data):
     """
-<<<<<<< HEAD
         separate images and labels from the data
     """
 

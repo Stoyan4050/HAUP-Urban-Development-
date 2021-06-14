@@ -1,6 +1,7 @@
 """
 utils.py
 """
+
 import urllib
 from math import floor, ceil
 import random
@@ -17,7 +18,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from pyproj import Transformer
-from .classifier import color_detection
+from classification.classifier import color_detection
 from .models import Tile, Classification, User
 from .tokens import TOKEN_GENERATOR
 
@@ -109,6 +110,33 @@ def add_labels_for_previous_years():
     # for year in range(1910, 2030, 10):
     #
     #     print(str(year - 10) + ": " + str(np.percentile(arr[int((year - 1910) / 10)], 90)) + "\n")
+
+
+def calculate_greenery_rounded(contains_greenery, greenery_percentage):
+    """
+    def calculate_greenery_rounded(contains_greenery, greenery_percentage)
+    """
+
+    if not contains_greenery:
+        return 0
+
+    if contains_greenery and greenery_percentage == 0:
+        return 25
+
+    return int(25 * ceil(100 * greenery_percentage / 25))
+
+
+def calculate_percentage_greenery(x_esri, y_esri, year, contains_greenery):
+    """
+    def calculate_percentage_greenery(x_esri, y_esri, year, contains_greenery)
+    """
+
+    first_colored_map = 1914
+
+    if contains_greenery:
+        return color_detection(x_esri, y_esri, max(year, first_colored_map))
+
+    return 0
 
 
 def create_tiles():
@@ -263,13 +291,8 @@ def extract_convert_to_esri():
         y_esri = floor(y_esri) + 75032
         tile_id = x_esri * 75879 + y_esri
 
-        first_colored_map = 1914
-
         try:
-            if contains_greenery:
-                greenery_percentage = color_detection(x_esri, y_esri, max(year, first_colored_map))
-            else:
-                greenery_percentage = 0
+            greenery_percentage = calculate_percentage_greenery(x_esri, y_esri, year, contains_greenery)
 
             Classification.objects.create(tile=Tile(tile_id, x_esri, y_esri), year=year, classified_by="-2",
                                           contains_greenery=contains_greenery, greenery_percentage=greenery_percentage)
