@@ -1,5 +1,4 @@
 altgraph==0.17
-api~=0.0.7
 asgiref==3.3.4
 beautifulsoup4~=4.9.3
 bs4==0.0.1
