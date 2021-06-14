@@ -344,21 +344,21 @@ def color_detection(x_coord, y_coord, year=2020):
         # print(y_shape)
     if len(areas) > 0:
         max_area = np.max(areas)
-        if max_area >= 15:
-            # cv2.imshow("Image", img2)
-            # cv2.waitKey()
-            # cv2.imshow("out", output)
-            # cv2.waitKey()
-            # img_res = np.hstack([img2, output])
-            # print(output.shape[0], output.shape[1])
-            num_pixels = output.shape[0] * output.shape[1] * output.shape[2]
-            # print(num_pixels)
-            # print(output)
-            non_zero = np.count_nonzero(output)
-            # print(non_zero)
+        #if max_area >= 15:
+        # cv2.imshow("Image", img2)
+        # cv2.waitKey()
+        # cv2.imshow("out", output)
+        # cv2.waitKey()
+        # img_res = np.hstack([img2, output])
+        # print(output.shape[0], output.shape[1])
+        num_pixels = output.shape[0] * output.shape[1] * output.shape[2]
+        # print(num_pixels)
+        # print(output)
+        non_zero = np.count_nonzero(output)
+        # print(non_zero)
 
-            percentage = non_zero / num_pixels
-            # print(percentage)
-            return percentage
+        percentage = non_zero / num_pixels
+        # print(percentage)
+        return percentage
 
     return 0
