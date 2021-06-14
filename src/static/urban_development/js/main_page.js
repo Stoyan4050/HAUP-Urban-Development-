@@ -182,15 +182,7 @@ require([
             abortController.abort()
         })
 
-        $('#data-view-button').click(function () {
-            abortController.abort()
-        })
-
         $('#year').change(function () {
-            abortController.abort()
-        })
-
-        $('#overlay').change(function () {
             abortController.abort()
         })
 
@@ -305,10 +297,6 @@ require([
             abortController.abort()
         })
 
-        $('#map-view-button').click(function () {
-            abortController.abort()
-        })
-
         $('#data-view-button').click(function () {
             abortController.abort()
         })
@@ -371,10 +359,6 @@ require([
         let abortController = new AbortController()
 
         $('#how-to-view-button').click(function () {
-            abortController.abort()
-        })
-
-        $('#map-view-button').click(function () {
             abortController.abort()
         })
 
