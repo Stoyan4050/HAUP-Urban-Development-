@@ -2,7 +2,7 @@
 add_data_for_previous_years.py
 """
 
-from api.utils import add_labels_for_previous_years
+from src.api.utils import add_labels_for_previous_years
 
 
 def run():

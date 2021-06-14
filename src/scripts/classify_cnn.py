@@ -2,8 +2,7 @@
     Classify with CNN
 """
 
-
-from api.classifier_new import classify_cnn
+from src.api.classifier_new import classify_cnn
 
 
 def run():

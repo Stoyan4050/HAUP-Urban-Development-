@@ -2,7 +2,7 @@
 classify.py
 """
 
-from api.classifier import classify
+from src.api.classifier import classify
 
 
 def run():
