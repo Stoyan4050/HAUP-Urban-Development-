@@ -94,7 +94,11 @@ require([
             document.getElementById("myForm").style.display='block'
             document.getElementById("coordinates").innerHTML = json["x_coordinate"] + ", " + json["y_coordinate"];
             document.getElementById("current_contains_greenery").innerHTML = json["contains_greenery"];
-            document.getElementById("current_greenery_percentage").innerHTML = json["greenery_percentage"];
+            if(json["greenery_percentage"] != "Unknown"){
+              json["greenery_percentage"] = Math.round(json["greenery_percentage"] * 100) + "%"
+            }
+            console.log(json["greenery_percentage"])
+            document.getElementById("current_greenery_percentage").innerHTML = json["greenery_percentage"]
             document.getElementById("classified_by").innerHTML = json["classified_by"];
            } else {
             document.getElementById("myForm").style.display='block'
@@ -465,7 +469,7 @@ require([
         contains_greenery = 'False'
         greenery_percentage = 0
         } else {
-            greenery_percentage = document.getElementById('greenery_percentage').value
+            greenery_percentage = document.getElementById('greenery_percentage').value / 100
             contains_greenery = document.getElementById('contains_greenery').value
           }
       var parameters = {
