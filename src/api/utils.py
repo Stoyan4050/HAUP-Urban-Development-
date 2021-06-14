@@ -127,7 +127,7 @@ def create_tiles():
     tilenames = data_frame.tilename.tolist()
     percentage = 0
 
-    for i in range(0, len(tilenames)):
+    for i in enumerate(tilenames):
         if ceil((100 * i) / len(tilenames)) > percentage:
             percentage = ceil((100 * i) / len(tilenames))
             print(str(percentage) + "%")
@@ -308,6 +308,47 @@ def send_email(uid, domain, email_subject, email_template):
         return True
 
     return False
+
+
+def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
+    """
+    def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
+    """
+    x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
+
+    try:
+        Classification.objects.create(tile_id=Tile.objects.
+                                      get(x_coordinate=x_tile, y_coordinate=y_tile).tile_id,
+                                      year=year, greenery_percentage=greenery_percentage,
+                                      contains_greenery=contains_greenery,
+                                      classified_by=User.objects.get(email=user).id)
+
+    except IntegrityError:
+        Classification.objects.filter(year=year, tile_id=Tile.objects.get(x_coordinate=x_tile,
+                                                                          y_coordinate=y_tile).tile_id)\
+            .update(greenery_percentage=greenery_percentage, contains_greenery=contains_greenery,
+                    classified_by=User.objects.get(email=user).id)
+
+    except ObjectDoesNotExist:
+        print("Unsuccessfully updated tiles.")
+
+
+def transform_coordinates_to_tile(x_coordinate, y_coordinate):
+    """
+    def transform_coordinates_to_tile(x_coordinate, y_coordinate):
+    """
+    transformer = Transformer.from_crs("EPSG:4326", "EPSG:28992")
+    x_esri, y_esri = transformer.transform(x_coordinate, y_coordinate)
+    x_esri -= 13328.546
+    x_esri /= 406.40102300613496932515337423313
+
+    y_esri = 619342.658 - y_esri
+    y_esri /= 406.40607802340702210663198959688
+
+    x_tile = floor(x_esri) + 75120
+    y_tile = floor(y_esri) + 75032
+
+    return x_tile, y_tile
 
 
 def transform_tile_to_coordinates(x_tile, y_tile):

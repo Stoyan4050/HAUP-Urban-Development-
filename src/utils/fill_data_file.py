@@ -45,7 +45,7 @@ def fill_file():
                 if 'inception' in data_frame.columns:
                     years = data_frame.inception.tolist()
 
-                for index in range(len(points)):
+                for index in enumerate(points):
                     args = [points[index], years[index], contains_greenery]
                     writer_object.writerow(args)
 

@@ -42,7 +42,7 @@ require([
       listItemCreatedFunction: function (event) {
         var item = event.item
 
-        // Don't show the legend twice
+        // Don't show  the legend twice
         if (item.layer.geometryType === 'polygon') {
           item.title = 'Classification legend'
           item.panel = legend
@@ -79,6 +79,50 @@ require([
     mapView.on(['pointer-down'], function (event) {
       showCoordinates(mapView.toMap({ x: event.x, y: event.y }))
     })
+    mapView.on('click', async function (event) {
+      if($('#overlay option:selected').val().trim().localeCompare("Classified as") === 0) {
+        abortController = new AbortController()
+        var x_coordinate = event.mapPoint.x
+        var y_coordinate = event.mapPoint.y
+        var year = $('#year option:selected').val().trim()
+        var parameters = { x_coordinate: x_coordinate, y_coordinate: y_coordinate, year: year }
+        const response = await fetch('/urban_development/transform_coordinates/' + JSON.stringify(parameters), {signal: abortController.signal})
+        try {
+          var json = await response.json()
+          var user = document.getElementById("user-name").innerHTML.trim().split(' ').join('').split("\n")[2]
+          if (user.localeCompare("guest") != 0) {
+            document.getElementById("myForm").style.display='block'
+            document.getElementById("coordinates").innerHTML = json["x_coordinate"] + ", " + json["y_coordinate"];
+            document.getElementById("current_contains_greenery").innerHTML = json["contains_greenery"];
+            if(json["greenery_percentage"] != "Unknown"){
+              json["greenery_percentage"] = Math.round(json["greenery_percentage"] * 100) + "%"
+            }
+            console.log(json["greenery_percentage"])
+            document.getElementById("current_greenery_percentage").innerHTML = json["greenery_percentage"]
+            document.getElementById("classified_by").innerHTML = json["classified_by"];
+           } else {
+            document.getElementById("myForm").style.display='block'
+            document.getElementById("h2").style.display='none'
+            document.getElementById("text_contains_greenery").style.display='none'
+            document.getElementById("contains_greenery").style.display='none'
+            document.getElementById("text_greenery_percentage").style.display='none'
+            document.getElementById("greenery_percentage").style.display='none'
+            document.getElementById("updateButton").style.display='none'
+            document.getElementById("coordinates").innerHTML = json["x_coordinate"] + ", " + json["y_coordinate"];
+            document.getElementById("classified_by").innerHTML = json["classified_by"];
+            document.getElementById("current_contains_greenery").innerHTML = json["contains_greenery"];
+            if(json["greenery_percentage"] != "Unknown"){
+              json["greenery_percentage"] = Math.round(json["greenery_percentage"] * 100) + "%"
+            }
+            document.getElementById("current_greenery_percentage").innerHTML = json["greenery_percentage"];
+
+          }
+        } catch (exception) {
+          alert(exception)
+          alert('Error oops.')
+        }
+      }
+      })
   }
 
   function addMap() {
@@ -234,11 +278,11 @@ require([
     }
   }
 
-  async function setupDataView() {
+  async function setupDataView(form) {
     $('#data').remove()
     var dataDiv = $("<div id='data'></div>")
     $('.page-container').append(dataDiv)
-
+    $('.page-container').append(form)
     let abortController = new AbortController()
 
     $('#map-view-button').click(function () {
@@ -246,6 +290,7 @@ require([
     })
 
     $('#data-view-button').click(function () {
+      document.getElementById("myForm").style.display='none'
       abortController.abort()
     })
 
@@ -298,24 +343,24 @@ require([
       }
 
       $('#data').append("<span class='text-element data-element'>Total classified tiles: " + classifiedTiles + "</span><br><br><br>")
-      $('#data').append("<span class='text-element data-element' id='public-space-tiles'>Tiles classified as not containing greenery: " + noGreenery + "</span><br>")
-      $('#data').append("<span class='text-element data-element' id='public-space-tiles'>Tiles classified as containing greenery: " + greenery + "</span><br><br><br>")
-      $('#data').append("<span class='text-element data-element' id='public-space-tiles'>Tiles classified as containing 0% - 25% greenery: " + quarter1 + "</span><br>")
-      $('#data').append("<span class='text-element data-element' id='not-public-space-tiles'>Tiles classified as containing 25% - 50% greenery: " + quarter2 + "</span><br>")
-      $('#data').append("<span class='text-element data-element' id='not-public-space-tiles'>Tiles classified as containing 50% - 75% greenery: " + quarter3 + "</span><br>")
-      $('#data').append("<span class='text-element data-element' id='not-public-space-tiles'>Tiles classified as containing 75% - 100% greenery: " + quarter4 + "</span><br><br><br>")
-      $('#data').append("<span class='text-element data-element id='user-tiles'>Tiles classified by user: " + classifiedByUser + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='no-greenery'>Tiles classified as not containing greenery: " + noGreenery + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='greenery'>Tiles classified as containing greenery: " + greenery + "</span><br><br><br>")
+      $('#data').append("<span class='text-element data-element' id='quarter1'>Tiles classified as containing 0% - 25% greenery: " + quarter1 + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='quarter2'>Tiles classified as containing 25% - 50% greenery: " + quarter2 + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='quarter3'>Tiles classified as containing 50% - 75% greenery: " + quarter3 + "</span><br>")
+      $('#data').append("<span class='text-element data-element' id='quarter4'>Tiles classified as containing 75% - 100% greenery: " + quarter4 + "</span><br><br><br>")
+      $('#data').append("<span class='text-element data-element' id='user-tiles'>Tiles classified by user: " + classifiedByUser + "</span><br>")
       $('#data').append("<span class='text-element data-element' id='classifier-tiles'>Tiles classified by classifier: " + classifiedByClassifier + "</span><br>")
       $('#data').append("<span class='text-element data-element' id='training-data-tiles'>Tiles classified by training data: " + classifiedByTrainingData + "</span><br>")
 
-      if (json['total'] > 0) {
+      if (classifiedTiles > 0) {
         function setupSpan(id, value) {
           function roundToTwoDecimalPlaces(x) {
             return +(Math.round(x + 'e+2') + 'e-2')
           }
 
           if (value > 0) {
-            const exact = (100 * value) / json['total']
+            const exact = (100 * value) / classifiedTiles
             const rounded = roundToTwoDecimalPlaces(exact)
             $('#' + id).append(
               ' (' + (rounded == exact ? '=' : '≈') + rounded + '%)'
@@ -323,19 +368,15 @@ require([
           }
         }
 
-        setupSpan('public-space-tiles', publicSpace)
-        setupSpan('not-public-space-tiles', notPublicSpace)
-        setupSpan('mixed-tiles', json['mixed'])
-        setupSpan('user-tiles', user)
-        setupSpan('classifier-tiles', classifier)
-        setupSpan('training-data-tiles', trainingData)
-        setupSpan('user-classifier-tiles', userClassifier)
-        setupSpan('user-training-data-tiles', userTrainingData)
-        setupSpan('classifier-training-data-tiles', classifierTrainingData)
-        setupSpan(
-          'user-classifier-training-data-tiles',
-          json['user_classifier_training_data']
-        )
+        setupSpan('no-greenery', noGreenery)
+        setupSpan('greenery', greenery)
+        setupSpan('quarter1', quarter1)
+        setupSpan('quarter2', quarter2)
+        setupSpan('quarter3', quarter3)
+        setupSpan('quarter4', quarter4)
+        setupSpan('user-tiles', classifiedByUser)
+        setupSpan('classifier-tiles', classifiedByClassifier)
+        setupSpan('training-data-tiles', classifiedByTrainingData)
       }
     } catch (exception) {
       alert('Error.')
@@ -391,6 +432,7 @@ require([
     $('#map-view-button').click(function (event) {
       if (viewType === VIEW_TYPES.map) return
       $('#map-view-button').prop('disabled', true)
+      var form = document.getElementById("myForm")
       $('#data').remove()
       $('#overlay').val('None').change()
       $('#overlay-cell').show()
@@ -399,6 +441,7 @@ require([
       var mapDiv = $("<div id='map'></div>")
       map = new Map(mapDiv)
       mapContainer.append(map)
+      mapContainer.append(form)
       $('.page-container').append(mapContainer)
       addMap()
       setupMapView(mapView)
@@ -408,17 +451,79 @@ require([
     $('#data-view-button').click(function (event) {
       if (viewType === VIEW_TYPES.data) return
       $('#data-view-button').prop('disabled', true)
+      var form = document.getElementById("myForm")
       $('#map-container').remove()
       $('#overlay-cell').hide()
       $('#map-view-button').prop('disabled', false)
-
-      setupDataView()
+      setupDataView(form)
       updateUrl('data')
       viewType = VIEW_TYPES.data
     })
+    $('#updateButton').click(async function (){
+      edits = {
+        addFeatures: [],
+      }
+      var year = $('#year option:selected').val().trim()
+      var classified_by = document.getElementById('user-name').innerHTML.trim().split(' ').join('').split('\n')[2]
+      var latitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[0]
+      var longitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[1]
+      var greenery_percentage
+      var contains_greenery
+      if(document.getElementById('contains_greenery').value.localeCompare('False')==0){
+        contains_greenery = 'False'
+        greenery_percentage = 0
+        } else {
+            greenery_percentage = document.getElementById('greenery_percentage').value / 100
+            contains_greenery = document.getElementById('contains_greenery').value
+          }
+      var parameters = {
+        year: year,
+        classified_by: classified_by,
+        longitude: longitude,
+        latitude: latitude,
+        greenery_percentage: greenery_percentage,
+        contains_greenery: contains_greenery
+      }
+      const response = await fetch('/urban_development/manual_classification/' + JSON.stringify(parameters),{signal: abortController.signal})
+        try {
+          var json = await response.json()
+          var graphic = new Graphic({
+            geometry: Polygon.fromExtent(
+              new Extent(
+                json.xmin, // xmin
+                json.ymin, // ymin
+                json.xmax, // xmax
+                json.ymax, // ymax
+                { wkid: 28992 }
+                )
+            ),
+          })
+          graphic.setAttribute('Longitude', json.x_coordinate)
+          graphic.setAttribute('Latitude', json.y_coordinate)
+          graphic.setAttribute('Contains greenery', json.contains_greenery)
+          graphic.setAttribute('Greenery percentage', json.greenery_percentage)
+          graphic.setAttribute('Greenery rounded', json.greenery_rounded)
+          edits.addFeatures.push(graphic)
+          classifiedAsLayer.applyEdits(edits)
+          } catch(exception) {
+            alert(exception)
+            alert('Update was unsuccessful.')
+          }
+    })
   })
 })
-
+function showHide(){
+  if($('#contains_greenery').val().localeCompare("True")==0){
+    document.getElementById("text_greenery_percentage").style.display='block'
+    document.getElementById("greenery_percentage").style.display='block'
+  } else {
+    document.getElementById("text_greenery_percentage").style.display='none'
+    document.getElementById("greenery_percentage").style.display='none'
+  }
+}
+function closeForm() {
+  document.getElementById("myForm").style.display = 'none';
+}
 function setupClassifiedAsLayer(FeatureLayer) {
   var template = {
     title: 'Tile | EPSG: 4326',
@@ -528,7 +633,6 @@ function setupClassifiedAsLayer(FeatureLayer) {
       },
     ],
     source: [],
-    popupTemplate: template,
     renderer: renderer,
     geometryType: 'polygon',
     spatialReference: { wkid: 28992 },
@@ -612,7 +716,6 @@ function setupClassifiedByLayer(FeatureLayer) {
       },
     ],
     source: [],
-    popupTemplate: template,
     renderer: renderer,
     geometryType: 'polygon',
     spatialReference: { wkid: 28992 },
