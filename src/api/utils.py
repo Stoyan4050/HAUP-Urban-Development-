@@ -110,23 +110,6 @@ def add_labels_for_previous_years():
     #
     #     print(str(year - 10) + ": " + str(np.percentile(arr[int((year - 1910) / 10)], 90)) + "\n")
 
-
-def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id):
-    """
-    def add_user_label(start_x, start_y, length_x, length_y, year, label, user_id)
-    """
-
-    for x_coordinate in range(start_x, start_x + length_x - 1):
-        for y_coordinate in range(start_y, start_y + length_y - 1):
-
-            try:
-                Classification.objects.create(
-                    tile=Tile.objects.get(x_coordinate=x_coordinate, y_coordinate=y_coordinate),
-                    year=year, label=label, classified_by=user_id)
-            except ObjectDoesNotExist:
-                print(x_coordinate, y_coordinate)
-
-
 def create_tiles():
     """
     def create_tiles()

@@ -10,8 +10,10 @@ import numpy as np
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from sklearn.decomposition import PCA
-from sklearn.metrics import classification_report, accuracy_score
-from sklearn.pipeline import Pipeline
+
+from sklearn.metrics import f1_score, classification_report, accuracy_score
+from sklearn.model_selection import GridSearchCV, KFold
+from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.svm import SVC
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils import shuffle
@@ -98,6 +100,7 @@ def random_sample(arr):
 
 def get_labels_imgs(data):
     """
+<<<<<<< HEAD
         separate images and labels from the data
     """
 
@@ -147,6 +150,49 @@ def classify(year=2015, download_data=False):
     print(accuracy_score(test_labels, prediction))
     print(classification_report(test_labels, prediction, target_names=label_encoder.classes_))
 
+def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, train_images):
+    """
+        tune hyper parameter
+    """
+
+    k_fold = KFold(n_splits=12)
+
+    best_model_estimator = Pipeline([("pca", PCA()), (estimator_name, estimator)])
+    sum_scores = 0
+    best_model_score = 0.0
+
+    vector = np.vectorize(np.int16)
+
+    for train_index, test_index in k_fold.split(train_images):
+        x_train, x_test = train_images[vector(train_index)], train_images[vector(test_index)]
+        y_train, y_test = train_labels[vector(train_index)], train_labels[vector(test_index)]
+
+        pipe = Pipeline([("pca", PCA()), (estimator_name, estimator)])
+        search = GridSearchCV(pipe, estimator_params, cv=5, return_train_score=True, n_jobs=-1, verbose=2,
+                              scoring="f1_macro")
+
+        search.fit(x_train, y_train)
+
+        est = search.best_estimator_
+
+        est_pipe = make_pipeline(est)
+        est_pipe.fit(x_train, y_train)
+        prediction = est_pipe.predict(x_test)
+
+        f1_score_est = f1_score(y_test, prediction, average="macro")
+
+        if f1_score_est > best_model_score:
+            best_model_score = f1_score_est
+            best_model_estimator = est
+
+        sum_scores = sum_scores + f1_score_est
+
+    mean_score = sum_scores / k_fold.get_n_splits()
+
+    print("Mean score:", mean_score, "\n")
+    print("Best score:", best_model_score, "\n")
+    print("Best estimator:", best_model_estimator)
+    return mean_score, best_model_score, best_model_estimator
 
 def create_dir(all_labels):
     """
@@ -194,7 +240,8 @@ def train_cnn(year=2015, download_data=False, train_network=True):
         get_images_test(year)
 
     train_images, train_labels = read_images(ALL_LABELS, True)
-    # test_images = read_images(ALL_LABELS, False)
+
+    test_images = read_images(ALL_LABELS, False)
     # test_labels = read_images(ALL_LABELS, False)
     # print(len(train_images))
     # print("Training data extracted!")
@@ -210,6 +257,7 @@ def train_cnn(year=2015, download_data=False, train_network=True):
     batch_size = 32
     checkpoint_path = "./model_checkpoint/cp-{epoch:04d}.ckpt"
     # checkpoint_dir = os.path.dirname(checkpoint_path)
+
 
     if train_network:
         model = Sequential()
@@ -261,6 +309,7 @@ def train_cnn(year=2015, download_data=False, train_network=True):
     # new_predictions = []
     # for i in enumerate(prediction):
     #     new_predictions.append(np.argmax(prediction[i]))
+
     # print(accuracy_score(test_labels, new_predictions))
     # print(classification_report(test_labels, new_predictions, target_names=label_encoder.classes_))
 
@@ -352,7 +401,8 @@ def color_detection(x_coord, y_coord, year=2020):
             # print(output)
             non_zero = np.count_nonzero(output)
             # print(non_zero)
-            percentage = non_zero / num_pixels
+
+            percentage = non_zero/num_pixels
             # print(percentage)
             return percentage
 
