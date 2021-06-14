@@ -94,24 +94,17 @@ def add_labels_for_previous_years():
                     try:
                         Classification.objects.create(
                             tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year + 10,
-                            greenery_percentage=classification.greenery_percentage,
-                            contains_greenery=classification.contains_greenery, classified_by="-5")
+                            greenery_percentage=classification.greenery_percentage, classified_by="-2")
                     except ObjectDoesNotExist:
                         print(tile_x, tile_y)
-                    except IntegrityError:
-                        print("Integrity error")
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 break
             if year == 1900:
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 # print(year)
-                try:
-                    Classification.objects.create(
-                        tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year,
-                        greenery_percentage=classification.greenery_percentage,
-                        contains_greenery=classification.contains_greenery, classified_by="-5")
-                except IntegrityError:
-                    print("Integrity error")
+                Classification.objects.create(
+                    tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year,
+                    greenery_percentage=classification.greenery_percentage, classified_by="-2")
 
     # for year in range(1910, 2030, 10):
     #
