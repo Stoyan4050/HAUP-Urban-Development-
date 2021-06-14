@@ -111,7 +111,11 @@ require([
             document.getElementById("coordinates").innerHTML = json["x_coordinate"] + ", " + json["y_coordinate"];
             document.getElementById("classified_by").innerHTML = json["classified_by"];
             document.getElementById("current_contains_greenery").innerHTML = json["contains_greenery"];
+            if(json["greenery_percentage"] != "Unknown"){
+              json["greenery_percentage"] = Math.round(json["greenery_percentage"] * 100) + "%"
+            }
             document.getElementById("current_greenery_percentage").innerHTML = json["greenery_percentage"];
+
           }
         } catch (exception) {
           alert(exception)
