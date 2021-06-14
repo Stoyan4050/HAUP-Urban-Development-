@@ -161,11 +161,9 @@ def classify_cnn(year=2020):
         tile_x = test_coord[count][1]
         tile_y = test_coord[count][0]
         tile_id = tile_x * 75879 + tile_y
-        Classification.objects.create(tile = Tile(tile_id, tile_x, tile_y),
+        Classification.objects.create(tile=Tile(tile_id, tile_x, tile_y),
                                       year=year, greenery_percentage=0,
                                       contains_greenery=class_label,
                                       classified_by="-1")
-
-
 
     print(predictions)
