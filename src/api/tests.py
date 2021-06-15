@@ -4,7 +4,7 @@ tests.py
 
 from django.test import SimpleTestCase
 
-from src.api.classifier import get_image_from_url, color_detection
+from .classifier import get_image_from_url, color_detection
 
 
 class GetImageFromUrl(SimpleTestCase):
@@ -100,7 +100,6 @@ class ColorDetectionTest(SimpleTestCase):
         def test_fifty_green
         """
         image_percentage = color_detection(75449, 75543, 2020)
-        print(image_percentage)
         self.assertTrue(image_percentage * 100 > 49)
         self.assertTrue(image_percentage * 100 < 52)
         self.assertEqual(0.5019989013671875, image_percentage)
