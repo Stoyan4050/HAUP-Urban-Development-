@@ -13,7 +13,6 @@ from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
 from django.db.models import Q
 from api.models import Classification, Tile
-import cv2
 from . import classifier_svm, classifier
 
 
@@ -55,47 +54,16 @@ def get_training_validation(train_data):
 
 
 def get_greenery_percentage(img, year):
-    first_colored_map = 1914
-
-    return color_detection_cnn(img, max(year, first_colored_map))
-
-
-def color_detection_cnn(img, year):
     """
-        detect greenery in tiles of maps
+        get the percentage of greenery
     """
     if img is None:
         if year >= 2020:
             raise ObjectDoesNotExist("Tile not found.")
 
-        print(year)
-        return color_detection_cnn(img, year + 1)
+        return get_greenery_percentage(img, year + 1)
 
-    img1 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    boundaries = [(36, 25, 25), (70, 255, 255)]
-    lower = np.array(boundaries[0], dtype='uint8')
-    upper = np.array(boundaries[1], dtype='uint8')
-    mask = cv2.inRange(img1, lower, upper)
-
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2))
-    opened_mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-
-    output = cv2.bitwise_and(img2, img2, mask=opened_mask)
-    contours, _ = cv2.findContours(opened_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cv2.drawContours(output, contours, -1, (0, 255, 0), 1)
-    areas = []
-    for contour in contours:
-        (_, _, w_shape, h_shape) = cv2.boundingRect(contour)
-        areas.append(w_shape * h_shape)
-
-    if len(areas) > 0:
-        num_pixels = output.shape[0] * output.shape[1] * output.shape[2]
-        non_zero = np.count_nonzero(output)
-        percentage = non_zero / num_pixels
-        return percentage
-
-    return 0
+    return classifier.get_greenery_percentage(img)
 
 
 def classify_cnn(year=2020):
@@ -168,7 +136,7 @@ def classify_cnn(year=2020):
     loss = history.history['loss']
     val_loss = history.history['val_loss']
 
-    epochs_range = range(500)
+    epochs_range = range(200)
 
     plt.figure(figsize=(15, 15))
     plt.subplot(2, 2, 1)
@@ -200,8 +168,9 @@ def classify_cnn(year=2020):
             class_label = True
             greenery = get_greenery_percentage(test_images[count], year)
             print(greenery)
-            # if greenery < 5:
-            #     class_label = False
+            if greenery < 2:
+                class_label = False
+                greenery = 0
 
         # print(test_coord[i][1])
         # print(test_coord[i][0])
@@ -217,4 +186,5 @@ def classify_cnn(year=2020):
                                       year=year, greenery_percentage=greenery,
                                       contains_greenery=class_label,
                                       classified_by="-1")
+
     print(predictions)
