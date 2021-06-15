@@ -1,12 +1,11 @@
 """
-    SVM classifier
+    classifier_svm.py
 """
 
 import urllib.request
 import cv2
 import numpy as np
 import django
-
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
@@ -18,11 +17,8 @@ from sklearn.pipeline import make_pipeline
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from django.db.models import Q
-
-from api import classifier
-from .models import Classification, Tile
-
-django.setup()
+from api.models import Classification, Tile
+from . import classifier
 
 
 def get_image_from_url(year, x_coord, y_coord):

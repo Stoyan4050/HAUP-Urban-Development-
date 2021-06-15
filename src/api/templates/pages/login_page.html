@@ -6,23 +6,9 @@
 {% endblock %}
 
 {% block form-error %}
-{% if form.errors %}
-<tr class="error-message">
-    <td colspan="2">
-        Invalid username or password.
-    </td>
-</tr>
-<tr class="blank-row">
-</tr>
-{% else %}
-<tr class="hidden-row">
-</tr>
-<tr class="hidden-row">
-</tr>
-{% endif %}
-{% endblock %}
-
-{% block input-error %}
-<tr class="blank-row">
-</tr>
+<div class="{% if form.errors %}message error{% else %}hidden-row{% endif %}" id="form-error">
+    {% if form.errors %}
+    Invalid username or password.
+    {% endif %}
+</div>
 {% endblock %}
