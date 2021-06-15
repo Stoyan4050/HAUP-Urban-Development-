@@ -56,6 +56,8 @@ def get_training_validation(train_data):
 
     return np.array(training), np.array(validation)
 
+def get_greenery_percentage(year, tile_x, tile_y):
+    return 0
 
 def classify_cnn(year=2020):
     """
@@ -153,13 +155,19 @@ def classify_cnn(year=2020):
 
     for count, prediction in enumerate(predictions):
         class_label = False
+        tile_x = test_coord[count][1]
+        tile_y = test_coord[count][0]
+
         if prediction == 1:
             class_label = True
+            greenery = get_greenery_percentage(year, tile_x, tile_y)
+            print(greenery)
+            if greenery < 5:
+                class_label = False
 
         # print(test_coord[i][1])
         # print(test_coord[i][0])
-        tile_x = test_coord[count][1]
-        tile_y = test_coord[count][0]
+
         tile_id = tile_x * 75879 + tile_y
         Classification.objects.create(tile=Tile(tile_id, tile_x, tile_y),
                                       year=year, greenery_percentage=0,
