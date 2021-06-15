@@ -1,23 +1,18 @@
 """
-    Classifier CNN
+    classifier_new.py
 """
+
 import numpy as np
 import django
 import tensorflow as tf
 import matplotlib.pyplot as plt
-
-
 from keras.optimizer_v2.adam import Adam
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
 from django.db.models import Q
-from api import classifier_svm, classifier
-
-
-from .models import Classification, Tile
-
-django.setup()
+from api.models import Classification, Tile
+from . import classifier_svm, classifier
 
 
 def change_labels(arr):
