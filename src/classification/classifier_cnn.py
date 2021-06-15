@@ -7,11 +7,11 @@ import django
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from keras.optimizer_v2.adam import Adam
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
-from django.db.models import Q
 from api.models import Classification, Tile
 from . import classifier_svm, classifier
 
