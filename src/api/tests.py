@@ -4,7 +4,7 @@ tests.py
 
 from django.test import SimpleTestCase
 
-from .classifier import get_image_from_url, color_detection
+from api.classifier import get_image_from_url, color_detection
 
 
 class GetImageFromUrl(SimpleTestCase):
