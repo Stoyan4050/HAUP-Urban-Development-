@@ -6,12 +6,14 @@ import numpy as np
 import django
 import tensorflow as tf
 import matplotlib.pyplot as plt
+from django.core.exceptions import ObjectDoesNotExist
 from keras.optimizer_v2.adam import Adam
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
 from django.db.models import Q
 from api.models import Classification, Tile
+import cv2
 from . import classifier_svm, classifier
 
 
@@ -51,8 +53,50 @@ def get_training_validation(train_data):
 
     return np.array(training), np.array(validation)
 
-def get_greenery_percentage(year, tile_x, tile_y):
+
+def get_greenery_percentage(img, year):
+    first_colored_map = 1914
+
+    return color_detection_cnn(img, max(year, first_colored_map))
+
+
+def color_detection_cnn(img, year):
+    """
+        detect greenery in tiles of maps
+    """
+    if img is None:
+        if year >= 2020:
+            raise ObjectDoesNotExist("Tile not found.")
+
+        print(year)
+        return color_detection_cnn(img, year + 1)
+
+    img1 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    boundaries = [(36, 25, 25), (70, 255, 255)]
+    lower = np.array(boundaries[0], dtype='uint8')
+    upper = np.array(boundaries[1], dtype='uint8')
+    mask = cv2.inRange(img1, lower, upper)
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2))
+    opened_mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+
+    output = cv2.bitwise_and(img2, img2, mask=opened_mask)
+    contours, _ = cv2.findContours(opened_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cv2.drawContours(output, contours, -1, (0, 255, 0), 1)
+    areas = []
+    for contour in contours:
+        (_, _, w_shape, h_shape) = cv2.boundingRect(contour)
+        areas.append(w_shape * h_shape)
+
+    if len(areas) > 0:
+        num_pixels = output.shape[0] * output.shape[1] * output.shape[2]
+        non_zero = np.count_nonzero(output)
+        percentage = non_zero / num_pixels
+        return percentage
+
     return 0
+
 
 def classify_cnn(year=2020):
     """
@@ -64,8 +108,6 @@ def classify_cnn(year=2020):
 
     train_labels, train_images = classifier.get_labels_imgs(training)
     train_labels = change_labels(train_labels)
-    # print("Train", train_labels)
-    # print("Train2", train_images)
 
     val_labels, val_images = classifier.get_labels_imgs(validation)
     val_labels = change_labels(val_labels)
@@ -150,23 +192,29 @@ def classify_cnn(year=2020):
 
     for count, prediction in enumerate(predictions):
         class_label = False
+        greenery = 0
         tile_x = test_coord[count][1]
         tile_y = test_coord[count][0]
 
         if prediction == 1:
             class_label = True
-            greenery = get_greenery_percentage(year, tile_x, tile_y)
+            greenery = get_greenery_percentage(test_images[count], year)
             print(greenery)
-            if greenery < 5:
-                class_label = False
+            # if greenery < 5:
+            #     class_label = False
 
         # print(test_coord[i][1])
         # print(test_coord[i][0])
 
-        tile_id = tile_x * 75879 + tile_y
-        Classification.objects.create(tile=Tile(tile_id, tile_x, tile_y),
-                                      year=year, greenery_percentage=0,
+        # tile_id = tile_x * 75879 + tile_y
+        # Classification.objects.create(tile=Tile(tile_id, tile_x, tile_y),
+        #                               year=year, greenery_percentage=0,
+        #                               contains_greenery=class_label,
+        #                               classified_by="-1")
+
+        Classification.objects.create(tile=Tile.objects.get(x_coordinate=tile_x,
+                                                            y_coordinate=tile_y),
+                                      year=year, greenery_percentage=greenery,
                                       contains_greenery=class_label,
                                       classified_by="-1")
-
     print(predictions)
