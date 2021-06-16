@@ -291,7 +291,7 @@ def read_images(all_labels, train_data=True):
 
 def find_color_image(x_coord, y_coord, year=2020):
     """
-        detect green colors and shapes of maps
+        find color image
     """
     # print("COLOR DETECTION RUNNING")
     # path = "./data/parks_detected"
