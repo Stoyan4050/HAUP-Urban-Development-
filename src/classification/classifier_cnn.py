@@ -6,11 +6,12 @@ import numpy as np
 import django
 import tensorflow as tf
 import matplotlib.pyplot as plt
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from keras.optimizer_v2.adam import Adam
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
-from django.db.models import Q
 from api.models import Classification, Tile
 from . import classifier_svm, classifier
 
@@ -52,6 +53,19 @@ def get_training_validation(train_data):
     return np.array(training), np.array(validation)
 
 
+def get_greenery_percentage(img, year):
+    """
+        get the percentage of greenery
+    """
+    if img is None:
+        if year >= 2020:
+            raise ObjectDoesNotExist("Tile not found.")
+
+        return get_greenery_percentage(img, year + 1)
+
+    return classifier.get_greenery_percentage(img)
+
+
 def classify_cnn(year=2020):
     """
         classifying using cnn
@@ -62,8 +76,6 @@ def classify_cnn(year=2020):
 
     train_labels, train_images = classifier.get_labels_imgs(training)
     train_labels = change_labels(train_labels)
-    # print("Train", train_labels)
-    # print("Train2", train_images)
 
     val_labels, val_images = classifier.get_labels_imgs(validation)
     val_labels = change_labels(val_labels)
@@ -124,7 +136,7 @@ def classify_cnn(year=2020):
     loss = history.history['loss']
     val_loss = history.history['val_loss']
 
-    epochs_range = range(500)
+    epochs_range = range(200)
 
     plt.figure(figsize=(15, 15))
     plt.subplot(2, 2, 1)
@@ -148,16 +160,30 @@ def classify_cnn(year=2020):
 
     for count, prediction in enumerate(predictions):
         class_label = False
+        greenery = 0
+        tile_x = test_coord[count][1]
+        tile_y = test_coord[count][0]
+
         if prediction == 1:
             class_label = True
+            greenery = get_greenery_percentage(test_images[count], year)
+            print(greenery)
+            if greenery < 2:
+                class_label = False
+                greenery = 0
 
         # print(test_coord[i][1])
         # print(test_coord[i][0])
-        tile_x = test_coord[count][1]
-        tile_y = test_coord[count][0]
-        tile_id = tile_x * 75879 + tile_y
-        Classification.objects.create(tile=Tile(tile_id, tile_x, tile_y),
-                                      year=year, greenery_percentage=0,
+
+        # tile_id = tile_x * 75879 + tile_y
+        # Classification.objects.create(tile=Tile(tile_id, tile_x, tile_y),
+        #                               year=year, greenery_percentage=0,
+        #                               contains_greenery=class_label,
+        #                               classified_by="-1")
+
+        Classification.objects.create(tile=Tile.objects.get(x_coordinate=tile_x,
+                                                            y_coordinate=tile_y),
+                                      year=year, greenery_percentage=greenery,
                                       contains_greenery=class_label,
                                       classified_by="-1")
 

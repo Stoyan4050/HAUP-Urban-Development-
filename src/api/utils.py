@@ -18,7 +18,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from pyproj import Transformer
-from classification.classifier import color_detection
+from classification.classifier import find_color_image
 from .models import Tile, Classification, User
 from .tokens import TOKEN_GENERATOR
 
@@ -134,7 +134,7 @@ def calculate_percentage_greenery(x_esri, y_esri, year, contains_greenery):
     first_colored_map = 1914
 
     if contains_greenery:
-        return color_detection(x_esri, y_esri, max(year, first_colored_map))
+        return find_color_image(x_esri, y_esri, max(year, first_colored_map))
 
     return 0
 

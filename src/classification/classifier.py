@@ -289,9 +289,9 @@ def read_images(all_labels, train_data=True):
     return images, labels
 
 
-def color_detection(x_coord, y_coord, year=2020):
+def find_color_image(x_coord, y_coord, year=2020):
     """
-        detect green colors and shapes of maps
+        find color image
     """
     # print("COLOR DETECTION RUNNING")
     # path = "./data/parks_detected"
@@ -316,8 +316,15 @@ def color_detection(x_coord, y_coord, year=2020):
             raise ObjectDoesNotExist("Tile not found.")
 
         print(year)
-        return color_detection(x_coord, y_coord, year + 1)
+        return find_color_image(x_coord, y_coord, year + 1)
 
+    return get_greenery_percentage(img)
+
+
+def get_greenery_percentage(img):
+    """
+        Get the percentage of greenery
+    """
     # cv2.imshow("A", img)
     # cv2.waitKey()
     img1 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
