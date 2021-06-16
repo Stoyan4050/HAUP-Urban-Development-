@@ -316,7 +316,7 @@ def find_color_image(x_coord, y_coord, year=2020):
             raise ObjectDoesNotExist("Tile not found.")
 
         print(year)
-        return color_detection(x_coord, y_coord, year + 1)
+        return find_color_image(x_coord, y_coord, year + 1)
 
     return get_greenery_percentage(img)
 
