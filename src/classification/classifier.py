@@ -289,7 +289,7 @@ def read_images(all_labels, train_data=True):
     return images, labels
 
 
-def color_detection(x_coord, y_coord, year=2020):
+def find_color_image(x_coord, y_coord, year=2020):
     """
         detect green colors and shapes of maps
     """
