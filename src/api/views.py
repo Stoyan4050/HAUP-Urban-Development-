@@ -17,8 +17,9 @@ from pyproj import Transformer
 from .forms import ChangePasswordForm, RegisterForm, LoginForm, NewPasswordForm
 from .models import Classification, Tile, User
 from .tokens import TOKEN_GENERATOR
-from .utils import calculate_greenery_rounded, extract_available_years, send_email,\
-     transform_tile_to_coordinates, transform_coordinates_to_tile, manual_classify
+from .utils import extract_available_years, send_email
+from .fill_db import transform_coordinates_to_tile, transform_tile_to_coordinates, manual_classify
+from .greenery import calculate_greenery_rounded
 
 
 class BaseView(View):

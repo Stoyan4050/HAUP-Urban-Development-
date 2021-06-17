@@ -139,26 +139,26 @@ def calculate_percentage_greenery(x_esri, y_esri, year, contains_greenery):
     return 0
 
 
-def create_tiles():
-    """
-    def create_tiles()
-    """
-
-    data_frame = pandas.read_csv("../src/data/tilenames.csv")
-    tilenames = data_frame.tilename.tolist()
-    percentage = 0
-
-    for i in enumerate(tilenames):
-        if ceil((100 * i) / len(tilenames)) > percentage:
-            percentage = ceil((100 * i) / len(tilenames))
-            print(str(percentage) + "%")
-
-        tile = tilenames[i]
-        x_coordinate = int(tile.split("_")[0])
-        y_coordinate = int(tile.split("_")[1][:-4])
-        tile_id = x_coordinate * 75879 + y_coordinate
-        Tile.objects.create_tile(tile_id=tile_id, x_coordinate=x_coordinate, y_coordinate=y_coordinate)
-
+# def create_tiles():
+#     """
+#     def create_tiles()
+#     """
+#
+#     data_frame = pandas.read_csv("../src/data/tilenames.csv")
+#     tilenames = data_frame.tilename.tolist()
+#     percentage = 0
+#
+#     for i in enumerate(tilenames):
+#         if ceil((100 * i) / len(tilenames)) > percentage:
+#             percentage = ceil((100 * i) / len(tilenames))
+#             print(str(percentage) + "%")
+#
+#         tile = tilenames[i]
+#         x_coordinate = int(tile.split("_")[0])
+#         y_coordinate = int(tile.split("_")[1][:-4])
+#         tile_id = x_coordinate * 75879 + y_coordinate
+#         Tile.objects.create_tile(tile_id=tile_id, x_coordinate=x_coordinate, y_coordinate=y_coordinate)
+#
 
 def euclidean_distance_random_tiles():
     """
@@ -326,74 +326,74 @@ def send_email(uid, domain, email_subject, email_template):
     return False
 
 
-def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
-    """
-    def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
-    """
-    x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
-
-    try:
-        Classification.objects.create(tile_id=Tile.objects.
-                                      get(x_coordinate=x_tile, y_coordinate=y_tile).tile_id,
-                                      year=year, greenery_percentage=greenery_percentage,
-                                      contains_greenery=contains_greenery,
-                                      classified_by=User.objects.get(email=user).id)
-
-    except IntegrityError:
-        Classification.objects.filter(year=year, tile_id=Tile.objects.get(x_coordinate=x_tile,
-                                                                          y_coordinate=y_tile).tile_id)\
-            .update(greenery_percentage=greenery_percentage, contains_greenery=contains_greenery,
-                    classified_by=User.objects.get(email=user).id)
-
-    except ObjectDoesNotExist:
-        print("Unsuccessfully updated tiles.")
-
-
-def transform_coordinates_to_tile(x_coordinate, y_coordinate):
-    """
-    def transform_coordinates_to_tile(x_coordinate, y_coordinate):
-    """
-    transformer = Transformer.from_crs("EPSG:4326", "EPSG:28992")
-    x_esri, y_esri = transformer.transform(x_coordinate, y_coordinate)
-    x_esri -= 13328.546
-    x_esri /= 406.40102300613496932515337423313
-
-    y_esri = 619342.658 - y_esri
-    y_esri /= 406.40607802340702210663198959688
-
-    x_tile = floor(x_esri) + 75120
-    y_tile = floor(y_esri) + 75032
-
-    return x_tile, y_tile
-
-
-def transform_tile_to_coordinates(x_tile, y_tile):
-    """
-    def transform_tile_to_coordinates(x_tile, y_tile)
-    """
-
-    x_offset = 406.40102300613496932515337423313
-    y_offset = 406.40607802340702210663198959688
-
-    xmin = x_tile - 75120
-    xmin *= x_offset
-    xmin = xmin + 13328.546
-
-    ymax = y_tile - 75032
-    ymax *= y_offset
-    ymax = 619342.658 - ymax
-
-    xmax = xmin + x_offset
-    ymin = ymax - y_offset
-
-    x_coordinate = (xmin + xmax) / 2
-    y_coordinate = (ymin + ymax) / 2
-
-    return {
-        "xmin": xmin,
-        "ymin": ymin,
-        "xmax": xmax,
-        "ymax": ymax,
-        "x_coordinate": x_coordinate,
-        "y_coordinate": y_coordinate,
-    }
+# def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
+#     """
+#     def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery):
+#     """
+#     x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
+#
+#     try:
+#         Classification.objects.create(tile_id=Tile.objects.
+#                                       get(x_coordinate=x_tile, y_coordinate=y_tile).tile_id,
+#                                       year=year, greenery_percentage=greenery_percentage,
+#                                       contains_greenery=contains_greenery,
+#                                       classified_by=User.objects.get(email=user).id)
+#
+#     except IntegrityError:
+#         Classification.objects.filter(year=year, tile_id=Tile.objects.get(x_coordinate=x_tile,
+#                                                                           y_coordinate=y_tile).tile_id)\
+#             .update(greenery_percentage=greenery_percentage, contains_greenery=contains_greenery,
+#                     classified_by=User.objects.get(email=user).id)
+#
+#     except ObjectDoesNotExist:
+#         print("Unsuccessfully updated tiles.")
+#
+#
+# def transform_coordinates_to_tile(x_coordinate, y_coordinate):
+#     """
+#     def transform_coordinates_to_tile(x_coordinate, y_coordinate):
+#     """
+#     transformer = Transformer.from_crs("EPSG:4326", "EPSG:28992")
+#     x_esri, y_esri = transformer.transform(x_coordinate, y_coordinate)
+#     x_esri -= 13328.546
+#     x_esri /= 406.40102300613496932515337423313
+#
+#     y_esri = 619342.658 - y_esri
+#     y_esri /= 406.40607802340702210663198959688
+#
+#     x_tile = floor(x_esri) + 75120
+#     y_tile = floor(y_esri) + 75032
+#
+#     return x_tile, y_tile
+#
+#
+# def transform_tile_to_coordinates(x_tile, y_tile):
+#     """
+#     def transform_tile_to_coordinates(x_tile, y_tile)
+#     """
+#
+#     x_offset = 406.40102300613496932515337423313
+#     y_offset = 406.40607802340702210663198959688
+#
+#     xmin = x_tile - 75120
+#     xmin *= x_offset
+#     xmin = xmin + 13328.546
+#
+#     ymax = y_tile - 75032
+#     ymax *= y_offset
+#     ymax = 619342.658 - ymax
+#
+#     xmax = xmin + x_offset
+#     ymin = ymax - y_offset
+#
+#     x_coordinate = (xmin + xmax) / 2
+#     y_coordinate = (ymin + ymax) / 2
+#
+#     return {
+#         "xmin": xmin,
+#         "ymin": ymin,
+#         "xmax": xmax,
+#         "ymax": ymax,
+#         "x_coordinate": x_coordinate,
+#         "y_coordinate": y_coordinate,
+#     }
