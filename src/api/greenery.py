@@ -4,6 +4,7 @@ greenery.py
 from math import ceil
 from classification.classifier import find_color_image
 
+
 def calculate_greenery_rounded(contains_greenery, greenery_percentage):
     """
     def calculate_greenery_rounded(contains_greenery, greenery_percentage)
