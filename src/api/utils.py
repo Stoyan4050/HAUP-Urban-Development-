@@ -2,24 +2,14 @@
 utils.py
 """
 
-import urllib
-from math import floor, ceil
-import random
-import os
-import cv2
-import pandas
 import requests
-import numpy as np
 from bs4 import BeautifulSoup
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
-from django.db import IntegrityError
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from pyproj import Transformer
-from classification.classifier import find_color_image
-from .models import Tile, Classification, User
+from .models import User
 from .tokens import TOKEN_GENERATOR
 
 

@@ -10,6 +10,7 @@ from pyproj import Transformer
 from .models import Tile, Classification, User
 from .greenery import calculate_percentage_greenery
 
+
 def create_tiles():
     """
     def create_tiles()
@@ -101,7 +102,7 @@ def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage,
 
     except IntegrityError:
         Classification.objects.filter(year=year, tile_id=Tile.objects.get(x_coordinate=x_tile,
-                                                                          y_coordinate=y_tile).tile_id)\
+                                                                          y_coordinate=y_tile).tile_id) \
             .update(greenery_percentage=greenery_percentage, contains_greenery=contains_greenery,
                     classified_by=User.objects.get(email=user).id)
 
