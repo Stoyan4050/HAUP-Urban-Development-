@@ -8,7 +8,7 @@ import os
 import cv2
 import numpy as np
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Tile, Classification
+from ..models import Tile, Classification
 
 
 def add_labels_for_previous_years():
