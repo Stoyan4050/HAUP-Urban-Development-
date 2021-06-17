@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from pyproj import Transformer
 from .models import Tile, Classification, User
-
+from .greenery import calculate_percentage_greenery
 
 def create_tiles():
     """
