@@ -1,12 +1,12 @@
 """
 urls.py
 """
-
 from django.urls import path
-from .views import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedTilesView,\
-    GuestView, LoginView, LogoutView, MainView, ManualClassificationView, PasswordChangedView, \
-    RegisterView, SendActivationEmailView, SendChangePasswordEmailView, TransformCoordinatesView
-
+from .views_old import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedTilesView,\
+    GuestView, LoginView, LogoutView, MainView, PasswordChangedView, \
+    RegisterView, SendActivationEmailView, SendChangePasswordEmailView
+from api.views.manual_classification_view import ManualClassificationView
+from api.views.transform_coordinates_view import TransformCoordinatesView
 app_name = "urban_development"
 
 urlpatterns = [

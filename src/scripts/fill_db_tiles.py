@@ -1,8 +1,8 @@
 """
-fill_db_tiles.py
+create_tiles.py
 """
 
-from api.utils.fill_db import create_tiles
+from api.utils.create_tiles import create_tiles
 
 
 def run():
