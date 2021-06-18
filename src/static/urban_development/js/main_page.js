@@ -323,11 +323,18 @@ require([
 
     function addCurrentOverlay(overlay, year, province) {
         if (overlay === 'Classified as') {
+            $('#province-cell').show()
+            $
             setupClassifiedAsLayer(FeatureLayer)
             addToClassifiedAsLayer(year, province)
         } else if (overlay === 'Classified by') {
+            $('#province-cell').show()
+
             setupClassifiedByLayer(FeatureLayer)
             addToClassifiedByLayer(year, province)
+        } else {
+            $('#province-cell').hide()
+            $('#province').val('None').change()
         }
     }
 

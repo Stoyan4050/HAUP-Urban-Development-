@@ -1,5 +1,5 @@
 """
-    Classify with CNN
+classify_cnn.py
 """
 
 from classification.classifier_cnn import classify_cnn

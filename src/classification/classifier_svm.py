@@ -1,5 +1,5 @@
 """
-    classifier_svm.py
+classifier_svm.py
 """
 
 import urllib.request
@@ -17,13 +17,14 @@ from sklearn.pipeline import make_pipeline
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from django.db.models import Q
-from api.models import Classification, Tile
-from . import classifier
+from api.models.classification import Classification
+from api.models.tile import Tile
+from classification import classifier
 
 
 def get_image_from_url(year, x_coord, y_coord):
     """
-        get images from with urls
+    Get images from urls.
     """
 
     url = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + str(
@@ -36,7 +37,7 @@ def get_image_from_url(year, x_coord, y_coord):
 
 def get_imgs_url(i, year, data):
     """
-        get images from the data
+    Get images from the data.
     """
     element = data[i]
 
@@ -48,7 +49,7 @@ def get_imgs_url(i, year, data):
 
 def get_images_training(data1, year):
     """
-        get training images
+    Get training images.
     """
 
     data = data1
@@ -97,7 +98,7 @@ def get_images_training(data1, year):
 
 def get_images_test(year):
     """
-        get test images
+    Get test images.
     """
 
     Classification.objects.filter(classified_by=-1).delete()
@@ -122,7 +123,7 @@ def get_images_test(year):
 
 def reshape_data(data):
     """
-        reshape the provided data
+    Reshape the provided data.
     """
 
     mte, nte, rte, kte = data.shape
@@ -133,7 +134,7 @@ def reshape_data(data):
 
 def classify(year=2020):
     """
-        classify using SVM
+    Classify using SVM.
     """
 
     # train_data = get_images_training(Classification.objects.filter(year__lte=year), year)
@@ -252,7 +253,7 @@ def classify(year=2020):
 
 def upload_predictions(prediction, test_coord, year):
     """"
-        Upload predictions to the database
+    Upload predictions to the database.
     """
 
     for i in enumerate(prediction):
@@ -266,7 +267,7 @@ def upload_predictions(prediction, test_coord, year):
 
 def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, train_images):
     """
-        Perform hyperparameter tuning
+    Perform hyperparameter tuning.
     """
 
     # print(train_images)
@@ -318,8 +319,9 @@ def tune_hyperparams(estimator_name, estimator, estimator_params, train_labels, 
 
 class ClassifierParams:
     """
-        Class classfier_params used for multiprocessing
+    Class used for multiprocessing.
     """
+
     year = 2020
     counter = 0
     train_imgs = []
@@ -327,7 +329,7 @@ class ClassifierParams:
 
     def __init__(self, year, data, counter):
         """
-            add parameters
+        Add parameters.
         """
 
         self.year_selected = year

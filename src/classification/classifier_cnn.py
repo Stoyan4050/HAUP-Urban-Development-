@@ -1,5 +1,5 @@
 """
-    classifier_new.py
+classifier_cnn.py
 """
 
 import numpy as np
@@ -12,13 +12,14 @@ from keras.optimizer_v2.adam import Adam
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
-from api.models import Classification, Tile
-from . import classifier_svm, classifier
+from api.models.classification import Classification
+from api.models.tile import Tile
+from classification import classifier_svm, classifier
 
 
 def change_labels(arr):
     """
-        changing the labels from True/False to Integers
+    Changing the labels from True/False to Integers.
     """
 
     new_arr = []
@@ -34,7 +35,7 @@ def change_labels(arr):
 
 def get_training_validation(train_data):
     """
-        get training and validaton set
+    Get training and validaton set.
     """
 
     validation = []
@@ -55,7 +56,7 @@ def get_training_validation(train_data):
 
 def get_greenery_percentage(img, year):
     """
-        get the percentage of greenery
+    Get the percentage of greenery.
     """
     if img is None:
         if year >= 2020:
@@ -68,7 +69,7 @@ def get_greenery_percentage(img, year):
 
 def classify_cnn(year=2020):
     """
-        classifying using cnn
+    Classifying using cnn.
     """
 
     training, validation = get_training_validation(np.array(classifier_svm.get_images_training(

@@ -1,10 +1,10 @@
 """
-admin.py
+admin_user.py
 """
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Tile, Classification
+from api.models.user import User
 
 
 @admin.register(User)
@@ -50,23 +50,3 @@ class AdminUser(UserAdmin):
     )
     search_fields = ("email", )
     ordering = ("email", )
-
-
-@admin.register(Tile)
-class TileAdmin(admin.ModelAdmin):
-    """
-    @admin.register(Tile)
-    class TileAdmin(admin.ModelAdmin)
-    """
-
-    model = Tile
-
-
-@admin.register(Classification)
-class ClassificationAdmin(admin.ModelAdmin):
-    """
-    @admin.register(Classification)
-    class ClassificationAdmin(admin.ModelAdmin)
-    """
-
-    model = Classification

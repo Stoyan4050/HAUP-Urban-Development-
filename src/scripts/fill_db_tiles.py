@@ -2,7 +2,7 @@
 fill_db_tiles.py
 """
 
-from api.utils import create_tiles
+from api.utils.create_tiles import create_tiles
 
 
 def run():
