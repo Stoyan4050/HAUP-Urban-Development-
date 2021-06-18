@@ -67,4 +67,4 @@ if __name__ == "__main__":
     # remove_blank()
     # export_nonblank_to_csv()
 
-    print("Please uncomment a line from the code to use the function you need")
+    print("Please uncomment one of the two commented lines of code to use the desired function.")
