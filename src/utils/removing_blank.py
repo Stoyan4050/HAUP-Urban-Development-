@@ -1,5 +1,5 @@
 """
-List all files in a directory using os.listdir
+removing_blank.py
 """
 
 from csv import writer
@@ -67,4 +67,4 @@ if __name__ == "__main__":
     # remove_blank()
     # export_nonblank_to_csv()
 
-    print("please uncomment a line from the code to use the function you need")
+    print("Please uncomment a line from the code to use the function you need")

@@ -7,8 +7,8 @@ import pandas
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from pyproj import Transformer
-from api.models import Tile, Classification, User
-from api.greenery import calculate_percentage_greenery
+from api.models_old import Tile, Classification
+from api.utils.calculate_greenery_percentage import calculate_greenery_percentage
 
 
 def extract_convert_to_esri():
@@ -56,7 +56,7 @@ def extract_convert_to_esri():
         tile_id = x_esri * 75879 + y_esri
 
         try:
-            greenery_percentage = calculate_percentage_greenery(x_esri, y_esri, year, contains_greenery)
+            greenery_percentage = calculate_greenery_percentage(x_esri, y_esri, year, contains_greenery)
 
             Classification.objects.create(tile=Tile(tile_id, x_esri, y_esri), year=year, classified_by="-2",
                                           contains_greenery=contains_greenery, greenery_percentage=greenery_percentage)

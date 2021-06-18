@@ -1,12 +1,23 @@
 """
 urls.py
 """
+
 from django.urls import path
-from .views_old import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedTilesView,\
-    GuestView, LoginView, LogoutView, MainView, PasswordChangedView, \
-    RegisterView, SendActivationEmailView, SendChangePasswordEmailView
+from api.views.account_activated_view import AccountActivatedView
+from api.views.base_view import BaseView
+from api.views.change_password_view import ChangePasswordView
+from api.views.get_classified_tiles_view import GetClassifiedTilesView
+from api.views.guest_view import GuestView
+from api.views.login_view import LoginView
+from api.views.logout_view import LogoutView
+from api.views.main_view import MainView
 from api.views.manual_classification_view import ManualClassificationView
+from api.views.password_changed_view import PasswordChangedView
+from api.views.register_view import RegisterView
+from api.views.send_activation_email_view import SendActivationEmailView
+from api.views.send_change_password_email_view import SendChangePasswordEmailView
 from api.views.transform_coordinates_view import TransformCoordinatesView
+
 app_name = "urban_development"
 
 urlpatterns = [

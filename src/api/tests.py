@@ -4,7 +4,6 @@ tests.py
 
 from django.test import SimpleTestCase
 from django.core.exceptions import ObjectDoesNotExist
-
 from classification.classifier import get_image_from_url, find_color_image
 
 
@@ -17,6 +16,7 @@ class GetImageFromUrl(SimpleTestCase):
         """
         def test_http_error
         """
+
         image = get_image_from_url(2020, 0, 0)
         self.assertEqual(None, image)
 
@@ -24,6 +24,7 @@ class GetImageFromUrl(SimpleTestCase):
         """
         def test_get_image
         """
+
         image = get_image_from_url(2020, 75111, 75659)
         self.assertIsNotNone(image)
 
@@ -38,6 +39,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests a tile containing no green
         """
+
         image_percentage = find_color_image(75418, 75317, 2020)
         self.assertTrue(image_percentage * 100 < 0.1)
         self.assertEqual(0.0006256103515625, image_percentage)
@@ -46,6 +48,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests a tile with bare minimum green
         """
+
         image_percentage = find_color_image(75505, 75546, 2020)
         self.assertTrue(image_percentage * 100 > 0.5)
         self.assertTrue(image_percentage * 100 < 1)
@@ -55,6 +58,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests a tile with bare minimum green
         """
+
         image_percentage = find_color_image(75507, 75546, 2020)
         self.assertTrue(image_percentage * 100 > 0.5)
         self.assertTrue(image_percentage * 100 < 1)
@@ -64,6 +68,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests a tile with approximately 10% green
         """
+
         image_percentage = find_color_image(75650, 75202, 2020)
         self.assertTrue(image_percentage * 100 > 8)
         self.assertTrue(image_percentage * 100 < 12)
@@ -73,6 +78,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests a tile with approximately 15% green
         """
+
         image_percentage = find_color_image(75202, 75593, 2020)
         self.assertTrue(image_percentage * 100 > 15)
         self.assertTrue(image_percentage * 100 < 20)
@@ -82,6 +88,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests a tile with approximately 30% green
         """
+
         image_percentage = find_color_image(75509, 75553, 2020)
         self.assertTrue(image_percentage * 100 > 30)
         self.assertTrue(image_percentage * 100 < 35)
@@ -91,6 +98,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests a tile with approximately 40% green
         """
+
         image_percentage = find_color_image(75506, 75552, 2020)
         self.assertTrue(image_percentage * 100 > 40)
         self.assertTrue(image_percentage * 100 < 45)
@@ -100,6 +108,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests a tile with approximately 50% green
         """
+
         image_percentage = find_color_image(75449, 75543, 2020)
         self.assertTrue(image_percentage * 100 > 49)
         self.assertTrue(image_percentage * 100 < 52)
@@ -109,6 +118,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests a tile with approximately 60% green
         """
+
         image_percentage = find_color_image(75511, 75553, 2020)
         self.assertTrue(image_percentage * 100 > 60)
         self.assertTrue(image_percentage * 100 < 65)
@@ -118,6 +128,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests a tile containing mainly green
         """
+
         image_percentage = find_color_image(75515, 75551, 2020)
         self.assertTrue(image_percentage * 100 > 80)
         self.assertEqual(0.8185831705729166, image_percentage)
@@ -126,6 +137,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests a tile containing primarily only green
         """
+
         image_percentage = find_color_image(75416, 75550, 2020)
         self.assertTrue(image_percentage * 100 > 80)
         self.assertEqual(0.8505350748697916, image_percentage)
@@ -134,6 +146,7 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests that farmland is not detected as greenery due to boundaries
         """
+
         image_percentage = find_color_image(75507, 75330, 2020)
         self.assertTrue(image_percentage * 100 < 0.5)
         self.assertEqual(0.0022684733072916665, image_percentage)
@@ -142,5 +155,6 @@ class ColorDetectionTest(SimpleTestCase):
         """
         tests that non-existed tile throws an exception
         """
+
         with self.assertRaises(ObjectDoesNotExist):
             find_color_image(0, 0, 2020)

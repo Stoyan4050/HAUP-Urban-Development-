@@ -1,18 +1,19 @@
 """
-add_labels_for_previous_years.py
+add_data_for_previous_years.py
 """
 
 import urllib
 import os
 import cv2
 from django.core.exceptions import ObjectDoesNotExist
-from ..models import Tile, Classification
+from api.models_old import Tile, Classification
 
 
-def add_labels_for_previous_years():
+def add_data_for_previous_years():
     """
-    add_labels_for_previous_years()
+    add_data_for_previous_years()
     """
+
     # arr = [[], [], [], [], [], [], [], [], [], [], [], [], []]
     percentile_dictionary = {
 
@@ -32,6 +33,7 @@ def add_labels_for_previous_years():
 
     ind = 0
     classifications = Classification.objects.filter(year=2020)
+
     for classification in classifications:
         ind += 1
         print(ind)
@@ -86,6 +88,7 @@ def add_labels_for_previous_years():
                         print(tile_x, tile_y)
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 break
+
             if year == 1900:
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 # print(year)
@@ -96,5 +99,3 @@ def add_labels_for_previous_years():
     # for year in range(1910, 2030, 10):
     #
     #     print(str(year - 10) + ": " + str(np.percentile(arr[int((year - 1910) / 10)], 90)) + "\n")
-
-

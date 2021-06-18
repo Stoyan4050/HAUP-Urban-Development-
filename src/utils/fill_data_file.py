@@ -6,16 +6,15 @@ from csv import writer
 import pandas
 
 
-# This script reads csv files extracted from wikidata and places all relevant information from them into data.csv
-# It also adds the data label, which can be entered in by the user
-def fill_file():
+def fill_data_file():
     """
-    def fill_file()
+    Reads csv files extracted from wikidata, places all relevant information from them into data.csv
+    and adds the label, which is entered by the user.
     """
 
     file_names = {}
     while True:
-        print("Please enter the file wish to read or leave empty, if there are no more files to read")
+        print("Please enter the file, you wish to read, or leave empty, if there are no more files to read:")
         file_name = input()
 
         if file_name == "":
@@ -24,7 +23,7 @@ def fill_file():
         contains_greenery = None
 
         while contains_greenery is None:
-            print("Please enter 'True', if the data is of greenery and 'False', otherwise")
+            print("Please enter 'True', if the data is of greenery and 'False', otherwise:")
             user_input = input()
 
             if user_input.lower() == "true":
@@ -54,4 +53,4 @@ def fill_file():
 
 
 if __name__ == "__main__":
-    fill_file()
+    fill_data_file()

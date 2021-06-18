@@ -1,10 +1,14 @@
+"""
+transform_coordinates_view.py
+"""
+
 import json
 from math import floor
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views import View
 from pyproj import Transformer
-from api.models import Classification
+from api.models_old import Classification
 
 
 class TransformCoordinatesView(View):

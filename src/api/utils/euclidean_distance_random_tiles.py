@@ -8,7 +8,7 @@ import os
 import cv2
 import numpy as np
 from django.core.exceptions import ObjectDoesNotExist
-from ..models import Tile
+from api.models_old import Tile
 
 
 def euclidean_distance_random_tiles():

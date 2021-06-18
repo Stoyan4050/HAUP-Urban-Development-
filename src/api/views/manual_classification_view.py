@@ -5,10 +5,10 @@ manual_classification_view.py
 import json
 from django.http import JsonResponse
 from django.views import View
-from api.utils import transform_coordinates_to_tile
-from api.utils import transform_tile_to_coordinates
-from api.utils import manual_classify
-from api.greenery import calculate_greenery_rounded
+from api.utils.calculate_greenery_rounded import calculate_greenery_rounded
+from api.utils.manual_classify import manual_classify
+from api.utils.transform_coordinates_to_tile import transform_coordinates_to_tile
+from api.utils.transform_tile_to_coordinates import transform_tile_to_coordinates
 
 
 class ManualClassificationView(View):
@@ -30,7 +30,7 @@ class ManualClassificationView(View):
         greenery_percentage = json.loads(parameters).get("greenery_percentage")
         contains_greenery = json.loads(parameters).get("contains_greenery")
 
-        manual_classify.manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery)
+        manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery)
 
         contains_greenery = contains_greenery.lower()
 
@@ -39,8 +39,8 @@ class ManualClassificationView(View):
         else:
             greenery_rounded = 0
 
-        x_tile, y_tile = transform_coordinates_to_tile.transform_coordinates_to_tile(x_coordinate, y_coordinate)
-        coordinates = transform_tile_to_coordinates.transform_tile_to_coordinates(x_tile, y_tile)
+        x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
+        coordinates = transform_tile_to_coordinates(x_tile, y_tile)
 
         result = {
             "xmin": coordinates["xmin"],
