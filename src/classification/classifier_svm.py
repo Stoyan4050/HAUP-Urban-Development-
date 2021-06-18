@@ -17,7 +17,8 @@ from sklearn.pipeline import make_pipeline
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from django.db.models import Q
-from api.models_old import Classification, Tile
+from api.models.classification import Classification
+from api.models.tile import Tile
 from classification import classifier
 
 

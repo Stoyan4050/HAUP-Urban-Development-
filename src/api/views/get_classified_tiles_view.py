@@ -6,7 +6,8 @@ import json
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.views import View
 from pyproj import Transformer
-from api.models_old import Classification, Tile
+from api.models.classification import Classification
+from api.models.tile import Tile
 from api.utils.transform_tile_to_coordinates import transform_tile_to_coordinates
 from api.utils.calculate_greenery_rounded import calculate_greenery_rounded
 

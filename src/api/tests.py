@@ -9,12 +9,12 @@ from classification.classifier import get_image_from_url, find_color_image
 
 class GetImageFromUrl(SimpleTestCase):
     """
-    get tile images from url tests class
+    class GetImageFromUrl(SimpleTestCase)
     """
 
     def test_http_error(self):
         """
-        def test_http_error
+        def test_http_error(self)
         """
 
         image = get_image_from_url(2020, 0, 0)
@@ -22,7 +22,7 @@ class GetImageFromUrl(SimpleTestCase):
 
     def test_get_image(self):
         """
-        def test_get_image
+        def test_get_image(self)
         """
 
         image = get_image_from_url(2020, 75111, 75659)
@@ -31,13 +31,14 @@ class GetImageFromUrl(SimpleTestCase):
 
 class ColorDetectionTest(SimpleTestCase):
     """
-    color detection tests class
+    class ColorDetectionTest(SimpleTestCase)
     """
 
-    # tests have been created by manually checking the approximate percentage of green on a tile
+    # The following tests have been created by manually checking the approximate percentage of green on a tile.
+
     def test_no_green(self):
         """
-        tests a tile containing no green
+        def test_no_green(self)
         """
 
         image_percentage = find_color_image(75418, 75317, 2020)
@@ -46,7 +47,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_minimal_green(self):
         """
-        tests a tile with bare minimum green
+        def test_minimal_green(self)
         """
 
         image_percentage = find_color_image(75505, 75546, 2020)
@@ -56,7 +57,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_minimal_green_two(self):
         """
-        tests a tile with bare minimum green
+        def test_minimal_green_two(self)
         """
 
         image_percentage = find_color_image(75507, 75546, 2020)
@@ -66,7 +67,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_ten_green(self):
         """
-        tests a tile with approximately 10% green
+        def test_ten_green(self)
         """
 
         image_percentage = find_color_image(75650, 75202, 2020)
@@ -76,7 +77,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_fifteen_green(self):
         """
-        tests a tile with approximately 15% green
+        def test_fifteen_green(self)
         """
 
         image_percentage = find_color_image(75202, 75593, 2020)
@@ -86,7 +87,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_thirty_green(self):
         """
-        tests a tile with approximately 30% green
+        def test_thirty_green(self)
         """
 
         image_percentage = find_color_image(75509, 75553, 2020)
@@ -96,7 +97,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_forty_green(self):
         """
-        tests a tile with approximately 40% green
+        def test_forty_green(self)
         """
 
         image_percentage = find_color_image(75506, 75552, 2020)
@@ -106,7 +107,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_fifty_green(self):
         """
-        tests a tile with approximately 50% green
+        def test_fifty_green(self)
         """
 
         image_percentage = find_color_image(75449, 75543, 2020)
@@ -116,7 +117,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_sixty_green(self):
         """
-        tests a tile with approximately 60% green
+        def test_sixty_green(self)
         """
 
         image_percentage = find_color_image(75511, 75553, 2020)
@@ -126,7 +127,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_almost_full_green(self):
         """
-        tests a tile containing mainly green
+        def test_almost_full_green(self)
         """
 
         image_percentage = find_color_image(75515, 75551, 2020)
@@ -135,7 +136,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_full_green(self):
         """
-        tests a tile containing primarily only green
+        def test_full_green(self)
         """
 
         image_percentage = find_color_image(75416, 75550, 2020)
@@ -144,7 +145,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_farm_land_no_greenery(self):
         """
-        tests that farmland is not detected as greenery due to boundaries
+        def test_farm_land_no_greenery(self)
         """
 
         image_percentage = find_color_image(75507, 75330, 2020)
@@ -153,7 +154,7 @@ class ColorDetectionTest(SimpleTestCase):
 
     def test_image_not_found(self):
         """
-        tests that non-existed tile throws an exception
+        def test_image_not_found(self)
         """
 
         with self.assertRaises(ObjectDoesNotExist):

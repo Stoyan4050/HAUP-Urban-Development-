@@ -19,7 +19,7 @@ import tensorflow as tf
 from tensorflow.keras import Sequential, layers
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 import matplotlib.pyplot as plt
-from api.models_old import Classification
+from api.models.classification import Classification
 
 ALL_LABELS = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space',
               'park', 'recreational area']

@@ -6,7 +6,8 @@ import urllib
 import os
 import cv2
 from django.core.exceptions import ObjectDoesNotExist
-from api.models_old import Tile, Classification
+from api.models.classification import Classification
+from api.models.tile import Tile
 
 
 def add_data_for_previous_years():

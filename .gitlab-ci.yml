@@ -27,4 +27,4 @@ unit_test:
   allow_failure: false
   script:
   - cd src
-  - python manage.py test
+  - python manage.py test ./api

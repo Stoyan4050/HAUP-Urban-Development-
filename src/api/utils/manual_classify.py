@@ -5,7 +5,8 @@ manual_classify.py
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from api.models.user import User
-from api.models_old import Tile, Classification
+from api.models.classification import Classification
+from api.models.tile import Tile
 from api.utils.transform_coordinates_to_tile import transform_coordinates_to_tile
 
 

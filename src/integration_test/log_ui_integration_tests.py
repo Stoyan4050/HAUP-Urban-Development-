@@ -55,7 +55,7 @@ MAP_BUTTON = selection('button')
 MAP_BUTTON.click()
 
 URL_MAP = CHROME.current_url
-if URL_MAP == 'http://127.0.0.1:8000/urban_development/map/':
+if URL_MAP == 'http://127.0.0.1:8000/urban_development/main/':
     print('Correct page')
 else:
     print('Incorrect page')
@@ -130,7 +130,7 @@ LOGIN_GUEST = selection('a', 2)
 LOGIN_GUEST.click()
 
 URL_MAP_GUEST = CHROME.current_url
-if URL_MAP_GUEST == 'http://127.0.0.1:8000/urban_development/map/':
+if URL_MAP_GUEST == 'http://127.0.0.1:8000/urban_development/main/':
     print('Correct page')
 else:
     print('Incorrect page')

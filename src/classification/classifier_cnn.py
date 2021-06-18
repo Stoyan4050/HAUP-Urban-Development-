@@ -12,7 +12,8 @@ from keras.optimizer_v2.adam import Adam
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
-from api.models_old import Classification, Tile
+from api.models.classification import Classification
+from api.models.tile import Tile
 from classification import classifier_svm, classifier
 
 

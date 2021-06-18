@@ -7,7 +7,8 @@ import pandas
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from pyproj import Transformer
-from api.models_old import Tile, Classification
+from api.models.classification import Classification
+from api.models.tile import Tile
 from api.utils.calculate_greenery_percentage import calculate_greenery_percentage
 
 

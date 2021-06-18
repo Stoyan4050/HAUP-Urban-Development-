@@ -2,4 +2,6 @@
 __init__.py
 """
 
-from . import admin_user
+from api.admin import admin_classification,\
+                      admin_tile,\
+                      admin_user

@@ -4,7 +4,7 @@ create_tiles.py
 
 from math import ceil
 import pandas
-from api.models_old import Tile
+from api.models.tile import Tile
 
 
 def create_tiles():

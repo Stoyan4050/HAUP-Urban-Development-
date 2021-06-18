@@ -2,5 +2,5 @@
 __init__.py
 """
 
-from . import apps,\
-              tokens
+from api import apps,\
+                tokens

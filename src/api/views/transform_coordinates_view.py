@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views import View
 from pyproj import Transformer
-from api.models_old import Classification
+from api.models.classification import Classification
 
 
 class TransformCoordinatesView(View):

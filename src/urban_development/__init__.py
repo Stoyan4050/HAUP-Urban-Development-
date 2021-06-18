@@ -2,7 +2,7 @@
 __init__.py
 """
 
-from . import asgi,\
-              settings,\
-              urls,\
-              wsgi
+from urban_development import asgi,\
+                              settings,\
+                              urls,\
+                              wsgi
