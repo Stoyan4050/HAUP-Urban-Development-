@@ -231,7 +231,7 @@ require([
         })
 
         var year = $('#year option:selected').val().trim()
-        const parameters = { year: year }
+        const parameters = { year: year, province: "None" }
         const response = await fetch('/urban_development/get_classified_tiles/' + JSON.stringify(parameters), { signal: abortController.signal })
 
         try {
@@ -311,22 +311,30 @@ require([
 
         var overlay = $('#overlay option:selected').val().trim()
         var year = $('#year option:selected').val().trim()
+        var province = $('#province option:selected').val().trim()
 
         var yearLayer = new TileLayer({
             url: 'https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_' + year + '/MapServer',
         })
 
         map.add(yearLayer)
-        addCurrentOverlay(overlay, year)
+        addCurrentOverlay(overlay, year, province)
     }
 
-    function addCurrentOverlay(overlay, year) {
+    function addCurrentOverlay(overlay, year, province) {
         if (overlay === 'Classified as') {
+            $('#province-cell').show()
+            $
             setupClassifiedAsLayer(FeatureLayer)
-            addToClassifiedAsLayer(year)
+            addToClassifiedAsLayer(year, province)
         } else if (overlay === 'Classified by') {
+            $('#province-cell').show()
+
             setupClassifiedByLayer(FeatureLayer)
-            addToClassifiedByLayer(year)
+            addToClassifiedByLayer(year, province)
+        } else {
+            $('#province-cell').hide()
+            $('#province').val('None').change()
         }
     }
 
@@ -349,12 +357,19 @@ require([
             abortController.abort()
         })
 
+        $('#province').change(function () {
+            abortController.abort()
+        })
+
         $('#logout-hyperlink').click(function () {
             abortController.abort()
         })
 
         var year = $('#year option:selected').val().trim()
-        const parameters = { year: year }
+        var province = $('#province option:selected').val().trim()
+
+        const parameters = { year: year, province: province }
+
         const response = await fetch('/urban_development/get_classified_tiles/' + JSON.stringify(parameters), { signal: abortController.signal })
 
         try {
@@ -518,12 +533,18 @@ require([
             abortController.abort()
         })
 
+        $('#province').change(function (){
+            abortController.abort();
+        })
+
         $('#logout-hyperlink').click(function () {
             abortController.abort()
         })
 
         var year = $('#year option:selected').val().trim()
-        const parameters = { year: year }
+        var province = $('#province option:selected').val().trim()
+
+        const parameters = { year: year, province: province }
         const response = await fetch('/urban_development/get_classified_tiles/' + JSON.stringify(parameters), { signal: abortController.signal })
 
         try {
@@ -591,11 +612,25 @@ require([
 
                 var overlay = $('#overlay option:selected').val().trim()
                 var year = $('#year option:selected').val().trim()
+                var province = $('#province option:selected').val().trim()
 
-                addCurrentOverlay(overlay, year)
+                addCurrentOverlay(overlay, year, province)
             }
         })
 
+        $('#province').change(function (event) {
+            if ($('#province-cell').is(':visible')){
+
+                map.remove(classifiedAsLayer)
+                map.remove(classifiedByLayer)
+
+                var overlay = $('#overlay option:selected').val().trim()
+                var year = $('#year option:selected').val().trim()
+                var province = $('#province option:selected').val().trim()
+
+                addCurrentOverlay(overlay, year, province)
+             }
+    })
         $('#how-to-view-button').click(function (event) {
             if (currentView === VIEWS.info) return
 
@@ -603,6 +638,7 @@ require([
             clearPage()
             $('#year-cell').hide()
             $('#overlay-cell').hide()
+            $('#province-cell').hide()
             setupInfoView()
         })
 
@@ -613,6 +649,8 @@ require([
             clearPage()
             $('#year-cell').show()
             $('#overlay-cell').show()
+            $('#province-cell').show()
+
             setupMapView()
         })
 
@@ -623,6 +661,7 @@ require([
             clearPage()
             $('#year-cell').show()
             $('#overlay-cell').hide()
+            $('#province-cell').hide()
             setupDataView()
         })
     })
