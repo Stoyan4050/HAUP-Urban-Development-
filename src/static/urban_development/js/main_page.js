@@ -63,7 +63,7 @@ require([
         var list1 = $('<ol class="steps-list"></ol>')
         div1.append(list1)
 
-        list1.append('<li class="steps-items">In the menu bar at the top, select "Map View".</li>')
+        list1.append('<li class="steps-items">In the menu bar at the top, select "Map view".</li>')
         list1.append('<li class="steps-items">On the map view page, in the menu bar at the top, select the year of map you want to view.</li>')
         list1.append('<li class="steps-items">In the menu bar at the top, select the type of classification you want to view.\
             "Classified as" provides a overlay on the map with the different types of classifications.\
@@ -78,7 +78,7 @@ require([
         var list2 = $('<ol class="steps-list"></ol>')
         div2.append(list2)
 
-        list2.append('<li class="steps-items">In the menu bar at the top, select "Data View".</li>')
+        list2.append('<li class="steps-items">In the menu bar at the top, select "Data view".</li>')
         list2.append('<li class="steps-items">On the data view page, in the menu bar at the top, select the year of the\
             (statistical) data you want to view.</li>')
         list2.append('<li class="steps-items">On the data view page, you can see statistics regarding the percentages of the\
@@ -89,7 +89,16 @@ require([
         var div3 = $('<div class="content"></div>')
         infoDiv.append(div3)
 
-        div3.append('<p class="steps-items">This functionality is not yet available.</p>')
+        var list3 = $('<ol class="steps-list"></ol>')
+        div3.append(list3)
+
+        list3.append('<li class="steps-items">In the menu bar at the top, select "Map view".</li>')
+        list3.append('<li class="steps-items">On the map view page, in the menu bar at the top, select the year of map you want to manually classify.</li>')
+        list3.append('<li class="steps-items">To classify a certain tile, you must choose the "Classified as" overlay, then when you click somewhere on the map\
+            a side bar will appear, containing the current information about the tile that corresponds to the location you have chosen\
+            or "unknown" if the tile hasn\'t been classified yet.</li>')
+        list3.append('<li class="steps-items">To update a tile, you shoulde choose whether or not the tile contains greenery and if it does, the amount of\
+            greenery that the tile contains. Then you simply press the "Update" button and in a couple of seconds your changes will be visible on the map</li>')
 
         var footerDiv = $('<div class="footer" id="footer-div"></div>')
         $('.page-container').append(footerDiv)
