@@ -63,7 +63,7 @@ require([
         var list1 = $('<ol class="steps-list"></ol>')
         div1.append(list1)
 
-        list1.append('<li class="steps-items">In the menu bar at the top, select "Map Vvew".</li>')
+        list1.append('<li class="steps-items">In the menu bar at the top, select "Map view".</li>')
         list1.append('<li class="steps-items">On the map view page, in the menu bar at the top, select the year of map you want to view.</li>')
         list1.append('<li class="steps-items">In the menu bar at the top, select the type of classification you want to view.\
             "Classified as" provides a overlay on the map with the different types of classifications.\
