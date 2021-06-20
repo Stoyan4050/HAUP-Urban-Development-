@@ -140,7 +140,7 @@ require([
         })
 
         var coordinatesWidget = document.createElement('div')
-        coordinatesWidget.className = 'esri-widget esri-component'
+        coordinatesWidget.className = 'esri-widget esri-component coordinates-widget'
         coordinatesWidget.style.padding = '7px 15px 5px'
         coordinatesWidget.style.marginBottom = '11px'
 
@@ -163,47 +163,56 @@ require([
             showCoordinates(mapView.toMap({ x: event.x, y: event.y }))
         })
 
-        mapView.on('click', async function (event) {
-            if($('#overlay option:selected').val().trim() === 'Classified as') {
-                var x_coordinate = event.mapPoint.x
-                var y_coordinate = event.mapPoint.y
-                var year = $('#year option:selected').val().trim()
-                var parameters = { x_coordinate: x_coordinate, y_coordinate: y_coordinate, year: year }
-                const response = await fetch('/urban_development/transform_coordinates/' + JSON.stringify(parameters))
-
-                try {
-                    var json = await response.json()
-
-                    var user = document.getElementById('user-name').innerHTML.trim().split(' ').join('').split('\n')[2]
-                    
-                    if (user === 'guest') {
-                        $('#update-title').css('display', 'none')
-                        $('#text-contains-greenery').css('display', 'none')
-                        $('#contains-greenery').css('display', 'none')
-                        $('#text-greenery-percentage').css('display', 'none')
-                        $('#greenery-percentage').css('display', 'none')
-                        $('#update-button').css('display', 'none')
-                    }
-                    
-
-                    $('#coordinates').html(json['x_coordinate'] + ', ' + json['y_coordinate'])
-                    $('#current-contains-greenery').html(json['contains_greenery'])
-                    $('#classified-by').html(json['classified_by'])
-
-                    if(json['greenery_percentage'] != 'unknown'){
-                        json['greenery_percentage'] = Math.round(json['greenery_percentage'] * 100) + '%'
-                    }
-                    
-                    $('#current-greenery-percentage').html(json['greenery_percentage'])
-                    
-                    $('#form-div').css('display', 'block')
-                } catch (exception) {
-                    alert('Error.')
-                }
-            }
+        mapView.on('click', function(event) {
+            $('#update-button').attr('disabled', true);
+            $('#close-button').attr('disabled', true);
+            setupManualClassificationForm(event).then(function () {
+                $('#update-button').attr('disabled', false);
+                $('#close-button').attr('disabled', false);
+            })
         })
 
         addMap()
+    }
+
+    async function setupManualClassificationForm(event) {
+        if($('#overlay option:selected').val().trim() === 'Classified as') {
+            var x_coordinate = event.mapPoint.x
+            var y_coordinate = event.mapPoint.y
+            var year = $('#year option:selected').val().trim()
+            var parameters = { x_coordinate: x_coordinate, y_coordinate: y_coordinate, year: year }
+            const response = await fetch('/urban_development/transform_coordinates/' + JSON.stringify(parameters))
+
+            try {
+                var json = await response.json()
+
+                var user = document.getElementById('user-name').innerHTML.trim().split(' ').join('').split('\n')[2]
+                
+                if (user === 'guest') {
+                    $('#update-title').css('display', 'none')
+                    $('#text-contains-greenery').css('display', 'none')
+                    $('#contains-greenery').css('display', 'none')
+                    $('#text-greenery-percentage').css('display', 'none')
+                    $('#greenery-percentage').css('display', 'none')
+                    $('#update-button').css('display', 'none')
+                }
+                
+
+                $('#coordinates').html(json['x_coordinate'] + ', ' + json['y_coordinate'])
+                $('#current-contains-greenery').html(json['contains_greenery'])
+                $('#classified-by').html(json['classified_by'])
+
+                if(json['greenery_percentage'] != 'unknown'){
+                    json['greenery_percentage'] = Math.round(json['greenery_percentage'] * 100) + '%'
+                }
+                
+                $('#current-greenery-percentage').html(json['greenery_percentage'])
+                
+                $('#form-div').css('display', 'block')
+            } catch (exception) {
+                alert('Error.')
+            }
+        }
     }
 
     async function setupDataView() {
@@ -323,16 +332,19 @@ require([
 
     function addCurrentOverlay(overlay, year, province) {
         if (overlay === 'Classified as') {
+            $('#province-cell').removeClass('hidden')
             $('#province-cell').show()
-            $
+
             setupClassifiedAsLayer(FeatureLayer)
             addToClassifiedAsLayer(year, province)
         } else if (overlay === 'Classified by') {
+            $('#province-cell').removeClass('hidden')
             $('#province-cell').show()
 
             setupClassifiedByLayer(FeatureLayer)
             addToClassifiedByLayer(year, province)
         } else {
+            $('#province-cell').addClass('hidden')
             $('#province-cell').hide()
             $('#province').val('None').change()
         }
@@ -468,7 +480,7 @@ require([
                     greenery_percentage: greeneryPercentage,
                 }
                 
-                const response = await fetch('/urban_development/manual_classification/' + JSON.stringify(parameters),{signal: abortController.signal})
+                const response = await fetch('/urban_development/manual_classification/' + JSON.stringify(parameters))
 
                 try {
                     var json = await response.json()
@@ -620,7 +632,6 @@ require([
 
         $('#province').change(function (event) {
             if ($('#province-cell').is(':visible')){
-
                 map.remove(classifiedAsLayer)
                 map.remove(classifiedByLayer)
 
@@ -638,6 +649,7 @@ require([
             clearPage()
             $('#year-cell').hide()
             $('#overlay-cell').hide()
+            $('#province-cell').addClass('hidden')
             $('#province-cell').hide()
             setupInfoView()
         })
@@ -649,7 +661,6 @@ require([
             clearPage()
             $('#year-cell').show()
             $('#overlay-cell').show()
-            $('#province-cell').show()
 
             setupMapView()
         })
@@ -661,6 +672,7 @@ require([
             clearPage()
             $('#year-cell').show()
             $('#overlay-cell').hide()
+            $('#province-cell').addClass('hidden')
             $('#province-cell').hide()
             setupDataView()
         })
