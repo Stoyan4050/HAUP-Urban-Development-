@@ -2,6 +2,7 @@ var map
 var mapView
 var classifiedAsLayer
 var classifiedByLayer
+var keys = new Set()
 
 require([
     'esri/Map',
@@ -96,9 +97,9 @@ require([
         list3.append('<li class="steps-items">On the map view page, in the menu bar at the top, select the year of map you want to manually classify.</li>')
         list3.append('<li class="steps-items">To classify a certain tile, you must choose the "Classified as" overlay, then when you click somewhere on the map\
             a side bar will appear, containing the current information about the tile that corresponds to the location you have chosen\
-            or "unknown" if the tile hasn\'t been classified yet.</li>')
-        list3.append('<li class="steps-items">To update a tile, you shoulde choose whether or not the tile contains greenery and if it does, the amount of\
-            greenery that the tile contains. Then you simply press the "Update" button and in a couple of seconds your changes will be visible on the map</li>')
+            or "unknown", if the tile hasn\'t been classified yet.</li>')
+        list3.append('<li class="steps-items">To update a tile, you should choose whether or not the tile contains greenery and if it does, you should specify the amount of\
+            greenery, that the tile contains. Then, you simply press the "Save" / "Update" ("View" / "Change") button and in a couple of seconds your changes will be visible on the map.</li>')
 
         var footerDiv = $('<div class="footer" id="footer-div"></div>')
         $('.page-container').append(footerDiv)
@@ -173,6 +174,14 @@ require([
         })
 
         mapView.on('click', function(event) {
+              const opts = {
+                  include: classifiedAsLayer
+              }
+            mapView.hitTest(event, opts).then(function(response) {
+                if (response.results.length) {
+                    let graphic = response.results[0].graphic.attributes.objectid;
+                }
+            })
             $('#update-button').attr('disabled', true);
             $('#close-button').attr('disabled', true);
             setupManualClassificationForm(event).then(function () {
@@ -185,7 +194,7 @@ require([
     }
 
     async function setupManualClassificationForm(event) {
-        if($('#overlay option:selected').val().trim() === 'Classified as') {
+        if ($('#overlay option:selected').val().trim() === 'Classified as') {
             var x_coordinate = event.mapPoint.x
             var y_coordinate = event.mapPoint.y
             var year = $('#year option:selected').val().trim()
@@ -196,27 +205,41 @@ require([
                 var json = await response.json()
 
                 var user = document.getElementById('user-name').innerHTML.trim().split(' ').join('').split('\n')[2]
-                
-                if (user === 'guest') {
-                    $('#update-title').css('display', 'none')
-                    $('#text-contains-greenery').css('display', 'none')
-                    $('#contains-greenery').css('display', 'none')
-                    $('#text-greenery-percentage').css('display', 'none')
-                    $('#greenery-percentage').css('display', 'none')
-                    $('#update-button').css('display', 'none')
+
+                if (json['contains_greenery'] != 'unknown'){
+                    if (user == 'guest') {
+                        $('#update-button').html('Change')
+                    }
+                    else {
+                        $('#update-button').html('Update')
+                    }
+                } else {
+                    if (user == 'guest') {
+                        $('#update-button').html('View')
+                    }
+                    else {
+                        $('#update-button').html('Save')
+                    }
                 }
-                
 
                 $('#coordinates').html(json['x_coordinate'] + ', ' + json['y_coordinate'])
-                $('#current-contains-greenery').html(json['contains_greenery'])
+                $('#current-contains-greenery').html(String(json['contains_greenery']))
                 $('#classified-by').html(json['classified_by'])
 
-                if(json['greenery_percentage'] != 'unknown'){
+                if (String(json['contains_greenery']) === 'true') {
+                    $('#text-greenery-percentage').show()
+                    $('#current-greenery-percentage').show()
+                } else if (String(json['contains_greenery']) === 'false') {
+                    $('#text-greenery-percentage').hide()
+                    $('#current-greenery-percentage').hide()
+                }
+
+                if (json['greenery_percentage'] != 'unknown'){
                     json['greenery_percentage'] = Math.round(json['greenery_percentage'] * 100) + '%'
                 }
-                
-                $('#current-greenery-percentage').html(json['greenery_percentage'])
-                
+
+                $('#current-greenery-percentage').html(String(json['greenery_percentage']))
+
                 $('#form-div').css('display', 'block')
             } catch (exception) {
                 alert('Error.')
@@ -361,6 +384,7 @@ require([
 
     async function addToClassifiedAsLayer() {
         let abortController = new AbortController()
+        keys = new Set()
 
         $('#how-to-view-button').click(function () {
             abortController.abort()
@@ -395,10 +419,8 @@ require([
 
         try {
             var json = await response.json()
-
             edits = {
                 addFeatures: [],
-                updateFeatures: [],
             }
 
             for (let i = 0; i < json.length; i++) {
@@ -413,6 +435,8 @@ require([
                         )
                     ),
                 })
+
+                keys.add(String(json[i].xmin + " " + json[i].ymin))
 
                 graphic.setAttribute('Longitude', json[i].x_coordinate)
                 graphic.setAttribute('Latitude', json[i].y_coordinate)
@@ -438,7 +462,7 @@ require([
             form.append('<label class="popup-info" id="coordinates"></label><br>')
             form.append('<label class="popup-info"><b>Contains greenery:</b></label>')
             form.append('<label class="popup-info" id="current-contains-greenery"></label><br>')
-            form.append('<label class="popup-info"><b>Greenery percentage:</b></label>')
+            form.append('<label class="popup-info" id="text-greenery-percentage"><b>Greenery percentage:</b></label>')
             form.append('<label class="popup-info" id="current-greenery-percentage"></label><br>')
             form.append('<label class="popup-info"><b>Classified by:</b></label>')
             form.append('<label class="popup-info" id="classified-by"></label><br>')
@@ -452,7 +476,7 @@ require([
             select.append('<option value="False">False</option>')
 
             $('#contains-greenery').on('change', function () {
-                if($('#contains-greenery option:selected').val().trim() === 'True') {
+                if ($('#contains-greenery option:selected').val().trim() === 'True') {
                     $('#text-greenery-percentage').css('display', 'inline-block')
                     $('#greenery-percentage').css('display', 'inline-block')
                   } else {
@@ -463,7 +487,7 @@ require([
             
             form.append('<label class="popup-info" id="text-greenery-percentage"><b>Greenery percentage:</b></label><br>')
             form.append('<input class="popup-info" id="greenery-percentage" placeholder="Greenery percentage" required><br>')
-            form.append('<button type="button" id="update-button">Update</button>')
+            form.append('<button type="button" id="update-button"></button>')
 
             $('#update-button').on('click', async function () {
                 var year = $('#year option:selected').val().trim()
@@ -515,11 +539,11 @@ require([
                     graphic.setAttribute('Contains greenery', json.contains_greenery)
                     graphic.setAttribute('Greenery percentage', json.greenery_percentage)
                     graphic.setAttribute('Greenery rounded', json.greenery_rounded)
-                    
-                    edits.addFeatures.push(graphic)
-                    
+
+                    edits.updateFeatures.push(graphic)
                     classifiedAsLayer.applyEdits(edits)
                 } catch(exception) {
+                    alert(exception)
                     alert('Error.')
                 }
             })
@@ -536,6 +560,7 @@ require([
     }
 
     async function addToClassifiedByLayer() {
+        keys = new Set()
         let abortController = new AbortController()
 
         $('#how-to-view-button').click(function () {
@@ -689,6 +714,7 @@ require([
 })
 
 function setupClassifiedAsLayer(FeatureLayer) {
+
     var renderer = {
         type: 'unique-value',
         field: 'Contains greenery',
