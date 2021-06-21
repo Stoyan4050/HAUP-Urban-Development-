@@ -276,7 +276,6 @@ require([
 
                 $('#form-div').css('display', 'block')
             } catch (exception) {
-                alert(exception)
                 alert('Error.')
             }
         }
