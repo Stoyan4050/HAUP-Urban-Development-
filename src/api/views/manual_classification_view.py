@@ -30,11 +30,12 @@ class ManualClassificationView(View):
         greenery_percentage = json.loads(parameters).get("greenery_percentage")
         contains_greenery = json.loads(parameters).get("contains_greenery")
 
-        manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery)
+        if user != "guest":
+            manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery)
 
         contains_greenery = contains_greenery.lower()
 
-        if contains_greenery in ('true', 'false'):
+        if contains_greenery in ("true", "false"):
             greenery_rounded = calculate_greenery_rounded(contains_greenery == "true", greenery_percentage)
         else:
             greenery_rounded = 0
