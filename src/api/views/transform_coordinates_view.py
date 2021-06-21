@@ -9,6 +9,8 @@ from django.http import JsonResponse
 from django.views import View
 from pyproj import Transformer
 from api.models.classification import Classification
+from api.utils.transform_coordinates_to_tile import transform_coordinates_to_tile
+from api.utils.transform_tile_to_coordinates import transform_tile_to_coordinates
 
 
 class TransformCoordinatesView(View):
@@ -66,12 +68,20 @@ class TransformCoordinatesView(View):
         transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
         x_coordinate, y_coordinate = transformer.transform(x_parameter, y_parameter)
 
+        tile_coordinate_x, tile_coordinate_y = transform_coordinates_to_tile(x_coordinate, y_coordinate)
+        coordinates = transform_tile_to_coordinates(tile_coordinate_x, tile_coordinate_y)
+        center_x, center_y = transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
+
         result = {
             "x_tile": x_tile,
             "y_tile": y_tile,
             "tile_id": tile_id,
-            "x_coordinate": x_coordinate,
-            "y_coordinate": y_coordinate,
+            "xmin": coordinates["xmin"],
+            "ymin": coordinates["ymin"],
+            "xmax": coordinates["xmax"],
+            "ymax": coordinates["ymax"],
+            "x_coordinate": center_x,
+            "y_coordinate": center_y,
             "classified_by": classified_by,
             "contains_greenery": contains_greenery,
             "greenery_percentage": greenery_percentage,
