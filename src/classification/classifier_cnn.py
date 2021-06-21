@@ -13,7 +13,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
 from api.models import Classification, Tile
-from . import classifier_svm, classifier
+from . import classifier_svm, classifier, parameter_tuner_cnn
 
 
 def change_labels(arr):
@@ -66,7 +66,7 @@ def get_greenery_percentage(img, year):
     return classifier.get_greenery_percentage(img)
 
 
-def classify_cnn(year=2020):
+def classify_cnn(year=2020, tuning=True):
     """
         classifying using cnn
     """
@@ -108,28 +108,31 @@ def classify_cnn(year=2020):
 
     datagen.fit(x_train)
 
-    model = Sequential()
-    model.add(Conv2D(32, 3, padding="same", activation="relu", input_shape=(img_size, img_size, 3)))
-    model.add(MaxPool2D())
+    if tuning is False:
+        model = Sequential()
+        model.add(Conv2D(32, 3, padding="same", activation="relu", input_shape=(img_size, img_size, 3)))
+        model.add(MaxPool2D())
 
-    model.add(Conv2D(32, 3, padding="same", activation="relu"))
-    model.add(MaxPool2D())
+        model.add(Conv2D(32, 3, padding="same", activation="relu"))
+        model.add(MaxPool2D())
 
-    model.add(Conv2D(64, 3, padding="same", activation="relu"))
-    model.add(MaxPool2D())
-    model.add(Dropout(0.4))
+        model.add(Conv2D(64, 3, padding="same", activation="relu"))
+        model.add(MaxPool2D())
+        model.add(Dropout(0.4))
 
-    model.add(Flatten())
-    model.add(Dense(128, activation="relu"))
-    model.add(Dense(2, activation="softmax"))
+        model.add(Flatten())
+        model.add(Dense(128, activation="relu"))
+        model.add(Dense(2, activation="softmax"))
 
-    model.summary()
+        model.summary()
 
-    opt = Adam(lr=0.000001)
-    model.compile(optimizer=opt, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                  metrics=['accuracy'])
-
-    history = model.fit(x_train, y_train, epochs=500, validation_data=(x_val, y_val))
+        opt = Adam(lr=0.000001)
+        model.compile(optimizer=opt, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                      metrics=['accuracy'])
+        history = model.fit(x_train, y_train, epochs=500, validation_data=(x_val, y_val))
+    else:
+        print("Performing hyper-parameter tuning")
+        model, history = parameter_tuner_cnn.paramter_tuning_cnn(x_train, y_train, x_val, y_val)
 
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
@@ -138,18 +141,18 @@ def classify_cnn(year=2020):
 
     epochs_range = range(200)
 
-    plt.figure(figsize=(15, 15))
-    plt.subplot(2, 2, 1)
-    plt.plot(epochs_range, acc, label='Training Accuracy')
-    plt.plot(epochs_range, val_acc, label='Validation Accuracy')
-    plt.legend(loc='lower right')
-    plt.title('Training and Validation Accuracy')
-
-    plt.subplot(2, 2, 2)
-    plt.plot(epochs_range, loss, label='Training Loss')
-    plt.plot(epochs_range, val_loss, label='Validation Loss')
-    plt.legend(loc='upper right')
-    plt.title('Training and Validation Loss')
+    # plt.figure(figsize=(15, 15))
+    # plt.subplot(2, 2, 1)
+    # plt.plot(epochs_range, acc, label='Training Accuracy')
+    # plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+    # plt.legend(loc='lower right')
+    # plt.title('Training and Validation Accuracy')
+    #
+    # plt.subplot(2, 2, 2)
+    # plt.plot(epochs_range, loss, label='Training Loss')
+    # plt.plot(epochs_range, val_loss, label='Validation Loss')
+    # plt.legend(loc='upper right')
+    # plt.title('Training and Validation Loss')
     # plt.show()
 
     django.db.connections.close_all()
