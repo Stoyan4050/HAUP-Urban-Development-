@@ -7,6 +7,7 @@ import django
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from django.db.models import Q
 from keras.optimizer_v2.adam import Adam
 from keras.models import Sequential
@@ -84,6 +85,15 @@ def classify_cnn(year=2020, tile_id=None):
     """
     Classifying using cnn.
     """
+
+    if tile_id is not None:
+        tile_x = tile_id // 75879
+        tile_y = tile_id % 75879
+        classifications = Classification.objects.filter(classified_by=-1,
+                                                        year=year, tile=Tile(tile_id, tile_x, tile_y))
+
+        if not classifications:
+            return None
 
     training, validation = get_training_validation(np.array(classifier_svm.get_images_training(
         Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year)))
@@ -191,6 +201,21 @@ def classify_cnn(year=2020, tile_id=None):
                 class_label = False
                 greenery = 0
 
+        if tile_id is not None:
+            try:
+                Classification.objects.create(tile=Tile(tile_id, tile_x, tile_y),
+                                              year=year, greenery_percentage=greenery,
+                                              contains_greenery=class_label,
+                                              classified_by="-1")
+            except IntegrityError:
+                Classification.objects.filter(classified_by=-1, year=year, tile=Tile(tile_id, tile_x, tile_y)) \
+                    .update(greenery_percentage=greenery, contains_greenery=class_label)
+
+            return {
+                "greenery_percentage": greenery,
+                "contains_greenery": class_label,
+            }
+
         # print(test_coord[i][1])
         # print(test_coord[i][0])
 
@@ -207,11 +232,5 @@ def classify_cnn(year=2020, tile_id=None):
                                       classified_by="-1")
 
     print(predictions)
-
-    if tile_id is not None:
-        return {
-            "greenery_percentage": greenery,
-            "contains_greenery": class_label,
-        }
 
     return None

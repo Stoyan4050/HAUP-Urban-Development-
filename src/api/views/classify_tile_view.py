@@ -32,14 +32,9 @@ class ClassifyTileView(View):
 
         tile_id = x_tile * 75879 + y_tile
 
-        Classification.objects.filter(tile=tile_id, year=year, classified_by=-1).delete()
+        response = classify_cnn(year, tile_id)
 
-        classifications = Classification.objects.filter(tile=tile_id, year=year)
-
-        if len(classifications) == 0:
-            response = classify_cnn(year, tile_id)
-
-        else:
+        if response is None:
             return JsonResponse(None, safe=False)
 
         coordinates = transform_tile_to_coordinates(x_tile, y_tile)

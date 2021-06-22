@@ -645,7 +645,7 @@ require([
     async function classifyTile() {
         let abortController = new AbortController()
 
-        $('#lock-button').click(function () {
+        $('#message-button').click(function () {
             abortController.abort()
         })
 
@@ -659,12 +659,11 @@ require([
             year: year,
         }
         
-        const response = await fetch('/urban_development/classify_tile/' + JSON.stringify(parameters))
+        const response = await fetch('/urban_development/classify_tile/' + JSON.stringify(parameters), { signal: abortController.signal })
 
         try {
             var json = await response.json()
 
-            console.log(json)
             if(json == null) return
 
             edits = {
