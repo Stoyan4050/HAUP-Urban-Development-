@@ -4,7 +4,6 @@ __init__.py
 
 from api.utils import add_data_for_previous_years,\
                       calculate_greenery_percentage,\
-                      calculate_greenery_rounded,\
                       create_tiles,\
                       euclidean_distance_random_tiles,\
                       extract_available_years,\

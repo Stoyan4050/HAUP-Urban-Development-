@@ -247,8 +247,8 @@ require([
                     $('#update-title').css('display', 'none')
                     $('#text-contains-greenery').css('display', 'none')
                     $('#contains-greenery').css('display', 'none')
-                    $('#text-greenery-percentage').css('display', 'none')
-                    $('#greenery-percentage').css('display', 'none')
+                    $('#text-greenery-amount').css('display', 'none')
+                    $('#greenery-amount').css('display', 'none')
                     $('#update-button').css('display', 'none')
                 }
 
@@ -262,17 +262,9 @@ require([
                 $('#current-contains-greenery').html(String(json['contains_greenery']))
                 $('#classified-by').html(json['classified_by'])
 
-                if (json['greenery_percentage'] != 'unknown'){
-                    if (String(json['contains_greenery']) === 'true') {
-                        json['greenery_percentage'] = Math.round(json['greenery_percentage'] * 100) + '%'
-                    } else if (String(json['contains_greenery']) === 'false') {
-                        json['greenery_percentage'] = 'none'
-                    }
-                }
-
-                $('#current-greenery-percentage').html(String(json['greenery_percentage']))
+                $('#current-greenery-amount').html(String(json['greenery_amount']))
                 $('#contains-greenery').val('True').change()
-                $('#greenery-percentage').val('')
+                $('#greenery-amount').val('low').change()
 
                 $('#form-div').css('display', 'block')
             } catch (exception) {
@@ -475,7 +467,7 @@ require([
                 graphic.setAttribute('Longitude', json[i].x_coordinate)
                 graphic.setAttribute('Latitude', json[i].y_coordinate)
                 graphic.setAttribute('Contains greenery', json[i].contains_greenery)
-                graphic.setAttribute('Greenery percentage', json[i].greenery_percentage)
+                graphic.setAttribute('Greenery amount', json[i].greenery_amount)
                 graphic.setAttribute('Greenery rounded', json[i].greenery_rounded)
 
                 edits.addFeatures.push(graphic)
@@ -497,8 +489,8 @@ require([
             form.append('<label class="popup-info" id="coordinates"></label><br>')
             form.append('<label class="popup-info"><b>Contains greenery:</b></label>')
             form.append('<label class="popup-info" id="current-contains-greenery"></label><br>')
-            form.append('<label class="popup-info" id="text-current-greenery-percentage"><b>Greenery percentage:</b></label>')
-            form.append('<label class="popup-info" id="current-greenery-percentage"></label><br>')
+            form.append('<label class="popup-info" id="text-current-greenery-amount"><b>Greenery amount:</b></label>')
+            form.append('<label class="popup-info" id="current-greenery-amount"></label><br>')
             form.append('<label class="popup-info"><b>Classified by:</b></label>')
             form.append('<label class="popup-info" id="classified-by"></label><br>')
             form.append('<br><h2 id="update-title">Update tile</h2><br>')
@@ -512,17 +504,23 @@ require([
 
             $('#contains-greenery').on('change', function () {
                 if ($('#contains-greenery option:selected').val().trim() === 'True') {
-                    $('#text-greenery-percentage').css('display', 'inline-block')
-                    $('#greenery-percentage').css('display', 'inline-block')
+                    $('#text-greenery-amount').css('display', 'inline-block')
+                    $('#greenery-amount').css('display', 'inline-block')
                   } else {
-                    $('#text-greenery-percentage').css('display', 'none')
-                    $('#greenery-percentage').css('display', 'none')
-                    $('#greenery-percentage').val('')
+                    $('#text-greenery-amount').css('display', 'none')
+                    $('#greenery-amount').css('display', 'none')
+                    $('#greenery-amount').val('low').change()
                   }
             })
             
-            form.append('<label class="popup-info" id="text-greenery-percentage"><b>Greenery percentage:</b></label><br>')
-            form.append('<input class="popup-info" id="greenery-percentage" placeholder="Greenery percentage" required><br>')
+            form.append('<label class="popup-info" id="text-greenery-amount"><b>Greenery amount:</b></label><br>')
+            var selectContainsGreenery = $('<select class="popup-info" id="greenery-amount"></select><br>')
+            form.append(selectContainsGreenery)
+
+            selectContainsGreenery.append('<option value="low">Low</option>')
+            selectContainsGreenery.append('<option value="medium">Medium</option>')
+            selectContainsGreenery.append('<option value="high">High</option>')
+
             form.append('<button type="button" id="update-button"></button>')
 
             $('#update-button').on('click', async function () {
@@ -532,12 +530,12 @@ require([
                 var longitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[1]
                 
                 var containsGreenery = document.getElementById('contains-greenery').value
-                var greeneryPercentage
+                var greeneryAmount
                 
                 if (containsGreenery === 'False') {
-                    greeneryPercentage = 0
+                    greeneryAmount = 'none'
                 } else {
-                    greeneryPercentage = document.getElementById('greenery-percentage').value / 100
+                    greeneryAmount = $('#greenery-amount option:selected').val().trim()
                 }
 
                 var parameters = {
@@ -546,7 +544,7 @@ require([
                     year: year,
                     classified_by: classifiedBy,
                     contains_greenery: containsGreenery,
-                    greenery_percentage: greeneryPercentage,
+                    greenery_amount: greeneryAmount,
                 }
                 
                 const response = await fetch('/urban_development/manual_classification/' + JSON.stringify(parameters))
@@ -574,7 +572,7 @@ require([
                     graphic.setAttribute('Longitude', json.x_coordinate)
                     graphic.setAttribute('Latitude', json.y_coordinate)
                     graphic.setAttribute('Contains greenery', json.contains_greenery)
-                    graphic.setAttribute('Greenery percentage', json.greenery_percentage)
+                    graphic.setAttribute('Greenery amount', json.greenery_amount)
                     graphic.setAttribute('Greenery rounded', json.greenery_rounded)
 
                     edits.addFeatures.push(graphic)
@@ -590,9 +588,9 @@ require([
                     $('#current-contains-greenery').html(json.contains_greenery)
 
                     if (String(json.contains_greenery) === 'true') {
-                        $('#current-greenery-percentage').html(Math.round(String(100 * json['greenery_percentage'])))
+                        $('#current-greenery-amount').html(json['greenery_amount'])
                     } else if (String(json.contains_greenery) === 'false') {
-                        $('#current-greenery-percentage').html('none')
+                        $('#current-greenery-amount').html('none')
                     }
                     
                     $('#classified-by').html('user')
@@ -779,12 +777,12 @@ function setupClassifiedAsLayer(FeatureLayer) {
     var renderer = {
         type: 'unique-value',
         field: 'Contains greenery',
-        field2: 'Greenery rounded',
+        field2: 'Greenery amount',
         fieldDelimiter: ':',
         defaultSymbol: { type: 'simple-fill' },
         uniqueValueInfos: [
             {
-                value: 'false:0',
+                value: 'false:none',
                 label: 'not containinig greenery',
                 symbol: {
                     type: 'simple-fill',
@@ -796,11 +794,11 @@ function setupClassifiedAsLayer(FeatureLayer) {
                 },
             },
             {
-                value: 'true:25',
-                label: 'containing 0% - 25% greenery',
+                value: 'true:low',
+                label: 'containing low amount of greenery',
                 symbol: {
                     type: 'simple-fill',
-                    color: [0, 255, 0, 0.25],
+                    color: [0, 255, 0, 0.4],
                     style: 'solid',
                     outline: {
                         style: 'none',
@@ -808,11 +806,11 @@ function setupClassifiedAsLayer(FeatureLayer) {
                 },
             },
             {
-                value: 'true:50',
-                label: 'containing 25% - 50% greenery',
+                value: 'true:medium',
+                label: 'containing medium amount of greenery',
                 symbol: {
                     type: 'simple-fill',
-                    color: [0, 255, 0, 0.45],
+                    color: [0, 255, 0, 0.6],
                     style: 'solid',
                     outline: {
                         style: 'none',
@@ -820,23 +818,11 @@ function setupClassifiedAsLayer(FeatureLayer) {
                 },
             },
             {
-                value: 'true:75',
-                label: 'containing 50% - 75% greenery',
+                value: 'true:high',
+                label: 'containing high amount of greenery',
                 symbol: {
                     type: 'simple-fill',
-                    color: [0, 255, 0, 0.65],
-                    style: 'solid',
-                    outline: {
-                        style: 'none',
-                    },
-                },
-            },
-            {
-                value: 'true:100',
-                label: 'containing 75% - 100% greenery',
-                symbol: {
-                    type: 'simple-fill',
-                    color: [0, 255, 0, 0.85],
+                    color: [0, 255, 0, 0.8],
                     style: 'solid',
                     outline: {
                         style: 'none',
@@ -867,12 +853,8 @@ function setupClassifiedAsLayer(FeatureLayer) {
                 type: 'string',
             },
             {
-                name: 'Greenery percentage',
-                type: 'double',
-            },
-            {
-                name: 'Greenery rounded',
-                type: 'integer',
+                name: 'Greenery amount',
+                type: 'string',
             },
         ],
         source: [],
