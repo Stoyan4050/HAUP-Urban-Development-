@@ -6,7 +6,6 @@ import json
 from django.http import JsonResponse
 from django.views import View
 from pyproj import Transformer
-from api.models.classification import Classification
 from api.utils.transform_coordinates_to_tile import transform_coordinates_to_tile
 from api.utils.transform_tile_to_coordinates import transform_tile_to_coordinates
 from classification.classifier_cnn import classify_cnn

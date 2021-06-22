@@ -16,17 +16,16 @@ def manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage,
     """
 
     x_tile, y_tile = transform_coordinates_to_tile(x_coordinate, y_coordinate)
+    tile_id = x_tile * 75879 + y_tile
 
     try:
-        Classification.objects.create(tile_id=Tile.objects.
-                                      get(x_coordinate=x_tile, y_coordinate=y_tile).tile_id,
+        Classification.objects.create(tile=Tile(tile_id, x_tile, y_tile),
                                       year=year, greenery_percentage=greenery_percentage,
                                       contains_greenery=contains_greenery,
                                       classified_by=User.objects.get(email=user).id)
 
     except IntegrityError:
-        Classification.objects.filter(year=year, tile_id=Tile.objects.get(x_coordinate=x_tile,
-                                                                          y_coordinate=y_tile).tile_id) \
+        Classification.objects.filter(year=year, tile=Tile(tile_id, x_tile, y_tile)) \
             .update(greenery_percentage=greenery_percentage, contains_greenery=contains_greenery,
                     classified_by=User.objects.get(email=user).id)
 
