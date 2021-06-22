@@ -97,7 +97,7 @@ require([
         list3.append('<li class="steps-items">From the menu bar at the top of the page, select "Map view".</li>')
         list3.append('<li class="steps-items">In the map view, from the menu bar at the top of the page, select the year, \
             which you want to manually classify map tiles of, and select the "Classified as" overlay.</li>')
-        list3.append('<li class="steps-items">In order to manully classify a certain map tile, select it by clicking on it on the map.\
+        list3.append('<li class="steps-items">In order to manually classify a certain map tile, select it by clicking on it on the map.\
             This will open a side bar, containing the current information about the selected map tile \
             (all information will appear as "unknown", if the map tile has not been classified yet").</li>')
         list3.append('<li class="steps-items">To change the information about the selected map tile, you should choose whether or not the map tile contains greenery \
@@ -504,6 +504,7 @@ require([
 
             $('#contains-greenery').on('change', function () {
                 if ($('#contains-greenery option:selected').val().trim() === 'True') {
+
                     $('#text-greenery-amount').css('display', 'inline-block')
                     $('#greenery-amount').css('display', 'inline-block')
                   } else {
@@ -597,6 +598,13 @@ require([
                 } catch(exception) {
                     alert('Error.')
                 }
+            })
+
+            form.append('<button type="button" id="classify-button">Classify</button>')
+
+            $('#classify-button').on('click', function() {
+
+
             })
 
             form.append('<button type="button" id="close-button">Close</button>')

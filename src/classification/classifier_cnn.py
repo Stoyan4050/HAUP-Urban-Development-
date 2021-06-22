@@ -67,13 +67,26 @@ def get_greenery_percentage(img, year):
     return classifier.get_greenery_percentage(img)
 
 
-def classify_cnn(year=2020):
+def get_single_image_to_classify(year, tile_id):
+    """
+    def get_images_test(year)
+    """
+    test_imgs = []
+
+    tile = Tile.objects.filter(tile_id=tile_id)[0]
+    img = classifier_svm.get_image_from_url(year, tile.y_coordinate, tile.x_coordinate)
+    coord = (tile.y_coordinate, tile.x_coordinate)
+    test_imgs.append((img, coord))
+    return test_imgs
+
+
+def classify_cnn(year=2020, tile_id=None):
     """
     Classifying using cnn.
     """
 
     training, validation = get_training_validation(np.array(classifier_svm.get_images_training(
-        Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year)))
+        Classification.objects.filter(classified_by=5, year__lte=year), year)))
 
     train_labels, train_images = classifier.get_labels_imgs(training)
     train_labels = change_labels(train_labels)
@@ -130,14 +143,14 @@ def classify_cnn(year=2020):
     model.compile(optimizer=opt, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=['accuracy'])
 
-    history = model.fit(x_train, y_train, epochs=500, validation_data=(x_val, y_val))
+    history = model.fit(x_train, y_train, epochs=300, validation_data=(x_val, y_val))
 
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
     loss = history.history['loss']
     val_loss = history.history['val_loss']
 
-    epochs_range = range(200)
+    epochs_range = range(300)
 
     plt.figure(figsize=(15, 15))
     plt.subplot(2, 2, 1)
@@ -154,7 +167,12 @@ def classify_cnn(year=2020):
     # plt.show()
 
     django.db.connections.close_all()
-    test_data = classifier_svm.get_images_test(year)
+
+    if tile_id is None:
+        test_data = classifier_svm.get_images_test(year)
+    else:
+        test_data = get_single_image_to_classify(year, tile_id)
+
     test_coord, test_images = classifier.get_labels_imgs(test_data)
 
     predictions = model.predict_classes(test_images)

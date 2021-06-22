@@ -101,7 +101,7 @@ def get_images_test(year):
     Get test images.
     """
 
-    Classification.objects.filter(classified_by=-1).delete()
+    # Classification.objects.filter(classified_by=-1).delete()
     data_temp = Classification.objects.values("tile_id").distinct()
     data = Tile.objects.filter(~Q(tile_id__in=data_temp.values_list("tile", flat=True)))
 
