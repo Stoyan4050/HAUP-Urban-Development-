@@ -72,7 +72,7 @@ class TransformCoordinatesView(View):
         coordinates = transform_tile_to_coordinates(tile_coordinate_x, tile_coordinate_y)
         center_x, center_y = transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
 
-        if not contains_greenery == "unknown":
+        if contains_greenery != "unknown":
             if contains_greenery:
                 if 0 <= greenery_percentage <= 0.33:
                     greenery_amount = "low"
