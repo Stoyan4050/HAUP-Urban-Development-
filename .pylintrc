@@ -7,7 +7,7 @@ extension-pkg-whitelist=
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
-ignore=CVS
+ignore=CVS, __pycache__, migrations, manage.py, tests.py
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.
@@ -15,7 +15,7 @@ ignore-patterns=
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
-#init-hook=
+init-hook="from pylint.config import find_pylintrc; import os, sys; sys.path.append(os.path.join(os.path.dirname(find_pylintrc()), 'src'));"
 
 # Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
 # number of processors available to use.
@@ -138,7 +138,9 @@ disable=print-statement,
         xreadlines-attribute,
         deprecated-sys-function,
         exception-escape,
-        comprehension-escape
+        comprehension-escape,
+        no-name-in-module,
+        E0633
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -227,7 +229,7 @@ const-naming-style=UPPER_CASE
 
 # Regular expression matching correct constant names. Overrides const-naming-
 # style.
-const-rgx=(app_name|urlpatterns|application|([A-Z_][A-Z0-9_]*)|(__.*__))$
+const-rgx=(app_name|urlpatterns|application|provinces|([A-Z_][A-Z0-9_]*)|(__.*__))$
 
 # Minimum line length for functions/classes that require docstrings, shorter
 # ones are exempt.
@@ -361,7 +363,7 @@ ignore-docstrings=yes
 ignore-imports=no
 
 # Minimum lines number of a similarity.
-min-similarity-lines=4
+min-similarity-lines=15
 
 
 [SPELLING]
@@ -507,16 +509,16 @@ valid-metaclass-classmethod-first-arg=cls
 max-args=10
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=7
+max-attributes=30
 
 # Maximum number of boolean expressions in an if statement (see R0916).
 max-bool-expr=5
 
 # Maximum number of branch for function / method body.
-max-branches=12
+max-branches=20
 
 # Maximum number of locals for function / method body.
-max-locals=30
+max-locals=50
 
 # Maximum number of parents for a class (see R0901).
 max-parents=7
@@ -528,7 +530,7 @@ max-public-methods=20
 max-returns=6
 
 # Maximum number of statements in function / method body.
-max-statements=50
+max-statements=75
 
 # Minimum number of public methods for a class (see R0903).
 min-public-methods=0

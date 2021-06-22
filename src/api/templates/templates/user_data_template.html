@@ -4,20 +4,16 @@
         <meta charset="utf-8">
         <meta name="description" content="Urban Development">
         <meta name="author" content="Group 18A">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Urban Development</title>
         {% load static %}
-        <link rel="stylesheet" href="{% static 'urban_development/css/user_data_template.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'urban_development/css/user_data_template.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'urban_development/css/global.css' %}">
         {% block imports %}
         {% endblock %}
     </head>
     <body>
-        <div id="header">
-            <div id="title-container">
-                <p id="title">
-                    Urban Development
-                </p>
-            </div>
-        </div>
         <div id="main">
             <div id="content-box">
                 <p id="page-name">
@@ -26,41 +22,41 @@
                 <form action="{{ action }}" method="POST">
                     {% csrf_token %}
                     {% if form %}
-                    <table>
+                    <div class="form-content">
                         {% load widget_tweaks %}
                         {% block form-error %}
                         {% endblock %}
                         {% for field in form %}
-                        <tr>
-                            <td>
-                                {{ field.label_tag }}
-                            </td>
-                            <td class="input-field">
-                                {% render_field field oninput="change()" onfocus="gainFocus()" onfocusout="loseFocus()" %}
-                            </td>
-                        </tr>
-                        <tr class="hidden-row">
-                            <td colspan="2" class="{% if field.help_text %}help-message{% endif %}">
+                        <div class="form-field-box">
+                            <div>
+                                <div class="form-label-container">
+                                    {{ field.label_tag }}
+                                </div>
+                                <div class="form-input-container">
+                                    {% render_field field oninput="change()" onfocus="gainFocus()" onfocusout="loseFocus()" %}
+                                </div>
+                            </div>
+                            <div class="hidden-row{% if field.help_text %} help-message{% endif %}">
                                 {{ field.help_text }}
-                            </td>
-                        </tr>
+                            </div>
                         {% block input-error %}
                         {% endblock %}
-                        {% endfor %}
-                    </table>
+                        </div>
+                        {% endfor %}                        
+                    </div>
+                  
                     {% endif %}
                     {% if hyperlinks %}
                     <div id="hyperlinks-container">
                         {% for message, location in hyperlinks.items %}
-                        <a href="{{ location }}">
+                        <a class="form-hyperlink" href="{{ location }}">
                             {{ message }}
                         </a>
-                        <br>
                         {% endfor %}
                     </div>
                     {% endif %}
                     {% if button %}
-                    <button type="submit">
+                    <button class="login-btn" type="submit">
                         {{ button }}
                     </button>
                     {% endif %}

@@ -1,0 +1,22 @@
+@media screen and (max-width: 768px) {
+    /* Tags */
+
+    nav {
+        padding: 0;
+        margin-top: 1.5rem;
+        flex-direction: column-reverse;
+    }
+
+    /* Classes */
+
+    .navbar {
+        flex-direction: column;
+        padding: 10px 2rem;
+    }
+
+    /*IDs*/
+
+    #email-cell {
+        margin-bottom: 1.5rem;
+    }
+}

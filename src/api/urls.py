@@ -3,9 +3,20 @@ urls.py
 """
 
 from django.urls import path
-from .views import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedAsView, GetClassifiedByView,\
-    GetDataView, GuestView, LoginView, LogoutView, MapView, PasswordChangedView, RegisterView,\
-    SendActivationEmailView, SendChangePasswordEmailView
+from api.views.account_activated_view import AccountActivatedView
+from api.views.base_view import BaseView
+from api.views.change_password_view import ChangePasswordView
+from api.views.get_classified_tiles_view import GetClassifiedTilesView
+from api.views.guest_view import GuestView
+from api.views.login_view import LoginView
+from api.views.logout_view import LogoutView
+from api.views.main_view import MainView
+from api.views.manual_classification_view import ManualClassificationView
+from api.views.password_changed_view import PasswordChangedView
+from api.views.register_view import RegisterView
+from api.views.send_activation_email_view import SendActivationEmailView
+from api.views.send_change_password_email_view import SendChangePasswordEmailView
+from api.views.transform_coordinates_view import TransformCoordinatesView
 
 app_name = "urban_development"
 
@@ -30,12 +41,12 @@ urlpatterns = [
          name="send_change_password_email_page"),
     path("password_changed/<slug:uidb64>/<slug:token>/", PasswordChangedView.as_view(),
          name="password_changed_page"),
-    path("map/", MapView.as_view(),
-         name="map_page"),
-    path("get_classified_as/<parameters>/", GetClassifiedAsView.as_view(),
-         name="get_classified_as_page"),
-    path("get_classified_by/<parameters>/", GetClassifiedByView.as_view(),
-         name="get_classified_by_page"),
-    path("get_data/<parameters>/", GetDataView.as_view(),
-         name="get_data_view"),
+    path("main/", MainView.as_view(),
+         name="main_page"),
+    path("get_classified_tiles/<parameters>/", GetClassifiedTilesView.as_view(),
+         name="get_classified_tiles_page"),
+    path("transform_coordinates/<parameters>/", TransformCoordinatesView.as_view(),
+         name="transform_coordinates_page"),
+    path("manual_classification/<parameters>/", ManualClassificationView.as_view(),
+         name="manual_classification"),
 ]

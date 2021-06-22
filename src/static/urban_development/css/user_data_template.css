@@ -1,42 +1,23 @@
 /* Tags */
 
 body {
-    background-color: gray;
-    display: flex; 
-    flex-flow: column; 
-    position: absolute; 
-    top: 0; 
-    bottom: 0; 
-    left: 0; 
-    right: 0;
+    background-color: #f3f4f6;
+    display: flex;
+    flex-flow: column;
+    min-height: 100vh;
     margin: 0;
 }
 
-table {
-    margin-top: 1.2vh;
-    width: 100%;
-    border-collapse: collapse;
+ul {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
-label {
-    display: table-cell;
-    text-align: left;
-    font-size: 1vw;
-}
-
-input {
-    display: table-cell;
-    margin-left: 5px;
-    font-size: 1vw;
-}
-
-a {
-    font-size: 0.6vw;
-}
-
-button {
-    margin-bottom: 1.2vh;
-    font-size: 1.5vw;
+li {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 /* IDs */
@@ -53,10 +34,7 @@ button {
     background-color: white;
     padding: 0 10px;
     margin: 6vh 0 0 0;
-    border: solid;
-    border-color: black;
-    border-width: 5px;
-    font-size: 3vw;
+    font-size: 1.6rem;
 }
 
 #main {
@@ -67,44 +45,94 @@ button {
 }
 
 #content-box {
-    background-color: white;
-    display: inline-block;
-    padding: 0 10px;
+    padding: 2rem;
     margin: 0;
-    border: solid;
-    border-color: black;
-    border-width: 5px;
+    border: 1px solid #e5e7eb;
     text-align: center;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 #page-name {
-    margin: 0 0.4vh;
-    font-size: 2.5vw;
+    margin: 0 0 2rem 0;
+    font-size: 1.6rem;
 }
 
 #hyperlinks-container {
-    margin-bottom: 1.2vh;
+    margin-bottom: 2rem;
 }
 
 /* Classes */
 
-.input-field  {
-    float: right;
+.form-content {
+    margin-bottom: 1.5rem;
+    text-align: left;
+    width: 25rem;
+}
+
+.form-field-box {
+    width: 100%;
+}
+
+.form-field-box + .form-field-box {
+    margin-top: 1rem;
+}
+
+.form-label-container {
+    margin-bottom: 0.4rem;
+}
+
+.form-input-container {
+    display: flex;
+}
+
+.form-input-container input {
+    flex-grow: 1;
+    padding: 0.8rem 0.6rem;
+}
+
+.login-btn {
+    width: 15rem;
+    padding: 0.8rem;
+    background-color: #bfdbfe;
+    color: #1e3a8a;
+    transition: 0.25s all;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background-color: #93c5fd;
 }
 
 .hidden-row {
     display: none;
 }
 
-.help-message {
-    font-size: 0.6vw;
-}
-
-.error-message {
-    color: red;
-    font-size: 0.6vw;
-}
-
 .blank-row {
     height: 1.2vh;
+}
+
+.error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.message {
+    padding: 0.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-hyperlink {
+    display: block;
+    color: #333;
+    text-decoration: none;
+}
+
+.form-hyperlink:hover {
+    text-decoration: underline;
+}
+
+.form-hyperlink + .form-hyperlink {
+    margin-top: 0.5rem;
 }
