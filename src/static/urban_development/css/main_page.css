@@ -116,7 +116,35 @@ nav {
 
 #update-button:hover {
     background-color: green;
-  }
+}
+
+#lock-div {
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#message-div {
+    background-color: white;
+    width: 50%;
+    opacity: 1;
+    text-align: center;
+}
+
+#message-span {
+    margin: 10px 25px;
+}
+
+#message-button {
+    background-color: red;
+    color: black;
+}
 
 #close-button {
     background-color:darkred;

@@ -468,7 +468,6 @@ require([
                 graphic.setAttribute('Latitude', json[i].y_coordinate)
                 graphic.setAttribute('Contains greenery', json[i].contains_greenery)
                 graphic.setAttribute('Greenery amount', json[i].greenery_amount)
-                graphic.setAttribute('Greenery rounded', json[i].greenery_rounded)
 
                 edits.addFeatures.push(graphic)
             }
@@ -503,15 +502,16 @@ require([
             select.append('<option value="False">False</option>')
 
             $('#contains-greenery').on('change', function () {
-                if ($('#contains-greenery option:selected').val().trim() === 'True') {
-
-                    $('#text-greenery-amount').css('display', 'inline-block')
-                    $('#greenery-amount').css('display', 'inline-block')
-                  } else {
-                    $('#text-greenery-amount').css('display', 'none')
-                    $('#greenery-amount').css('display', 'none')
-                    $('#greenery-amount').val('low').change()
-                  }
+                if ($('#contains-greenery').is(':visible')) {
+                    if ($('#contains-greenery option:selected').val().trim() === 'True') {
+                        $('#text-greenery-amount').css('display', 'inline-block')
+                        $('#greenery-amount').css('display', 'inline-block')
+                    } else {
+                        $('#text-greenery-amount').css('display', 'none')
+                        $('#greenery-amount').css('display', 'none')
+                        $('#greenery-amount').val('low').change()
+                    }
+                }
             })
             
             form.append('<label class="popup-info" id="text-greenery-amount"><b>Greenery amount:</b></label><br>')
@@ -527,8 +527,8 @@ require([
             $('#update-button').on('click', async function () {
                 var year = $('#year option:selected').val().trim()
                 var classifiedBy = document.getElementById('user-name').innerHTML.trim().split(' ').join('').split('\n')[2]
-                var latitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[0]
-                var longitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[1]
+                var longitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[0]
+                var latitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[1]
                 
                 var containsGreenery = document.getElementById('contains-greenery').value
                 var greeneryAmount
@@ -574,7 +574,6 @@ require([
                     graphic.setAttribute('Latitude', json.y_coordinate)
                     graphic.setAttribute('Contains greenery', json.contains_greenery)
                     graphic.setAttribute('Greenery amount', json.greenery_amount)
-                    graphic.setAttribute('Greenery rounded', json.greenery_rounded)
 
                     edits.addFeatures.push(graphic)
 
@@ -595,16 +594,31 @@ require([
                     }
                     
                     $('#classified-by').html('user')
-                } catch(exception) {
+                } catch (exception) {
                     alert('Error.')
                 }
             })
 
             form.append('<button type="button" id="classify-button">Classify</button>')
 
-            $('#classify-button').on('click', function() {
+            $('#classify-button').on('click', async function() {
+                var lockDiv = $('<div id="lock-div"></div>')
+                $('.page-container').append(lockDiv)
 
+                var messageDiv = $('<div id="message-div"></div>')
+                lockDiv.append(messageDiv)
 
+                messageDiv.append('<span id="message-span">A tile is currently being classified.</span>')
+                messageDiv.append('<br>')
+                messageDiv.append('<button id="message-button">Cancel</button>')
+
+                $('#message-button').on('click', function() {
+                    $('#lock-div').remove()
+                })
+
+                await classifyTile().then(function(value) {
+                    $('#lock-div').remove()
+                })
             })
 
             form.append('<button type="button" id="close-button">Close</button>')
@@ -625,6 +639,68 @@ require([
         } catch (exception) {
             alert('Error.')
             $('#overlay').val('None').change()
+        }
+    }
+
+    async function classifyTile() {
+        let abortController = new AbortController()
+
+        $('#lock-button').click(function () {
+            abortController.abort()
+        })
+
+        var year = $('#year option:selected').val().trim()
+        var longitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[0]
+        var latitude = document.getElementById('coordinates').innerHTML.trim().split(', ')[1]
+
+        var parameters = {
+            longitude: longitude,
+            latitude: latitude,
+            year: year,
+        }
+        
+        const response = await fetch('/urban_development/classify_tile/' + JSON.stringify(parameters))
+
+        try {
+            var json = await response.json()
+
+            console.log(json)
+            if(json == null) return
+
+            edits = {
+                addFeatures: [],
+                deleteFeatures:[],
+            }
+
+            var graphic = new Graphic({
+                geometry: Polygon.fromExtent(
+                    new Extent(
+                        json.xmin, // xmin
+                        json.ymin, // ymin
+                        json.xmax, // xmax
+                        json.ymax, // ymax
+                        { wkid: 28992 }
+                    )
+                ),
+            })
+
+            graphic.setAttribute('Longitude', json.x_coordinate)
+            graphic.setAttribute('Latitude', json.y_coordinate)
+            graphic.setAttribute('Contains greenery', json.contains_greenery)
+            graphic.setAttribute('Greenery amount', json.greenery_amount)
+
+            edits.addFeatures.push(graphic)
+
+            if (currentlySelectedTile != null) {
+                edits.deleteFeatures.push(currentlySelectedTile)
+            }
+            
+            classifiedAsLayer.applyEdits(edits)
+
+            currentlySelectedTile = graphic
+        } catch (exception) {
+            alert(exception)
+            // alert('Error.')
         }
     }
 

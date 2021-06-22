@@ -86,7 +86,7 @@ def classify_cnn(year=2020, tile_id=None):
     """
 
     training, validation = get_training_validation(np.array(classifier_svm.get_images_training(
-        Classification.objects.filter(classified_by=5, year__lte=year), year)))
+        Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year)))
 
     train_labels, train_images = classifier.get_labels_imgs(training)
     train_labels = change_labels(train_labels)
@@ -143,14 +143,14 @@ def classify_cnn(year=2020, tile_id=None):
     model.compile(optimizer=opt, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=['accuracy'])
 
-    history = model.fit(x_train, y_train, epochs=300, validation_data=(x_val, y_val))
+    history = model.fit(x_train, y_train, epochs=200, validation_data=(x_val, y_val))
 
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
     loss = history.history['loss']
     val_loss = history.history['val_loss']
 
-    epochs_range = range(300)
+    epochs_range = range(200)
 
     plt.figure(figsize=(15, 15))
     plt.subplot(2, 2, 1)
@@ -207,3 +207,11 @@ def classify_cnn(year=2020, tile_id=None):
                                       classified_by="-1")
 
     print(predictions)
+
+    if tile_id is not None:
+        return {
+            "greenery_percentage": greenery,
+            "contains_greenery": class_label,
+        }
+
+    return None

@@ -104,9 +104,6 @@ def get_labels_imgs(data):
 
     labels = []
     imgs = []
-    print("******************************\n\n\n")
-    print(data)
-    print("\n\n\n******************************")
     for img, label in data:
         labels.append(label)
         imgs.append(img)
