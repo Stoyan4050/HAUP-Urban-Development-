@@ -9,7 +9,6 @@ from pyproj import Transformer
 from api.models.classification import Classification
 from api.models.tile import Tile
 from api.utils.transform_tile_to_coordinates import transform_tile_to_coordinates
-from api.utils.calculate_greenery_rounded import calculate_greenery_rounded
 
 provinces = {'Drenthe': [75590, 75751, 75128, 75290], 'Flevoland': [75424, 75574, 75228, 75391],
              'Friesland': [75380, 75641, 75043, 75240], 'Gelderland': [75402, 75713, 75316, 75532],
@@ -72,8 +71,7 @@ class GetClassifiedTilesView(View):
                 "year": -1,
                 "classified_by": "unknown",
                 "contains_greenery": False,
-                "greenery_percentage": 0,
-                "greenery_rounded": 0,
+                "greenery_amount": 0,
             }
 
         for classification in classifications_for_year.values():
@@ -90,8 +88,17 @@ class GetClassifiedTilesView(View):
                     result[classification["tile_id"]]["classified_by"] = "unknown"
 
                 result[classification["tile_id"]]["contains_greenery"] = classification["contains_greenery"]
-                result[classification["tile_id"]]["greenery_percentage"] = 100 * classification["greenery_percentage"]
-                result[classification["tile_id"]]["greenery_rounded"] = calculate_greenery_rounded(
-                    classification["contains_greenery"], classification["greenery_percentage"])
+
+                if classification["contains_greenery"]:
+                    if 0 <= classification["greenery_percentage"] <= 0.33:
+                        result[classification["tile_id"]]["greenery_amount"] = "low"
+                    elif 0.33 < classification["greenery_percentage"] <= 0.66:
+                        result[classification["tile_id"]]["greenery_amount"] = "medium"
+                    elif 0.66 < classification["greenery_percentage"] <= 1:
+                        result[classification["tile_id"]]["greenery_amount"] = "high"
+                    else:
+                        result[classification["tile_id"]]["greenery_amount"] = "unknown"
+                else:
+                    result[classification["tile_id"]]["greenery_amount"] = "none"
 
         return JsonResponse(list(result.values()), safe=False)

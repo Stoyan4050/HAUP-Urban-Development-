@@ -62,7 +62,7 @@ class TransformCoordinatesView(View):
                 classified_by = "unknown"
         except ObjectDoesNotExist:
             contains_greenery = "unknown"
-            greenery_percentage = "unknown"
+            greenery_amount = "unknown"
             classified_by = "unknown"
 
         transformer = Transformer.from_crs("EPSG:28992", "EPSG:4326")
@@ -71,6 +71,19 @@ class TransformCoordinatesView(View):
         tile_coordinate_x, tile_coordinate_y = transform_coordinates_to_tile(x_coordinate, y_coordinate)
         coordinates = transform_tile_to_coordinates(tile_coordinate_x, tile_coordinate_y)
         center_x, center_y = transformer.transform(coordinates["x_coordinate"], coordinates["y_coordinate"])
+
+        if not contains_greenery == "unknown":
+            if contains_greenery:
+                if 0 <= greenery_percentage <= 0.33:
+                    greenery_amount = "low"
+                elif 0.33 < greenery_percentage <= 0.66:
+                    greenery_amount = "medium"
+                elif 0.66 < greenery_percentage <= 1:
+                    greenery_amount = "high"
+                else:
+                    greenery_amount = "unknown"
+            else:
+                greenery_amount = "none"
 
         result = {
             "x_tile": x_tile,
@@ -84,7 +97,7 @@ class TransformCoordinatesView(View):
             "y_coordinate": center_y,
             "classified_by": classified_by,
             "contains_greenery": contains_greenery,
-            "greenery_percentage": greenery_percentage,
+            "greenery_amount": greenery_amount,
         }
 
         return JsonResponse(result, safe=False)
