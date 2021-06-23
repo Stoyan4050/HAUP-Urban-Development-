@@ -23,6 +23,11 @@ class ClassifyTileView(View):
         def get(_, parameters)
         """
 
+        user = json.loads(parameters).get("user")
+
+        if user == "guest":
+            return JsonResponse(None, safe=False)
+
         year = json.loads(parameters).get("year")
         x_parameter = float(json.loads(parameters).get("longitude"))
         y_parameter = float(json.loads(parameters).get("latitude"))

@@ -70,7 +70,7 @@ def get_greenery_percentage(img, year):
 
 def get_single_image_to_classify(year, tile_id):
     """
-    def get_images_test(year)
+    Get the image of a single tile.
     """
     test_imgs = []
 
@@ -91,9 +91,8 @@ def classify_cnn(year=2020, tile_id=None):
         tile_y = tile_id % 75879
         classifications = Classification.objects.filter(year=year, tile=Tile(tile_id, tile_x, tile_y))
 
-        if classifications:
-            if classifications[0].classified_by != -1:
-                return None
+        if classifications and classifications[0].classified_by != -1:
+            return None
 
     training, validation = get_training_validation(np.array(classifier_svm.get_images_training(
         Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year)))

@@ -36,7 +36,6 @@ class GetClassifiedTilesView(View):
         if province == "None":
             classifications_for_year = Classification.objects.filter(year__lte=year)
             distinct_ids = classifications_for_year.values("tile_id").distinct()
-
             distinct_tiles = Tile.objects.filter(tile_id__in=distinct_ids.values_list("tile_id", flat=True))
         else:
             x_min = provinces.get(province)[0]
@@ -46,7 +45,6 @@ class GetClassifiedTilesView(View):
 
             tiles = Tile.objects.filter(x_coordinate__gte=x_min, x_coordinate__lte=x_max,
                                         y_coordinate__gte=y_min, y_coordinate__lte=y_max)
-
             classifications_for_year = Classification.objects.filter(year__lte=year, tile_id__in=tiles
                                                                      .values_list("tile_id", flat=True)).distinct()
             distinct_tiles = Tile.objects.filter(tile_id__in=classifications_for_year.values_list("tile_id", flat=True))
@@ -70,8 +68,8 @@ class GetClassifiedTilesView(View):
                 "y_coordinate": y_coordinate,
                 "year": -1,
                 "classified_by": "unknown",
-                "contains_greenery": False,
-                "greenery_amount": 0,
+                "contains_greenery": "unknown",
+                "greenery_amount": "unknown",
             }
 
         for classification in classifications_for_year.values():

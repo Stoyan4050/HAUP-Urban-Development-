@@ -14,7 +14,7 @@ body {
   
 h1, h2 {
     font-family: Arial, sans-serif;
-    margin-left: 0.2vw;
+    margin-left: 0.5vw;
     font-size: 1.5vw;
 }
   
@@ -59,18 +59,6 @@ nav {
     text-align: center;
 }
 
-.header-cell {
-    height: 100%;
-    aspect-ratio: 1;
-    float: left;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    border-right: 1px solid black;
-}
-
 /* IDs */
 
 #province-cell {
@@ -100,7 +88,7 @@ nav {
     float: right;
 }
 
-#update-button {
+#update-button, #classify-button {
     background-color: #047857;
     color: white;
     padding: 0.5vh 0;
@@ -114,7 +102,7 @@ nav {
     font-size: 1vw;
 }
 
-#update-button:hover {
+#update-button:hover, #classify-button:hover {
     background-color: green;
 }
 
@@ -132,39 +120,37 @@ nav {
 
 #message-div {
     background-color: white;
-    width: 50%;
-    opacity: 1;
     text-align: center;
+    border: 1px solid black;
+}
+
+#message-container {
+    margin-top: 0.5vh;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
 }
 
 #message-span {
-    margin: 10px 25px;
+    font-size: 1vw;
 }
 
-#message-button {
-    background-color: red;
-    color: black;
-}
-
-#close-button {
+#close-button, #message-button {
     background-color:darkred;
     color: white;
     padding: 0.5vh 0;
     border: none;
     cursor: pointer;
     width: 19vw;
-    margin-top: 1vh;
-    margin-left: 0.5vw;
-    margin-right: 0.5vw;
+    margin: 1vh 0.5vw;
     opacity: 0.8;
     font-size: 1vw;
 }
 
-#close-button:hover {
+#close-button:hover, #message-button:hover {
     background-color: red;
 }
 
-#update-button:disabled, #close-button:disabled {
+#update-button:disabled, #classify-button:disabled, #close-button:disabled, #message-button:disabled {
     background-color: grey;
 }
 
@@ -324,7 +310,7 @@ nav {
 .popup-info{
     font-family: 'Times New Roman';
     font-size: 1.25vw;
-    margin-left: 5px;
+    margin-left: 0.5vw;
 }
 
 .esri-ui-inner-container.esri-ui-corner-container {
