@@ -89,11 +89,11 @@ def classify_cnn(year=2020, tile_id=None):
     if tile_id is not None:
         tile_x = tile_id // 75879
         tile_y = tile_id % 75879
-        classifications = Classification.objects.filter(classified_by=-1,
-                                                        year=year, tile=Tile(tile_id, tile_x, tile_y))
+        classifications = Classification.objects.filter(year=year, tile=Tile(tile_id, tile_x, tile_y))
 
-        if not classifications:
-            return None
+        if classifications:
+            if classifications[0].classified_by != -1:
+                return None
 
     training, validation = get_training_validation(np.array(classifier_svm.get_images_training(
         Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year)))
