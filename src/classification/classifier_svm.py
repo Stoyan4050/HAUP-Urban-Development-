@@ -60,8 +60,8 @@ def get_images_training(data1, year):
         print(counter)
         counter += 1
 
-        # if counter > 20:
-        #     return training_imgs
+        if counter > 20:
+            return training_imgs
 
     return training_imgs
     #     print(i)
@@ -112,7 +112,7 @@ def get_images_test(year):
         coord = (tile.y_coordinate, tile.x_coordinate)
         test_imgs.append((img, coord))
 
-        if counter > 2000:
+        if counter > 20:
             break
 
         counter += 1

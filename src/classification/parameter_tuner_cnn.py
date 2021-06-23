@@ -1,3 +1,7 @@
+"""
+    Tuning CNN classifier
+"""
+
 import tensorflow as tf
 import kerastuner as kt
 from tensorflow.keras.optimizers import Adam
@@ -6,7 +10,10 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 
 
-def model_builder(hp):
+def model_builder(hyper):
+    """
+        Build a model for tuning
+    """
     # model = keras.Sequential()
     # model.add(keras.layers.Flatten(input_shape=(28, 28)))
     #
@@ -18,13 +25,12 @@ def model_builder(hp):
 
     # Tune the learning rate for the optimizer
     # Choose an optimal value from 0.01, 0.001, or 0.0001
-    hp_learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4])
+    hp_learning_rate = hyper.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4])
 
-    print("HERE 33333")
     img_size = 32
     model = Sequential()
     model.add(Conv2D(
-        filters=hp.Choice(
+        filters=hyper.Choice(
             'num_filters',
             values=[32, 64],
             default=64,
@@ -38,28 +44,27 @@ def model_builder(hp):
     # Conv2D(32, 3, padding="same", activation="relu", input_shape=(img_size, img_size, 3))
     model.add(MaxPool2D())
 
-    model.add(Conv2D(filters=hp.Choice(
-        'num_filters',
-        values=[32, 64],
-        default=64),
-        kernel_size=3,
-        padding="same",
-        activation="relu"))
+    model.add(Conv2D(filters=hyper.Choice('num_filters',
+                                          values=[32, 64],
+                                          default=64),
+                     kernel_size=3,
+                     padding="same",
+                     activation="relu"))
 
     model.add(MaxPool2D())
 
-    model.add(Conv2D(filters=hp.Choice(
+    model.add(Conv2D(filters=hyper.Choice(
         'num_filters',
         values=[32, 64],
         default=64),
-        kernel_size=3,
-        padding="same",
-        activation="relu"))
+                     kernel_size=3,
+                     padding="same",
+                     activation="relu"))
 
     model.add(MaxPool2D())
 
     model.add(Dropout(
-        rate=hp.Float(
+        rate=hyper.Float(
             'dropout_3',
             min_value=0.0,
             max_value=0.7,
@@ -71,14 +76,14 @@ def model_builder(hp):
     model.add(Flatten())
 
     model.add(Dense(
-        units=hp.Int(
+        units=hyper.Int(
             'units',
             min_value=32,
             max_value=512,
             step=32,
             default=128
         ),
-        activation=hp.Choice(
+        activation=hyper.Choice(
             'dense_activation',
             values=['relu', 'tanh', 'sigmoid'],
             default='relu'
@@ -86,14 +91,14 @@ def model_builder(hp):
     ))
 
     model.add(Dense(
-        units=hp.Int(
+        units=hyper.Int(
             'units',
             min_value=2,
             max_value=128,
             step=32,
             default=2
         ),
-        activation=hp.Choice(
+        activation=hyper.Choice(
             'dense_activation',
             values=['relu', 'tanh', 'sigmoid'],
             default='relu'
@@ -114,7 +119,7 @@ def paramter_tuning_cnn(img_train, label_train, img_test, label_test):
     """
     tuner = kt.Hyperband(model_builder,
                          objective='val_accuracy',
-                         max_epochs=10,
+                         max_epochs=50,
                          factor=3)
 
     stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
