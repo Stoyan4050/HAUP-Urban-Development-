@@ -24,14 +24,14 @@ def model_builder(hyper):
 
     # Tune the learning rate for the optimizer
     # Choose an optimal value from 0.01, 0.001, or 0.0001
-    hp_learning_rate = hyper.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4])
+    hp_learning_rate = hyper.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4, 0.000001, 0.00001])
 
     img_size = 32
     model = Sequential()
     model.add(Conv2D(
         filters=hyper.Choice(
             'num_filters',
-            values=[32, 64],
+            values=[32, 48, 64, 80, 96, 112, 128],
             default=64,
         ),
         activation='relu',
@@ -44,7 +44,7 @@ def model_builder(hyper):
     model.add(MaxPool2D())
 
     model.add(Conv2D(filters=hyper.Choice('num_filters',
-                                          values=[32, 64],
+                                          values=[32, 48, 64, 80, 96, 112, 128],
                                           default=64),
                      kernel_size=3,
                      padding="same",
@@ -54,7 +54,7 @@ def model_builder(hyper):
 
     model.add(Conv2D(filters=hyper.Choice(
         'num_filters',
-        values=[32, 64],
+        values=[32, 48, 64, 80, 96, 112, 128],
         default=64),
                      kernel_size=3,
                      padding="same",
@@ -77,14 +77,14 @@ def model_builder(hyper):
     model.add(Dense(
         units=hyper.Int(
             'units',
-            min_value=32,
-            max_value=512,
-            step=32,
+            min_value=2,
+            max_value=128,
+            step=2,
             default=128
         ),
         activation=hyper.Choice(
             'dense_activation',
-            values=['relu', 'tanh', 'sigmoid'],
+            values=['relu', 'tanh', 'sigmoid', 'softmax'],
             default='relu'
         )
     ))
@@ -94,12 +94,12 @@ def model_builder(hyper):
             'units',
             min_value=2,
             max_value=128,
-            step=32,
+            step=2,
             default=2
         ),
         activation=hyper.Choice(
             'dense_activation',
-            values=['relu', 'tanh', 'sigmoid'],
+            values=['relu', 'tanh', 'sigmoid', 'softmax'],
             default='relu'
         )
     ))
