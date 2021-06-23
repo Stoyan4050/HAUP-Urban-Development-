@@ -6,6 +6,7 @@ from django.urls import path
 from api.views.account_activated_view import AccountActivatedView
 from api.views.base_view import BaseView
 from api.views.change_password_view import ChangePasswordView
+from api.views.classify_tile_view import ClassifyTileView
 from api.views.get_classified_tiles_view import GetClassifiedTilesView
 from api.views.guest_view import GuestView
 from api.views.login_view import LoginView
@@ -48,5 +49,7 @@ urlpatterns = [
     path("transform_coordinates/<parameters>/", TransformCoordinatesView.as_view(),
          name="transform_coordinates_page"),
     path("manual_classification/<parameters>/", ManualClassificationView.as_view(),
-         name="manual_classification"),
+         name="manual_classification_page"),
+    path("classify_tile/<parameters>/", ClassifyTileView.as_view(),
+         name="classify_tile_page"),
 ]

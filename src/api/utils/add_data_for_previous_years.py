@@ -39,6 +39,7 @@ def add_data_for_previous_years():
         ind += 1
         print(ind)
 
+        tile_id = classification.tile.tile_id
         tile_x = classification.tile.tile_id // 75879
         tile_y = int(classification.tile.tile_id) % 75879
 
@@ -83,7 +84,7 @@ def add_data_for_previous_years():
                 if year != 2010:
                     try:
                         Classification.objects.create(
-                            tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year + 10,
+                            tile=Tile(tile_id, tile_x, tile_y), year=year + 10,
                             greenery_percentage=classification.greenery_percentage, classified_by="-2")
                     except ObjectDoesNotExist:
                         print(tile_x, tile_y)
@@ -94,7 +95,7 @@ def add_data_for_previous_years():
                 os.remove("./data/images/" + str(tile_x) + "_" + str(tile_y) + "_" + str(year) + ".jpg")
                 # print(year)
                 Classification.objects.create(
-                    tile=Tile.objects.get(x_coordinate=tile_x, y_coordinate=tile_y), year=year,
+                    tile=Tile(tile_id, tile_x, tile_y), year=year,
                     greenery_percentage=classification.greenery_percentage, classified_by="-2")
 
     # for year in range(1910, 2030, 10):
