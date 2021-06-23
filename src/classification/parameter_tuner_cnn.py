@@ -56,9 +56,9 @@ def model_builder(hyper):
         'num_filters',
         values=[32, 64],
         default=64),
-        kernel_size=3,
-        padding="same",
-        activation="relu"))
+                     kernel_size=3,
+                     padding="same",
+                     activation="relu"))
 
     model.add(MaxPool2D())
 
