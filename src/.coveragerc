@@ -1,26 +1,28 @@
 [run]
 source = .
-omit = */__init__.py
-       ./manage.py
-       ./api/apps.py
-       ./api/tests.py
-       ./api/urls.py
+omit = ./venv/*
        ./api/migrations/*
+       ./api/tests/*
+       ./integration_tests/*
+       */__init__.py
+       ./api/apps.py
+       ./api/urls.py
        ./urban_development/asgi.py
        ./urban_development/settings.py
        ./urban_development/urls.py
        ./urban_development/wsgi.py
-       ./venv/*
+       ./manage.py     
 
 [report]
-omit = */__init__.py
-       ./manage.py
-       ./api/apps.py
-       ./api/tests.py
-       ./api/urls.py
+omit = ./venv/*
        ./api/migrations/*
+       ./api/tests/*
+       ./integration_tests/*
+       */__init__.py
+       ./api/apps.py
+       ./api/urls.py
        ./urban_development/asgi.py
        ./urban_development/settings.py
        ./urban_development/urls.py
        ./urban_development/wsgi.py
-       ./venv/*
+       ./manage.py       
