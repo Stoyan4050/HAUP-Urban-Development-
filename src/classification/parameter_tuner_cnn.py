@@ -3,11 +3,10 @@
 """
 
 import tensorflow as tf
-from kerastuner import Hyperband
 from tensorflow.keras.optimizers import Adam
-
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
+from kerastuner import Hyperband
 
 
 def model_builder(hyper):
@@ -57,9 +56,9 @@ def model_builder(hyper):
         'num_filters',
         values=[32, 64],
         default=64),
-                     kernel_size=3,
-                     padding="same",
-                     activation="relu"))
+        kernel_size=3,
+        padding="same",
+        activation="relu"))
 
     model.add(MaxPool2D())
 
