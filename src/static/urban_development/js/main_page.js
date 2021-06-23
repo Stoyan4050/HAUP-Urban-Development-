@@ -85,7 +85,7 @@ require([
         list2.append('<li class="steps-items">On the data view page, you can see statistics regarding what different map tiles\
             have been classified as and who they have been classified by.</li>')
 
-        infoDiv.append('<button type="button" class="collapsible">How to manually classify map tiles</button>')
+        infoDiv.append('<button type="button" class="collapsible">How to classify map tiles using the classifier</button>')
 
         var div3 = $('<div class="content"></div>')
         infoDiv.append(div3)
@@ -93,14 +93,34 @@ require([
         var list3 = $('<ol class="steps-list"></ol>')
         div3.append(list3)
 
-        list3.append('<li class="steps-items">Log in with your account (guest users are not allowed to manually classify map tiles).</li>')
+        list3.append('<li class="steps-items">Log in with your account (guest users are not allowed to classify map tiles using the classifier).</li>')
         list3.append('<li class="steps-items">From the menu bar at the top of the page, select "Map view".</li>')
         list3.append('<li class="steps-items">In the map view, from the menu bar at the top of the page, select the year, \
-            which you want to manually classify map tiles of, and select the "Classified as" overlay.</li>')
-        list3.append('<li class="steps-items">In order to manually classify a certain map tile, select it by clicking on it on the map.\
+            which you want to classify map tiles of, and select the "Classified as" overlay.</li>')
+        list3.append('<li class="steps-items">In order to classify a certain map tile, select it by clicking on it on the map.\
             This will open a side bar, containing the current information about the selected map tile \
             (all information will appear as "unknown", if the map tile has not been classified yet").</li>')
-        list3.append('<li class="steps-items">To change the information about the selected map tile, you should choose whether or not the map tile contains greenery \
+        list3.append('<li class="steps-items">To classify the selected map tile using the classifier, you should simply press the "Classify" button. \
+            This will display a message, saying that a tile is currently being classified, and will give you the option to cancel the classification, \
+            before it has completed, using the "Cancel" button. As soon as the selected map tile has been classified by the classifier, the message \
+            will disappear and the changes will be visible in the side bar and on the map.</li>')
+
+        infoDiv.append('<button type="button" class="collapsible">How to manually classify map tiles</button>')
+
+        var div4 = $('<div class="content"></div>')
+        infoDiv.append(div4)
+
+        var list4 = $('<ol class="steps-list"></ol>')
+        div4.append(list4)
+
+        list4.append('<li class="steps-items">Log in with your account (guest users are not allowed to manually classify map tiles).</li>')
+        list4.append('<li class="steps-items">From the menu bar at the top of the page, select "Map view".</li>')
+        list4.append('<li class="steps-items">In the map view, from the menu bar at the top of the page, select the year, \
+            which you want to classify map tiles of, and select the "Classified as" overlay.</li>')
+        list4.append('<li class="steps-items">In order to classify a certain map tile, select it by clicking on it on the map.\
+            This will open a side bar, containing the current information about the selected map tile \
+            (all information will appear as "unknown", if the map tile has not been classified yet").</li>')
+        list4.append('<li class="steps-items">To manually classify the selected map tile, you should choose whether or not the map tile contains greenery \
             and, if it does, you should specify the amount of greenery, which the map tile contains. Then, you should simply press the "Save" / "Update" button \
             and, in a couple of seconds, your changes will be visible in the side bar and on the map.</li>')
 
@@ -836,7 +856,7 @@ require([
         })
 
         $('#province').change(function (){
-            abortController.abort();
+            abortController.abort()
         })
 
         $('#logout-hyperlink').click(function () {

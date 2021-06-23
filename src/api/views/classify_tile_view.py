@@ -10,6 +10,9 @@ from api.utils.transform_coordinates_to_tile import transform_coordinates_to_til
 from api.utils.transform_tile_to_coordinates import transform_tile_to_coordinates
 from classification.classifier_cnn import classify_cnn
 
+LOW_MEDIUM_GREENERY = 0.33
+MEDIUM_HIGH_GREENERY = 0.66
+
 
 class ClassifyTileView(View):
     """
@@ -50,11 +53,11 @@ class ClassifyTileView(View):
 
         if contains_greenery != "unknown":
             if contains_greenery:
-                if 0 <= greenery_percentage <= 0.33:
+                if 0 <= greenery_percentage <= LOW_MEDIUM_GREENERY:
                     greenery_amount = "low"
-                elif 0.33 < greenery_percentage <= 0.66:
+                elif LOW_MEDIUM_GREENERY < greenery_percentage <= MEDIUM_HIGH_GREENERY:
                     greenery_amount = "medium"
-                elif 0.66 < greenery_percentage <= 1:
+                elif MEDIUM_HIGH_GREENERY < greenery_percentage <= 1:
                     greenery_amount = "high"
                 else:
                     greenery_amount = "unknown"

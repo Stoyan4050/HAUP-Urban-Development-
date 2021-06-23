@@ -12,6 +12,9 @@ from api.models.classification import Classification
 from api.utils.transform_coordinates_to_tile import transform_coordinates_to_tile
 from api.utils.transform_tile_to_coordinates import transform_tile_to_coordinates
 
+LOW_MEDIUM_GREENERY = 0.33
+MEDIUM_HIGH_GREENERY = 0.66
+
 
 class TransformCoordinatesView(View):
     """
@@ -76,11 +79,11 @@ class TransformCoordinatesView(View):
 
         if contains_greenery != "unknown":
             if contains_greenery:
-                if 0 <= greenery_percentage <= 0.33:
+                if 0 <= greenery_percentage <= LOW_MEDIUM_GREENERY:
                     greenery_amount = "low"
-                elif 0.33 < greenery_percentage <= 0.66:
+                elif LOW_MEDIUM_GREENERY < greenery_percentage <= MEDIUM_HIGH_GREENERY:
                     greenery_amount = "medium"
-                elif 0.66 < greenery_percentage <= 1:
+                elif MEDIUM_HIGH_GREENERY < greenery_percentage <= 1:
                     greenery_amount = "high"
                 else:
                     greenery_amount = "unknown"

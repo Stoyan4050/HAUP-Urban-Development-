@@ -10,12 +10,15 @@ from api.models.classification import Classification
 from api.models.tile import Tile
 from api.utils.transform_tile_to_coordinates import transform_tile_to_coordinates
 
-provinces = {'Drenthe': [75590, 75751, 75128, 75290], 'Flevoland': [75424, 75574, 75228, 75391],
+PROVINCES = {'Drenthe': [75590, 75751, 75128, 75290], 'Flevoland': [75424, 75574, 75228, 75391],
              'Friesland': [75380, 75641, 75043, 75240], 'Gelderland': [75402, 75713, 75316, 75532],
              'Groningen': [75598, 75771, 75032, 75226], 'Limburg': [75499, 75613, 75520, 75805],
              'Noord-Brabant': [75264, 75581, 75506, 75672], 'Noord-Holland': [75205, 75455, 75133, 75552],
              'Overijssel': [75534, 75750, 75225, 75425], 'Zuid-Holland': [75205, 75408, 75368, 75552],
              'Utrecht': [75368, 75509, 75376, 75498], 'Zeeland': [75120, 75278, 75526, 75675]}
+
+LOW_MEDIUM_GREENERY = 0.33
+MEDIUM_HIGH_GREENERY = 0.66
 
 
 class GetClassifiedTilesView(View):
@@ -38,10 +41,10 @@ class GetClassifiedTilesView(View):
             distinct_ids = classifications_for_year.values("tile_id").distinct()
             distinct_tiles = Tile.objects.filter(tile_id__in=distinct_ids.values_list("tile_id", flat=True))
         else:
-            x_min = provinces.get(province)[0]
-            x_max = provinces.get(province)[1]
-            y_min = provinces.get(province)[2]
-            y_max = provinces.get(province)[3]
+            x_min = PROVINCES.get(province)[0]
+            x_max = PROVINCES.get(province)[1]
+            y_min = PROVINCES.get(province)[2]
+            y_max = PROVINCES.get(province)[3]
 
             tiles = Tile.objects.filter(x_coordinate__gte=x_min, x_coordinate__lte=x_max,
                                         y_coordinate__gte=y_min, y_coordinate__lte=y_max)
@@ -88,11 +91,11 @@ class GetClassifiedTilesView(View):
                 result[classification["tile_id"]]["contains_greenery"] = classification["contains_greenery"]
 
                 if classification["contains_greenery"]:
-                    if 0 <= classification["greenery_percentage"] <= 0.33:
+                    if 0 <= classification["greenery_percentage"] <= LOW_MEDIUM_GREENERY:
                         result[classification["tile_id"]]["greenery_amount"] = "low"
-                    elif 0.33 < classification["greenery_percentage"] <= 0.66:
+                    elif LOW_MEDIUM_GREENERY < classification["greenery_percentage"] <= MEDIUM_HIGH_GREENERY:
                         result[classification["tile_id"]]["greenery_amount"] = "medium"
-                    elif 0.66 < classification["greenery_percentage"] <= 1:
+                    elif MEDIUM_HIGH_GREENERY < classification["greenery_percentage"] <= 1:
                         result[classification["tile_id"]]["greenery_amount"] = "high"
                     else:
                         result[classification["tile_id"]]["greenery_amount"] = "unknown"

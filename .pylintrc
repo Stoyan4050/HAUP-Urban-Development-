@@ -229,7 +229,7 @@ const-naming-style=UPPER_CASE
 
 # Regular expression matching correct constant names. Overrides const-naming-
 # style.
-const-rgx=(app_name|urlpatterns|application|provinces|([A-Z_][A-Z0-9_]*)|(__.*__))$
+const-rgx=(app_name|urlpatterns|application|([A-Z_][A-Z0-9_]*)|(__.*__))$
 
 # Minimum line length for functions/classes that require docstrings, shorter
 # ones are exempt.
