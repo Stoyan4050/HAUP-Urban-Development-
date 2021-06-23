@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Urban Development">
+        <meta name="author" content="Group 18A">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Urban Development</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/4.15/esri/themes/dark-blue/main.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'urban_development/css/main_page.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'urban_development/css/global.css' %}">
+        <script src="https://js.arcgis.com/4.15/"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="{% static 'urban_development/js/main_page.js' %}" type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="page-container">
+            <div class="title-container">
+                <div class="navbar" id="main-page-header">
+                    <img src="{% static 'urban_development/images/logo2.png' %}" class="logo">
+                    <nav>
+                        <div class="nav-left">
+                            <div class="text-center">
+                                <a class="text-element" id="how-to-view-button">
+                                    How to use
+                                </a>
+                            </div>
+                            <div class="text-center">
+                                <a class="text-element" id="map-view-button">
+                                    Map view
+                                </a>
+                            </div>
+                            <div class="text-center">
+                                <a class="text-element" id="data-view-button">
+                                    Data view
+                                </a>
+                            </div>
+                            <div class="text-center" id="year-cell">
+                                <span class="text-element">
+                                    Year
+                                </span>
+                                <br>
+                                <select name="year" class="text-element" id="year">
+                                    {% for key, value in years.items %}
+                                    <option value="{{ value }}">
+                                        {{ key }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="text-center" id="overlay-cell">
+                                <span class="text-element">
+                                    Overlay
+                                </span>
+                                <br>
+                                <select name="overlay" class="text-element" id="overlay">
+                                    <option value="None">None</option>
+                                    <option value="Classified as">Classified as</option>
+                                    <option value="Classified by">Classified by</option>
+                                </select>
+                            </div>
+                            <div class="text-center hidden" id="province-cell">
+                                <span class="text-element">
+                                    Province
+                                </span>
+                                <br>
+                                <select name="province" class="text-element" id="province">
+                                    <option value="None">All</option>
+                                    <option value="Drenthe">Drenthe</option>
+                                    <option value="Flevoland">Flevoland</option>
+                                    <option value="Friesland">Friesland</option>
+                                    <option value="Gelderland">Gelderland</option>
+                                    <option value="Groningen">Groningen</option>
+                                    <option value="Limburg">Limburg</option>
+                                    <option value="Noord-Brabant">Noord-Brabant</option>
+                                    <option value="Noord-Holland">Noord-Holland</option>
+                                    <option value="Overijssel">Overijssel</option>
+                                    <option value="Zuid-Holland">Zuid-Holland</option>
+                                    <option value="Utrecht">Utrecht</option>
+                                    <option value="Zeeland">Zeeland </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="email-cell">
+                            <div>
+                                <span class="text-element" id="user-name">
+                                    Hello,
+                                    {% if user.is_authenticated %}
+                                    {{ user.email }}
+                                    {% else %}
+                                    guest
+                                    {% endif %}
+                                </span>
+                                <br>
+                                {% if user.is_authenticated %}
+                                <a href="/urban_development/logout/" class="text-element" id="logout-hyperlink">
+                                    Log out
+                                </a>
+                                {% else %}
+                                <a href="/urban_development/login/" class="text-element" id="logout-hyperlink">
+                                    Log in
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

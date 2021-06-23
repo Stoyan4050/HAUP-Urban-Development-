@@ -1,0 +1,337 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* Tags */
+  
+body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1vw;
+    box-sizing: border-box;
+    min-height: 100vh;
+}
+  
+h1, h2 {
+    font-family: Arial, sans-serif;
+    margin-left: 0.5vw;
+    font-size: 1.5vw;
+}
+  
+nav {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    padding-left: 3vw;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #047857;
+    font-size: 1vw;
+    cursor: pointer;
+}
+
+.navbar a:hover {
+    color: green;
+}
+
+.page-title h2 {
+    text-align: center;
+    font-size: 2.5vw;
+}
+
+.page-title div {
+    display: flex;
+    align-items: center;
+}
+
+.nav-left > div {
+    height: 100%;
+    margin: 0 0.4vw;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* IDs */
+
+#province-cell {
+    display: hidden;
+}
+
+#map {
+    flex-grow: 1;
+    display: flex;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#data {
+    width: 100%;
+    height: 93vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+#user-info {
+    float: right;
+}
+
+#update-button, #classify-button {
+    background-color: #047857;
+    color: white;
+    padding: 0.5vh 0;
+    border: none;
+    cursor: pointer;
+    width: 19vw;
+    margin-top: 1vh;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
+    opacity: 0.8;
+    font-size: 1vw;
+}
+
+#update-button:hover, #classify-button:hover {
+    background-color: green;
+}
+
+#lock-div {
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#message-div {
+    background-color: white;
+    text-align: center;
+    border: 1px solid black;
+}
+
+#message-container {
+    margin-top: 0.5vh;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
+}
+
+#message-span {
+    font-size: 1vw;
+}
+
+#close-button, #message-button {
+    background-color:darkred;
+    color: white;
+    padding: 0.5vh 0;
+    border: none;
+    cursor: pointer;
+    width: 19vw;
+    margin: 1vh 0.5vw;
+    opacity: 0.8;
+    font-size: 1vw;
+}
+
+#close-button:hover, #message-button:hover {
+    background-color: red;
+}
+
+#update-button:disabled, #classify-button:disabled, #close-button:disabled, #message-button:disabled {
+    background-color: grey;
+}
+
+#contains-greenery {
+    width: 6vw;
+    border: 1px solid #999;
+    font-size: 1.25vw;
+    color: black;
+    border-radius: 5px;
+}
+
+#coordinates {
+    width: 10.5vw;
+    display: block;
+}
+
+#form-div {
+    width: 20vw;
+}
+
+#info-div {
+    margin-top: 45vh;
+}
+
+/* Classes */
+
+.text-element {
+    width: 100%;
+    font-family: 'Times New Roman';
+    font-size: 1vw;
+}
+
+.esri-legend__layer-caption, #form-div {
+    display: none;
+}
+
+.coordinates-widget {
+    font-size: 0.8vw;
+}
+
+.data-element {
+    font-size: 1.5vw;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.esri-component.esri-layer-list.esri-widget.esri-widget--panel {
+    margin-bottom: 15px;
+}
+
+.page-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.title-container {
+    width: 100vw;
+    height: 7vh;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.navbar {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 5%;
+}
+
+.logo {
+    width: 5vw;
+    cursor: auto;
+}
+
+.page-title {
+    height: 40vh;
+    margin-bottom: 15px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    position: relative;
+    background-color: #9bb091;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+}
+
+.title-text {
+    flex-direction: column;
+}
+
+.tree {
+    height: 35vh;
+    margin-right: -2vw;
+}
+
+.bench {
+    height: 20vh;
+    margin-left: -5vw;
+    margin-top: 20vh;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #9bb091;
+    color: white;
+    text-align: center;
+}
+
+.steps {
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 7vh;
+}
+
+.collapsible {
+    background-color: #6B7280;
+    color: white;
+    cursor: pointer;
+    padding: 0.75vw;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 0.75vw;
+}
+
+.content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
+
+.steps button {
+    font-size: 1vw;
+}
+
+.steps-list {
+    margin-top: 2%;
+    margin-left: 4%;
+    margin-bottom: 2%;
+}
+
+.steps-items {
+    margin-top: 1%;
+    margin-bottom: 1%;
+}
+
+.popup-info{
+    font-family: 'Times New Roman';
+    font-size: 1.25vw;
+    margin-left: 0.5vw;
+}
+
+.esri-ui-inner-container.esri-ui-corner-container {
+    inset: 15px 15px !important;
+}
+
+.active, .collapsible:hover {
+    background-color: #047857;
+}
+  
+nav .nav-left {
+    height: 100%;
+    display: flex;
+    flex: 1;
+    align-items: center;
+}
+
+.hidden { 
+    position: absolute; 
+    overflow: hidden; 
+    clip: rect(0 0 0 0); 
+    height: 1px; width: 1px; 
+    margin: -1px; padding: 0; border: 0; 
+}

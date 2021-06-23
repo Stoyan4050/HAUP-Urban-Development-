@@ -4,20 +4,16 @@
         <meta charset="utf-8">
         <meta name="description" content="Urban Development">
         <meta name="author" content="Group 18A">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Urban Development</title>
         {% load static %}
-        <link rel="stylesheet" href="{% static 'urban_development/css/user_data_template.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'urban_development/css/user_data_template.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'urban_development/css/global.css' %}">
         {% block imports %}
         {% endblock %}
     </head>
     <body>
-        <!-- <div id="header">
-            <div id="title-container">
-                <p id="title">
-                    Urban Development
-                </p>
-            </div>
-        </div> -->
         <div id="main">
             <div id="content-box">
                 <p id="page-name">
@@ -28,13 +24,8 @@
                     {% if form %}
                     <div class="form-content">
                         {% load widget_tweaks %}
-                        {% if form.errors %}
-                        <div class="form-errors">  
-                            {% block form-error %}
-                         
-                            {% endblock %}
-                            </div> 
-                        {% endif %}
+                        {% block form-error %}
+                        {% endblock %}
                         {% for field in form %}
                         <div class="form-field-box">
                             <div>
@@ -45,14 +36,12 @@
                                     {% render_field field oninput="change()" onfocus="gainFocus()" onfocusout="loseFocus()" %}
                                 </div>
                             </div>
-                            <div class="hidden-row">
-                                <span class="{% if field.help_text %}help-message{% endif %}">
-                                    {{ field.help_text }}
-                                </span>
+                            <div class="hidden-row{% if field.help_text %} help-message{% endif %}">
+                                {{ field.help_text }}
                             </div>
-                        </div>
                         {% block input-error %}
                         {% endblock %}
+                        </div>
                         {% endfor %}                        
                     </div>
                   

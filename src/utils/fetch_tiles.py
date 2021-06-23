@@ -1,12 +1,15 @@
-"""Module for retrieving map tiles"""
+"""
+fetch_tiles.py
+"""
+
 import urllib.request
 
 
-def main(year, range_x, range_y, folder):
-    """Fetching map tiles"""
+def fetch_tiles(year, range_x, range_y, folder):
+    """
+    def fetch_tiles(year, range_x, range_y, folder)
+    """
 
-    # valid tile range
-    # ideally run several scripts with different ranges to speed up
     for x_coord in range_x:
         for y_coord in range_y:
 
@@ -17,4 +20,4 @@ def main(year, range_x, range_y, folder):
 
 
 if __name__ == "__main__":
-    main(2020, range(75748, 75879), range(75087, 75825), "")
+    fetch_tiles(2020, range(75748, 75879), range(75087, 75825), "")

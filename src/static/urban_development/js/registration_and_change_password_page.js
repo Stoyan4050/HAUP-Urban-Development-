@@ -10,16 +10,13 @@ function gainFocus() {
     let inputRow = window.event.target.parentNode.parentNode;
     let informationRow = inputRow.nextElementSibling;
     let errorRow = informationRow.nextElementSibling;
-    let blankRow = errorRow.nextElementSibling;
     
-    errorRow.style.display = "none";
-    
-    if (informationRow.firstElementChild.className === "help-message") {
-        informationRow.style.display = "table-row";
-        blankRow.className = "hidden-row";
-    } else {
-        informationRow.style.display = "none";
-        blankRow.className = "blank-row";
+    if (informationRow.className === "hidden-row help-message") {
+        if (errorRow.className === "message error") {
+            errorRow.style.display = "none";
+        }
+
+        informationRow.className = "message";
     }
 }
 
@@ -27,15 +24,12 @@ function loseFocus() {
     let inputRow = window.event.target.parentNode.parentNode;
     let informationRow = inputRow.nextElementSibling;
     let errorRow = informationRow.nextElementSibling;
-    let blankRow = errorRow.nextElementSibling;
-    
-    informationRow.style.display = "none";
-    
-    if (errorRow.className === "error-message") {
-        errorRow.style.display = "table-row";
-        blankRow.className = "hidden-row";
-    } else {
-        errorRow.style.display = "none";
-        blankRow.className = "blank-row";
+
+    if (informationRow.className === "message") {
+        if (errorRow.className === "message error") {
+            errorRow.style.display = "block";
+        }
+
+        informationRow.className = "hidden-row help-message";
     }
 }
