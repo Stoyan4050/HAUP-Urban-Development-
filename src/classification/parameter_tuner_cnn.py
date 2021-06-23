@@ -3,7 +3,7 @@
 """
 
 import tensorflow as tf
-import kerastuner as kt
+from kerastuner import Hyperband
 from tensorflow.keras.optimizers import Adam
 
 from tensorflow.keras.models import Sequential
@@ -117,10 +117,10 @@ def paramter_tuning_cnn(img_train, label_train, img_test, label_test):
     """
         Hyper parameter tuning
     """
-    tuner = kt.Hyperband(model_builder,
-                         objective='val_accuracy',
-                         max_epochs=50,
-                         factor=3)
+    tuner = Hyperband(model_builder,
+                      objective='val_accuracy',
+                      max_epochs=50,
+                      factor=3)
 
     stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
 
