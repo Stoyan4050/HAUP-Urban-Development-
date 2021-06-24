@@ -11,4 +11,3 @@ def run():
     """
 
     classify_cnn()
-    # classify_cnn(year=2020, tile_id=5700485518)

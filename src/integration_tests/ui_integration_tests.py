@@ -6,9 +6,9 @@ import unittest
 from selenium import webdriver
 
 
-class UIIntegrationTest(unittest.TestCase):
+class UIIntegrationTests(unittest.TestCase):
     """
-    class UIIntegrationTest(unittest.TestCase)
+    class UIIntegrationTests(unittest.TestCase)
     """
 
     register_user_button = None

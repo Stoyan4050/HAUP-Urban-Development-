@@ -1,37 +1,15 @@
 """
-tests.py
+test_color_detection.py
 """
 
-from django.test import SimpleTestCase
+import unittest
 from django.core.exceptions import ObjectDoesNotExist
-from classification.classifier import get_image_from_url, find_color_image
+from classification.classifier import find_color_image
 
 
-class GetImageFromUrl(SimpleTestCase):
+class TestColorDetection(unittest.TestCase):
     """
-    class GetImageFromUrl(SimpleTestCase)
-    """
-
-    def test_http_error(self):
-        """
-        def test_http_error(self)
-        """
-
-        image = get_image_from_url(2020, 0, 0)
-        self.assertEqual(None, image)
-
-    def test_get_image(self):
-        """
-        def test_get_image(self)
-        """
-
-        image = get_image_from_url(2020, 75111, 75659)
-        self.assertIsNotNone(image)
-
-
-class ColorDetectionTest(SimpleTestCase):
-    """
-    class ColorDetectionTest(SimpleTestCase)
+    class TestColorDetection(unittest.TestCase)
     """
 
     # The following tests have been created by manually checking the approximate percentage of green on a tile.

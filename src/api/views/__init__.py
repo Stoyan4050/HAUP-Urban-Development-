@@ -5,6 +5,7 @@ __init__.py
 from api.views import account_activated_view,\
                       base_view,\
                       change_password_view,\
+                      classify_tile_view,\
                       get_classified_tiles_view,\
                       guest_view,\
                       login_view,\
