@@ -87,9 +87,8 @@ def classify_cnn(year=2020, tile_id=None, tuning=True):
     """
 
     if tile_id is not None:
-        tile_x = tile_id // 75879
-        tile_y = tile_id % 75879
-        classifications = Classification.objects.filter(year=year, tile=Tile(tile_id, tile_x, tile_y))
+        classifications = Classification.objects.filter(year=year,
+                                                        tile=Tile(tile_id, tile_id // 75879, tile_id % 75879))
 
         if classifications and classifications[0].classified_by != -1:
             return None
