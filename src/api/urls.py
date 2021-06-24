@@ -3,9 +3,21 @@ urls.py
 """
 
 from django.urls import path
-from .views import AccountActivatedView, BaseView, ChangePasswordView, GetClassifiedTilesView,\
-    GuestView, LoginView, LogoutView, MainView, ManualClassificationView, PasswordChangedView, \
-    RegisterView, SendActivationEmailView, SendChangePasswordEmailView, TransformCoordinatesView
+from api.views.account_activated_view import AccountActivatedView
+from api.views.base_view import BaseView
+from api.views.change_password_view import ChangePasswordView
+from api.views.classify_tile_view import ClassifyTileView
+from api.views.get_classified_tiles_view import GetClassifiedTilesView
+from api.views.guest_view import GuestView
+from api.views.login_view import LoginView
+from api.views.logout_view import LogoutView
+from api.views.main_view import MainView
+from api.views.manual_classification_view import ManualClassificationView
+from api.views.password_changed_view import PasswordChangedView
+from api.views.register_view import RegisterView
+from api.views.send_activation_email_view import SendActivationEmailView
+from api.views.send_change_password_email_view import SendChangePasswordEmailView
+from api.views.transform_coordinates_view import TransformCoordinatesView
 
 app_name = "urban_development"
 
@@ -37,5 +49,7 @@ urlpatterns = [
     path("transform_coordinates/<parameters>/", TransformCoordinatesView.as_view(),
          name="transform_coordinates_page"),
     path("manual_classification/<parameters>/", ManualClassificationView.as_view(),
-         name="manual_classification"),
+         name="manual_classification_page"),
+    path("classify_tile/<parameters>/", ClassifyTileView.as_view(),
+         name="classify_tile_page"),
 ]

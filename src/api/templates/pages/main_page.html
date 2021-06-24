@@ -22,18 +22,18 @@
                     <img src="{% static 'urban_development/images/logo2.png' %}" class="logo">
                     <nav>
                         <div class="nav-left">
-                            <div class="header-button text-element" id="how-to-view-button">
-                                <a>
+                            <div class="text-center">
+                                <a class="text-element" id="how-to-view-button">
                                     How to use
                                 </a>
                             </div>
-                            <div class="header-button text-element" id="map-view-button">
-                                <a>
+                            <div class="text-center">
+                                <a class="text-element" id="map-view-button">
                                     Map view
                                 </a>
                             </div>
-                            <div class="header-button text-element" id="data-view-button">
-                                <a>
+                            <div class="text-center">
+                                <a class="text-element" id="data-view-button">
                                     Data view
                                 </a>
                             </div>
@@ -61,6 +61,27 @@
                                     <option value="Classified by">Classified by</option>
                                 </select>
                             </div>
+                            <div class="text-center hidden" id="province-cell">
+                                <span class="text-element">
+                                    Province
+                                </span>
+                                <br>
+                                <select name="province" class="text-element" id="province">
+                                    <option value="None">All</option>
+                                    <option value="Drenthe">Drenthe</option>
+                                    <option value="Flevoland">Flevoland</option>
+                                    <option value="Friesland">Friesland</option>
+                                    <option value="Gelderland">Gelderland</option>
+                                    <option value="Groningen">Groningen</option>
+                                    <option value="Limburg">Limburg</option>
+                                    <option value="Noord-Brabant">Noord-Brabant</option>
+                                    <option value="Noord-Holland">Noord-Holland</option>
+                                    <option value="Overijssel">Overijssel</option>
+                                    <option value="Zuid-Holland">Zuid-Holland</option>
+                                    <option value="Utrecht">Utrecht</option>
+                                    <option value="Zeeland">Zeeland </option>
+                                </select>
+                            </div>
                         </div>
                         <div id="email-cell">
                             <div>
@@ -79,7 +100,7 @@
                                 </a>
                                 {% else %}
                                 <a href="/urban_development/login/" class="text-element" id="logout-hyperlink">
-                                    Sign up or log in
+                                    Log in
                                 </a>
                                 {% endif %}
                             </div>

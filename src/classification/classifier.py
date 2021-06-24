@@ -19,7 +19,7 @@ import tensorflow as tf
 from tensorflow.keras import Sequential, layers
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 import matplotlib.pyplot as plt
-from api.models import Classification
+from api.models.classification import Classification
 
 ALL_LABELS = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space',
               'park', 'recreational area']
@@ -27,8 +27,9 @@ ALL_LABELS = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 
 
 def get_image_from_url(year, x_coord, y_coord):
     """
-        get historic map images from website
+    Get historic map images from website.
     """
+
     # print(year)
     url = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + str(
         year) + "/MapServer/tile/11/" + str(x_coord) + "/" + str(y_coord)
@@ -43,7 +44,7 @@ def get_image_from_url(year, x_coord, y_coord):
 
 def get_images_training(data, year):
     """
-        get images for training
+    Get images for training.
     """
 
     training_imgs = []
@@ -64,7 +65,7 @@ def get_images_training(data, year):
 
 def get_images_test(year):
     """
-        get images for test
+    Get images for test.
     """
 
     Classification.objects.filter(classified_by=-1).delete()
@@ -88,7 +89,7 @@ def get_images_test(year):
 
 def random_sample(arr):
     """
-        get random sample of the data
+    Get random sample of the data.
     """
 
     arr = np.array(arr)
@@ -98,7 +99,7 @@ def random_sample(arr):
 
 def get_labels_imgs(data):
     """
-        separate images and labels from the data
+    Separate images and labels from the data.
     """
 
     labels = []
@@ -111,7 +112,7 @@ def get_labels_imgs(data):
 
 def classify(year=2015, download_data=False):
     """
-        classify
+    Classify.
     """
 
     all_labels = ['beach', 'church', 'city square', 'garden', 'greenery', 'museum', 'not a public space', 'park',
@@ -150,7 +151,7 @@ def classify(year=2015, download_data=False):
 
 def create_dir(all_labels):
     """
-        creates directories for storing images. Takes in all labels for directory names
+    Creates directories for storing images. Takes in all labels for directory names.
     """
 
     path_train = "./data/train"
@@ -169,8 +170,8 @@ def create_dir(all_labels):
 
 def save_images(label, img, counter, train=True):
     """
-        saves images in corresponding directory. Takes in label for directory, image to store, counter for
-        unique file name
+    Saves images in corresponding directory.
+    Takes in label for directory, image to store, counter for unique file name.
     """
 
     if train:
@@ -184,8 +185,8 @@ def save_images(label, img, counter, train=True):
 
 def train_cnn(year=2015, download_data=False, train_network=True):
     """
-        train Convolutional neural network. Takes in year of map, whether data needs to be downloaded,
-        and if network is trained
+    Train CNN.
+    Takes in year of map, whether data needs to be downloaded and if network is trained.
     """
 
     if download_data:
@@ -269,7 +270,7 @@ def train_cnn(year=2015, download_data=False, train_network=True):
 
 def read_images(all_labels, train_data=True):
     """
-        read in images from directories
+    Read in images from directories.
     """
 
     images = []
@@ -291,8 +292,9 @@ def read_images(all_labels, train_data=True):
 
 def find_color_image(x_coord, y_coord, year=2020):
     """
-        find color image
+    Find color image.
     """
+
     # print("COLOR DETECTION RUNNING")
     # path = "./data/parks_detected"
     # shutil.rmtree(path)
@@ -323,8 +325,9 @@ def find_color_image(x_coord, y_coord, year=2020):
 
 def get_greenery_percentage(img):
     """
-        Get the percentage of greenery
+    Get the percentage of greenery.
     """
+
     # cv2.imshow("A", img)
     # cv2.waitKey()
     img1 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)

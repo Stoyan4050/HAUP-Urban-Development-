@@ -7,44 +7,40 @@
   
 body {
     font-family: 'Times New Roman', Times, serif;
-    font-size: 16px;
+    font-size: 1vw;
     box-sizing: border-box;
     min-height: 100vh;
 }
   
-h1 {
+h1, h2 {
     font-family: Arial, sans-serif;
-    margin-left: 5px;
-    font-size: 23pt;
-}
-
-h2 {
-    margin-left: 5px;
-    font-size: 23pt;
-    font-family: Arial, sans-serif;
+    margin-left: 0.5vw;
+    font-size: 1.5vw;
 }
   
 nav {
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex: 1;
-    padding-left: 60px;
+    padding-left: 3vw;
 }
 
 .navbar a {
     text-decoration: none;
-    color: #228b22;
-    font-size: 20px;
+    color: #047857;
+    font-size: 1vw;
     cursor: pointer;
 }
 
-.page-title h2 {
-    font-size: 50px;
+.navbar a:hover {
+    color: green;
 }
 
-.page-title h3 {
-    margin-left: -170px;
+.page-title h2 {
+    text-align: center;
+    font-size: 2.5vw;
 }
 
 .page-title div {
@@ -53,10 +49,21 @@ nav {
 }
 
 .nav-left > div {
-    margin: 0 20px;
+    height: 100%;
+    margin: 0 0.4vw;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 /* IDs */
+
+#province-cell {
+    display: hidden;
+}
 
 #map {
     flex-grow: 1;
@@ -69,83 +76,123 @@ nav {
 
 #data {
     width: 100%;
-    height: calc(100vh - 61px);
+    height: 93vh;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    text-align: center;
 }
 
 #user-info {
     float: right;
 }
 
-#update-button {
-  background-color: #04AA6D;
-  color: white;
-  padding: 16px 20px;
-  border: none;
-  cursor: pointer;
-  width: 17vw;
-  margin-top:20px;
-  margin-bottom:10px;
-  opacity: 0.8;
+#update-button, #classify-button {
+    background-color: #047857;
+    color: white;
+    padding: 0.5vh 0;
+    border: none;
+    cursor: pointer;
+    width: 19vw;
+    margin-top: 1vh;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
+    opacity: 0.8;
+    font-size: 1vw;
 }
 
-#close-button {
-  background-color: black;
-  color: white;
-  padding: 16px 20px;
-  border: none;
-  cursor: pointer;
-  width: 17vw;
-  margin-bottom:10px;
-  opacity: 0.8;
+#update-button:hover, #classify-button:hover {
+    background-color: green;
 }
 
-#contains-greenery {
-  width: 120px;
-  height: 30px;
-  border: 1px solid #999;
-  font-size: 18px;
-  color: black;
-  border-radius: 5px;
-}
-
-#coordinates {
-  width: 270px;
-  display: block;
-}
-
-#form-div {
-  width: 20vw;
-}
-
-/* Classes */
-
-.header-cell {
-    height: 100%;
-    aspect-ratio: 1;
-    float: left;
+#lock-div {
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     text-align: center;
-    border-right: 1px solid black;
 }
 
+#message-div {
+    background-color: white;
+    text-align: center;
+    border: 1px solid black;
+}
+
+#message-container {
+    margin-top: 0.5vh;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
+}
+
+#message-span {
+    font-size: 1vw;
+}
+
+#close-button, #message-button {
+    background-color:darkred;
+    color: white;
+    padding: 0.5vh 0;
+    border: none;
+    cursor: pointer;
+    width: 19vw;
+    margin: 1vh 0.5vw;
+    opacity: 0.8;
+    font-size: 1vw;
+}
+
+#close-button:hover, #message-button:hover {
+    background-color: red;
+}
+
+#update-button:disabled, #classify-button:disabled, #close-button:disabled, #message-button:disabled {
+    background-color: grey;
+}
+
+#contains-greenery {
+    width: 6vw;
+    border: 1px solid #999;
+    font-size: 1.25vw;
+    color: black;
+    border-radius: 5px;
+}
+
+#coordinates {
+    width: 10.5vw;
+    display: block;
+}
+
+#form-div {
+    width: 20vw;
+}
+
+#info-div {
+    margin-top: 45vh;
+}
+
+/* Classes */
+
 .text-element {
+    width: 100%;
     font-family: 'Times New Roman';
-    font-size: 1rem;
+    font-size: 1vw;
 }
 
 .esri-legend__layer-caption, #form-div {
     display: none;
 }
 
+.coordinates-widget {
+    font-size: 0.8vw;
+}
+
 .data-element {
-    font-size: 1.6rem;
+    font-size: 1.5vw;
 }
 
 .text-center {
@@ -163,25 +210,26 @@ nav {
 }
 
 .title-container {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 7vh;
     box-sizing: border-box;
     position: relative;
 }
 
 .navbar {
+    height: 100%;
     display: flex;
     align-items: center;
-    padding: 10px 5%;
+    padding: 0 5%;
 }
 
 .logo {
-    width: 100px;
+    width: 5vw;
     cursor: auto;
 }
 
 .page-title {
-    height: 400px;
+    height: 40vh;
     margin-bottom: 15px;
     color: white;
     display: flex;
@@ -200,14 +248,14 @@ nav {
 }
 
 .tree {
-    height: 350px;
-    margin-right: -40px;
+    height: 35vh;
+    margin-right: -2vw;
 }
 
 .bench {
-    width: 220px;
-    margin-left: -100px;
-    margin-top: 200px;
+    height: 20vh;
+    margin-left: -5vw;
+    margin-top: 20vh;
 }
 
 .footer {
@@ -220,22 +268,21 @@ nav {
 }
 
 .steps {
-    margin-top: 6%;
-    margin-left: 6%;
-    margin-right: 20%;
-    margin-bottom: 10%;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 7vh;
 }
 
 .collapsible {
     background-color: #6B7280;
     color: white;
     cursor: pointer;
-    padding: 18px;
+    padding: 0.75vw;
     width: 100%;
     border: none;
     text-align: left;
     outline: none;
-    font-size: 15px;
+    font-size: 0.75vw;
 }
 
 .content {
@@ -246,7 +293,7 @@ nav {
 }
 
 .steps button {
-    font-size: 20px;
+    font-size: 1vw;
 }
 
 .steps-list {
@@ -256,14 +303,14 @@ nav {
 }
 
 .steps-items {
-  margin-top: 1%;
-  margin-bottom: 1%;
+    margin-top: 1%;
+    margin-bottom: 1%;
 }
 
 .popup-info{
     font-family: 'Times New Roman';
-    font-size: 1.2rem;
-    margin-left: 5px;
+    font-size: 1.25vw;
+    margin-left: 0.5vw;
 }
 
 .esri-ui-inner-container.esri-ui-corner-container {
@@ -275,7 +322,16 @@ nav {
 }
   
 nav .nav-left {
+    height: 100%;
     display: flex;
     flex: 1;
     align-items: center;
+}
+
+.hidden { 
+    position: absolute; 
+    overflow: hidden; 
+    clip: rect(0 0 0 0); 
+    height: 1px; width: 1px; 
+    margin: -1px; padding: 0; border: 0; 
 }
