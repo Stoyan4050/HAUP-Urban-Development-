@@ -19,6 +19,10 @@ class TestLoginView(unittest.TestCase):
         def setUp(self)
         """
 
+        self.user_credentials = {
+            "username": "username",
+            "password": "password",
+        }
         self.request_factory = RequestFactory()
 
     def test_login_view_get_request(self):
@@ -44,6 +48,7 @@ class TestLoginView(unittest.TestCase):
         response = LoginView.as_view()(request)
 
         self.assertEqual(response.status_code, 200)
+        mock_login_form.return_value.is_valid.assert_called_once_with()
 
     @patch("api.views.login_view.authenticate")
     @patch("api.views.login_view.LoginForm")
@@ -55,12 +60,17 @@ class TestLoginView(unittest.TestCase):
         """
 
         mock_login_form.return_value.is_valid.return_value = True
+        mock_login_form.return_value.cleaned_data = self.user_credentials
         mock_authenticate.return_value = None
 
         request = self.request_factory.post("/urban_development/login/")
         response = LoginView.as_view()(request)
 
         self.assertEqual(response.status_code, 200)
+        mock_login_form.return_value.is_valid.assert_called_once_with()
+        mock_authenticate.assert_called_once_with(request,
+                                                  username=self.user_credentials["username"],
+                                                  password=self.user_credentials["password"])
 
     @patch("api.views.login_view.login")
     @patch("api.views.login_view.authenticate")
@@ -73,11 +83,19 @@ class TestLoginView(unittest.TestCase):
         def test_login_view_post_request_user_valid(self, mock_login_form, mock_authenticate, mock_login)
         """
 
+        user = User(email=self.user_credentials["username"], password=self.user_credentials["password"])
+
         mock_login_form.return_value.is_valid.return_value = True
-        mock_authenticate.return_value = User(email="email", password="password")
+        mock_login_form.return_value.cleaned_data = self.user_credentials
+        mock_authenticate.return_value = user
         mock_login.return_value = None
 
         request = self.request_factory.post("/urban_development/login/")
         response = LoginView.as_view()(request)
 
         self.assertEqual(response.status_code, 302)
+        mock_login_form.return_value.is_valid.assert_called_once_with()
+        mock_authenticate.assert_called_once_with(request,
+                                                  username=self.user_credentials["username"],
+                                                  password=self.user_credentials["password"])
+        mock_login.assert_called_once_with(request, user)
