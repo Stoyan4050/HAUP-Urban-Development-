@@ -4,6 +4,7 @@ omit = ./venv/*
        ./api/migrations/*
        ./api/tests/*
        ./integration_tests/*
+       ./scripts/*
        */__init__.py
        ./api/apps.py
        ./api/urls.py
@@ -18,6 +19,7 @@ omit = ./venv/*
        ./api/migrations/*
        ./api/tests/*
        ./integration_tests/*
+       ./scripts/*
        */__init__.py
        ./api/apps.py
        ./api/urls.py
