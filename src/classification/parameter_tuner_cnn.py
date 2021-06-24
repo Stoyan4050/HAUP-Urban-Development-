@@ -78,7 +78,7 @@ def model_builder(hyper):
         units=hyper.Int(
             'units',
             min_value=2,
-            max_value=128,
+            max_value=512,
             step=2,
             default=128
         ),
@@ -93,7 +93,7 @@ def model_builder(hyper):
         units=hyper.Int(
             'units',
             min_value=2,
-            max_value=128,
+            max_value=512,
             step=2,
             default=2
         ),
