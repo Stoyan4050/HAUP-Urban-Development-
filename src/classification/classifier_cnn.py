@@ -68,13 +68,9 @@ def get_greenery_percentage(img, year):
     return classifier.get_greenery_percentage(img)
 
 
-# <<<<<<< HEAD
-# def classify_cnn(year=2020, tuning=True):
-# =======
 def get_single_image_to_classify(year, tile_id):
-# >>>>>>> origin/dev
     """
-    Get the image of a single tile.
+        Get the image of a single tile.
     """
     test_imgs = []
 
@@ -87,7 +83,7 @@ def get_single_image_to_classify(year, tile_id):
 
 def classify_cnn(year=2020, tile_id=None, tuning=True):
     """
-    Classifying using cnn.
+        Classifying using cnn.
     """
 
     if tile_id is not None:
@@ -135,7 +131,6 @@ def classify_cnn(year=2020, tile_id=None, tuning=True):
 
     datagen.fit(x_train)
 
-# <<<<<<< HEAD
     if tuning is False:
         model = Sequential()
         model.add(Conv2D(32, 3, padding="same", activation="relu", input_shape=(img_size, img_size, 3)))
