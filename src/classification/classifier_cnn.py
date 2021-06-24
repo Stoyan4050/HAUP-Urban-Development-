@@ -81,7 +81,7 @@ def get_single_image_to_classify(year, tile_id):
     return test_imgs
 
 
-def classify_cnn(year=2020, tile_id=None, tuning=True):
+def classify_cnn(year=2020, tile_id=None, tuning=False):
     """
         Classifying using cnn.
     """
@@ -158,7 +158,7 @@ def classify_cnn(year=2020, tile_id=None, tuning=True):
         loss = history.history['loss']
         val_loss = history.history['val_loss']
 
-        epochs_range = range(200)
+        epochs_range = range(500)
 
         plt.figure(figsize=(15, 15))
         plt.subplot(2, 2, 1)

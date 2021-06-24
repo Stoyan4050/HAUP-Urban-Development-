@@ -107,7 +107,7 @@ def get_images_test(year):
 
     test_imgs = []
     counter = 0
-    for tile in data[211111:]:
+    for tile in data[311111:]:
 
         img = get_image_from_url(year, tile.y_coordinate, tile.x_coordinate)
         coord = (tile.y_coordinate, tile.x_coordinate)
