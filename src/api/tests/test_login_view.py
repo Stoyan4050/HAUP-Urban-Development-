@@ -3,7 +3,7 @@ test_login_view.py
 """
 
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 from django.test import RequestFactory
 from api.models.user import User
 from api.views.login_view import LoginView
@@ -60,7 +60,8 @@ class TestLoginView(unittest.TestCase):
         """
 
         mock_login_form.return_value.is_valid.return_value = True
-        mock_login_form.return_value.cleaned_data = self.user_credentials
+        mock_cleaned_data = PropertyMock(return_value=self.user_credentials)
+        type(mock_login_form.return_value).cleaned_data = mock_cleaned_data
         mock_authenticate.return_value = None
 
         request = self.request_factory.post("/urban_development/login/")
@@ -68,6 +69,7 @@ class TestLoginView(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         mock_login_form.return_value.is_valid.assert_called_once_with()
+        mock_cleaned_data.assert_called_once_with()
         mock_authenticate.assert_called_once_with(request,
                                                   username=self.user_credentials["username"],
                                                   password=self.user_credentials["password"])
@@ -86,7 +88,8 @@ class TestLoginView(unittest.TestCase):
         user = User(email=self.user_credentials["username"], password=self.user_credentials["password"])
 
         mock_login_form.return_value.is_valid.return_value = True
-        mock_login_form.return_value.cleaned_data = self.user_credentials
+        mock_cleaned_data = PropertyMock(return_value=self.user_credentials)
+        type(mock_login_form.return_value).cleaned_data = mock_cleaned_data
         mock_authenticate.return_value = user
         mock_login.return_value = None
 
@@ -95,6 +98,7 @@ class TestLoginView(unittest.TestCase):
 
         self.assertEqual(response.status_code, 302)
         mock_login_form.return_value.is_valid.assert_called_once_with()
+        mock_cleaned_data.assert_called_once_with()
         mock_authenticate.assert_called_once_with(request,
                                                   username=self.user_credentials["username"],
                                                   password=self.user_credentials["password"])

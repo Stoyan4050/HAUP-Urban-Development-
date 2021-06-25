@@ -717,6 +717,10 @@ require([
 
         try {
             var json = await response.json()
+
+            if (json == null) {
+                return
+            }
             
             edits = {
                 addFeatures: [],
@@ -787,7 +791,9 @@ require([
         try {
             var json = await response.json()
 
-            if(json == null) return
+            if (json == null) {
+                return
+            }
 
             edits = {
                 addFeatures: [],

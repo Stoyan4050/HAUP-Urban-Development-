@@ -99,8 +99,8 @@
     <p id="t45" class="mis show_mis"><span class="n"><a href="#t45">45</a></span><span class="t">                <span class="key">if</span> <span class="str">'inception'</span> <span class="key">in</span> <span class="nam">data_frame</span><span class="op">.</span><span class="nam">columns</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t46" class="mis show_mis"><span class="n"><a href="#t46">46</a></span><span class="t">                    <span class="nam">years</span> <span class="op">=</span> <span class="nam">data_frame</span><span class="op">.</span><span class="nam">inception</span><span class="op">.</span><span class="nam">tolist</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t47" class="pln"><span class="n"><a href="#t47">47</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t48" class="mis show_mis"><span class="n"><a href="#t48">48</a></span><span class="t">                <span class="key">for</span> <span class="nam">index</span> <span class="key">in</span> <span class="nam">enumerate</span><span class="op">(</span><span class="nam">points</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t49" class="mis show_mis"><span class="n"><a href="#t49">49</a></span><span class="t">                    <span class="nam">args</span> <span class="op">=</span> <span class="op">[</span><span class="nam">points</span><span class="op">[</span><span class="nam">index</span><span class="op">]</span><span class="op">,</span> <span class="nam">years</span><span class="op">[</span><span class="nam">index</span><span class="op">]</span><span class="op">,</span> <span class="nam">contains_greenery</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t48" class="mis show_mis"><span class="n"><a href="#t48">48</a></span><span class="t">                <span class="key">for</span> <span class="nam">point</span><span class="op">,</span> <span class="nam">year</span> <span class="key">in</span> <span class="nam">zip</span><span class="op">(</span><span class="nam">points</span><span class="op">,</span> <span class="nam">years</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t49" class="mis show_mis"><span class="n"><a href="#t49">49</a></span><span class="t">                    <span class="nam">args</span> <span class="op">=</span> <span class="op">[</span><span class="nam">point</span><span class="op">,</span> <span class="nam">year</span><span class="op">,</span> <span class="nam">contains_greenery</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p id="t50" class="mis show_mis"><span class="n"><a href="#t50">50</a></span><span class="t">                    <span class="nam">writer_object</span><span class="op">.</span><span class="nam">writerow</span><span class="op">(</span><span class="nam">args</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t51" class="pln"><span class="n"><a href="#t51">51</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t52" class="mis show_mis"><span class="n"><a href="#t52">52</a></span><span class="t">            <span class="nam">f_object</span><span class="op">.</span><span class="nam">close</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -113,7 +113,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.5</a>,
-            created at 2021-06-24 14:51 +0300
+            created at 2021-06-25 03:31 +0300
         </p>
     </div>
 </div>
