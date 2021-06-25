@@ -1,5 +1,5 @@
 """
-    Tuning CNN classifier
+parameter_tuner_cnn.py
 """
 
 import tensorflow as tf
@@ -11,8 +11,9 @@ from kerastuner import Hyperband
 
 def model_builder(hyper):
     """
-        Build a model for tuning
+    Build a model for hyperparameter tuning.
     """
+
     # model = keras.Sequential()
     # model.add(keras.layers.Flatten(input_shape=(28, 28)))
     #
@@ -114,8 +115,9 @@ def model_builder(hyper):
 
 def paramter_tuning_cnn(img_train, label_train, img_test, label_test):
     """
-        Hyper parameter tuning
+    Perform hyperparameter tuning.
     """
+
     tuner = Hyperband(model_builder,
                       objective='val_accuracy',
                       max_epochs=50,
