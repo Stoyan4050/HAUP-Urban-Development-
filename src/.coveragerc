@@ -1,0 +1,28 @@
+[run]
+source = .
+omit = ./venv/*
+       ./api/migrations/*
+       ./api/tests/*
+       ./integration_tests/*
+       */__init__.py
+       ./api/apps.py
+       ./api/urls.py
+       ./urban_development/asgi.py
+       ./urban_development/settings.py
+       ./urban_development/urls.py
+       ./urban_development/wsgi.py
+       ./manage.py     
+
+[report]
+omit = ./venv/*
+       ./api/migrations/*
+       ./api/tests/*
+       ./integration_tests/*
+       */__init__.py
+       ./api/apps.py
+       ./api/urls.py
+       ./urban_development/asgi.py
+       ./urban_development/settings.py
+       ./urban_development/urls.py
+       ./urban_development/wsgi.py
+       ./manage.py       

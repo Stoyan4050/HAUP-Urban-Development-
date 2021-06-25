@@ -7,6 +7,7 @@ import django
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from django.db.models import Q
 from keras.optimizer_v2.adam import Adam
 from keras.models import Sequential
@@ -14,7 +15,7 @@ from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
 from api.models.classification import Classification
 from api.models.tile import Tile
-from classification import classifier_svm, classifier
+from classification import classifier_svm, classifier, parameter_tuner_cnn
 
 
 def change_labels(arr):
@@ -67,10 +68,30 @@ def get_greenery_percentage(img, year):
     return classifier.get_greenery_percentage(img)
 
 
-def classify_cnn(year=2020):
+def get_single_image_to_classify(year, tile_id):
+    """
+    Get the image of a single tile.
+    """
+    test_imgs = []
+
+    tile = Tile.objects.filter(tile_id=tile_id)[0]
+    img = classifier_svm.get_image_from_url(year, tile.y_coordinate, tile.x_coordinate)
+    coord = (tile.y_coordinate, tile.x_coordinate)
+    test_imgs.append((img, coord))
+    return test_imgs
+
+
+def classify_cnn(year=2020, tile_id=None, tuning=True):
     """
     Classifying using cnn.
     """
+
+    if tile_id is not None:
+        classifications = Classification.objects.filter(year=year,
+                                                        tile=Tile(tile_id, tile_id // 75879, tile_id % 75879))
+
+        if classifications and classifications[0].classified_by != -1:
+            return None
 
     training, validation = get_training_validation(np.array(classifier_svm.get_images_training(
         Classification.objects.filter(~Q(classified_by=-1), year__lte=year), year)))
@@ -109,52 +130,61 @@ def classify_cnn(year=2020):
 
     datagen.fit(x_train)
 
-    model = Sequential()
-    model.add(Conv2D(32, 3, padding="same", activation="relu", input_shape=(img_size, img_size, 3)))
-    model.add(MaxPool2D())
+    if tuning is False:
+        model = Sequential()
+        model.add(Conv2D(32, 3, padding="same", activation="relu", input_shape=(img_size, img_size, 3)))
+        model.add(MaxPool2D())
 
-    model.add(Conv2D(32, 3, padding="same", activation="relu"))
-    model.add(MaxPool2D())
+        model.add(Conv2D(32, 3, padding="same", activation="relu"))
+        model.add(MaxPool2D())
 
-    model.add(Conv2D(64, 3, padding="same", activation="relu"))
-    model.add(MaxPool2D())
-    model.add(Dropout(0.4))
+        model.add(Conv2D(64, 3, padding="same", activation="relu"))
+        model.add(MaxPool2D())
+        model.add(Dropout(0.4))
 
-    model.add(Flatten())
-    model.add(Dense(128, activation="relu"))
-    model.add(Dense(2, activation="softmax"))
+        model.add(Flatten())
+        model.add(Dense(128, activation="relu"))
+        model.add(Dense(2, activation="softmax"))
 
-    model.summary()
+        model.summary()
 
-    opt = Adam(lr=0.000001)
-    model.compile(optimizer=opt, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                  metrics=['accuracy'])
+        opt = Adam(lr=0.000001)
+        model.compile(optimizer=opt, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                      metrics=['accuracy'])
+        history = model.fit(x_train, y_train, epochs=400, validation_data=(x_val, y_val))
 
-    history = model.fit(x_train, y_train, epochs=500, validation_data=(x_val, y_val))
+        acc = history.history['accuracy']
+        val_acc = history.history['val_accuracy']
+        loss = history.history['loss']
+        val_loss = history.history['val_loss']
 
-    acc = history.history['accuracy']
-    val_acc = history.history['val_accuracy']
-    loss = history.history['loss']
-    val_loss = history.history['val_loss']
+        epochs_range = range(400)
 
-    epochs_range = range(200)
+        plt.figure(figsize=(15, 15))
+        plt.subplot(2, 2, 1)
+        plt.plot(epochs_range, acc, label='Training Accuracy')
+        plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+        plt.legend(loc='lower right')
+        plt.title('Training and Validation Accuracy')
 
-    plt.figure(figsize=(15, 15))
-    plt.subplot(2, 2, 1)
-    plt.plot(epochs_range, acc, label='Training Accuracy')
-    plt.plot(epochs_range, val_acc, label='Validation Accuracy')
-    plt.legend(loc='lower right')
-    plt.title('Training and Validation Accuracy')
+        plt.subplot(2, 2, 2)
+        plt.plot(epochs_range, loss, label='Training Loss')
+        plt.plot(epochs_range, val_loss, label='Validation Loss')
+        plt.legend(loc='upper right')
+        plt.title('Training and Validation Loss')
+        # plt.show()
 
-    plt.subplot(2, 2, 2)
-    plt.plot(epochs_range, loss, label='Training Loss')
-    plt.plot(epochs_range, val_loss, label='Validation Loss')
-    plt.legend(loc='upper right')
-    plt.title('Training and Validation Loss')
-    # plt.show()
+    else:
+        print("Performing hyper-parameter tuning")
+        model, history = parameter_tuner_cnn.paramter_tuning_cnn(x_train, y_train, x_val, y_val)
 
     django.db.connections.close_all()
-    test_data = classifier_svm.get_images_test(year)
+
+    if tile_id is None:
+        test_data = classifier_svm.get_images_test(year)
+    else:
+        test_data = get_single_image_to_classify(year, tile_id)
+
     test_coord, test_images = classifier.get_labels_imgs(test_data)
 
     predictions = model.predict_classes(test_images)
@@ -169,18 +199,21 @@ def classify_cnn(year=2020):
             class_label = True
             greenery = get_greenery_percentage(test_images[count], year)
             print(greenery)
-            if greenery < 2:
-                class_label = False
-                greenery = 0
 
-        # print(test_coord[i][1])
-        # print(test_coord[i][0])
+        if tile_id is not None:
+            try:
+                Classification.objects.create(tile=Tile(tile_id, tile_x, tile_y),
+                                              year=year, greenery_percentage=greenery,
+                                              contains_greenery=class_label,
+                                              classified_by="-1")
+            except IntegrityError:
+                Classification.objects.filter(classified_by=-1, year=year, tile=Tile(tile_id, tile_x, tile_y)) \
+                    .update(greenery_percentage=greenery, contains_greenery=class_label)
 
-        # tile_id = tile_x * 75879 + tile_y
-        # Classification.objects.create(tile=Tile(tile_id, tile_x, tile_y),
-        #                               year=year, greenery_percentage=0,
-        #                               contains_greenery=class_label,
-        #                               classified_by="-1")
+            return {
+                "greenery_percentage": greenery,
+                "contains_greenery": class_label,
+            }
 
         Classification.objects.create(tile=Tile.objects.get(x_coordinate=tile_x,
                                                             y_coordinate=tile_y),
@@ -189,3 +222,5 @@ def classify_cnn(year=2020):
                                       classified_by="-1")
 
     print(predictions)
+
+    return None

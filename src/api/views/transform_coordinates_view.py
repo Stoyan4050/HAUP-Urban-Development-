@@ -12,6 +12,9 @@ from api.models.classification import Classification
 from api.utils.transform_coordinates_to_tile import transform_coordinates_to_tile
 from api.utils.transform_tile_to_coordinates import transform_tile_to_coordinates
 
+LOW_MEDIUM_GREENERY = 0.33
+MEDIUM_HIGH_GREENERY = 0.66
+
 
 class TransformCoordinatesView(View):
     """
@@ -48,9 +51,11 @@ class TransformCoordinatesView(View):
                 if classification["year"] > classification_year:
                     classification_year = classification["year"]
 
-            contains_greenery = Classification.objects.get(tile=tile_id, year=classification_year).contains_greenery
-            greenery_percentage = Classification.objects.get(tile=tile_id, year=classification_year).greenery_percentage
-            classified_by = Classification.objects.get(tile=tile_id, year=classification_year).classified_by
+            classification = Classification.objects.get(tile=tile_id, year=classification_year)
+
+            contains_greenery = classification.contains_greenery
+            greenery_percentage = classification.greenery_percentage
+            classified_by = classification.classified_by
 
             if classified_by == -1:
                 classified_by = "classifier"
@@ -74,11 +79,11 @@ class TransformCoordinatesView(View):
 
         if contains_greenery != "unknown":
             if contains_greenery:
-                if 0 <= greenery_percentage <= 0.33:
+                if 0 <= greenery_percentage <= LOW_MEDIUM_GREENERY:
                     greenery_amount = "low"
-                elif 0.33 < greenery_percentage <= 0.66:
+                elif LOW_MEDIUM_GREENERY < greenery_percentage <= MEDIUM_HIGH_GREENERY:
                     greenery_amount = "medium"
-                elif 0.66 < greenery_percentage <= 1:
+                elif MEDIUM_HIGH_GREENERY < greenery_percentage <= 1:
                     greenery_amount = "high"
                 else:
                     greenery_amount = "unknown"
@@ -98,6 +103,7 @@ class TransformCoordinatesView(View):
             "classified_by": classified_by,
             "contains_greenery": contains_greenery,
             "greenery_amount": greenery_amount,
+            "year": classification_year if classification_year > 0 else "unknown",
         }
 
         return JsonResponse(result, safe=False)

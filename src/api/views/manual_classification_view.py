@@ -22,12 +22,16 @@ class ManualClassificationView(View):
         def get(_, parameters):
         """
 
-        x_coordinate = json.loads(parameters).get("latitude")
-        y_coordinate = json.loads(parameters).get("longitude")
-        year = json.loads(parameters).get("year")
         user = json.loads(parameters).get("classified_by")
-        greenery_amount = json.loads(parameters).get("greenery_amount")
+
+        if user == "guest":
+            return JsonResponse(None, safe=False)
+
+        x_coordinate = json.loads(parameters).get("longitude")
+        y_coordinate = json.loads(parameters).get("latitude")
+        year = json.loads(parameters).get("year")
         contains_greenery = json.loads(parameters).get("contains_greenery")
+        greenery_amount = json.loads(parameters).get("greenery_amount")
 
         if contains_greenery == "True":
             if greenery_amount == "low":
@@ -39,8 +43,7 @@ class ManualClassificationView(View):
         else:
             greenery_percentage = 0
 
-        if user != "guest":
-            manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery)
+        manual_classify(x_coordinate, y_coordinate, year, user, greenery_percentage, contains_greenery)
 
         contains_greenery = contains_greenery.lower()
 
