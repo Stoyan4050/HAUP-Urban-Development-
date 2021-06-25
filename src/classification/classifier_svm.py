@@ -61,7 +61,7 @@ def get_images_training(data1, year):
         print(counter)
         counter += 1
 
-        # if counter > 20:
+        # if counter > 500:
         #     return training_imgs
 
     return training_imgs
@@ -107,13 +107,13 @@ def get_images_test(year):
 
     test_imgs = []
     counter = 0
-    for tile in data[111111:]:
+    for tile in data[11111:]:
 
         img = get_image_from_url(year, tile.y_coordinate, tile.x_coordinate)
         coord = (tile.y_coordinate, tile.x_coordinate)
         test_imgs.append((img, coord))
 
-        if counter > 11000:
+        if counter > 19000:
             break
 
         counter += 1
