@@ -40,8 +40,9 @@ class LoginView(View):
         form = LoginForm(data=request.POST)
 
         if form.is_valid():
-            email = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
+            data = form.cleaned_data
+            email = data.get("username")
+            password = data.get("password")
             user = authenticate(request, username=email, password=password)
 
             if user is not None:

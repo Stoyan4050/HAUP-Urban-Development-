@@ -30,7 +30,6 @@ def get_image_from_url(year, x_coord, y_coord):
     Get historic map images from website.
     """
 
-    # print(year)
     url = "https://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Historische_tijdreis_" + str(
         year) + "/MapServer/tile/11/" + str(x_coord) + "/" + str(y_coord)
 

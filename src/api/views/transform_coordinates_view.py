@@ -103,7 +103,7 @@ class TransformCoordinatesView(View):
             "classified_by": classified_by,
             "contains_greenery": contains_greenery,
             "greenery_amount": greenery_amount,
-            "year": classification_year if classification_year > 0 else "unknown"
+            "year": classification_year if classification_year > 0 else "unknown",
         }
 
         return JsonResponse(result, safe=False)

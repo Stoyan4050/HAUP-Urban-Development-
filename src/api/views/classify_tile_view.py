@@ -63,6 +63,8 @@ class ClassifyTileView(View):
                     greenery_amount = "unknown"
             else:
                 greenery_amount = "none"
+        else:
+            greenery_amount = "unknown"
 
         result = {
             "xmin": coordinates["xmin"],
@@ -71,7 +73,7 @@ class ClassifyTileView(View):
             "ymax": coordinates["ymax"],
             "x_coordinate": center_x,
             "y_coordinate": center_y,
-            "contains_greenery": response["contains_greenery"],
+            "contains_greenery": contains_greenery,
             "greenery_amount": greenery_amount,
         }
 

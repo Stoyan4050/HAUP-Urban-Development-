@@ -70,7 +70,7 @@ def get_greenery_percentage(img, year):
 
 def get_single_image_to_classify(year, tile_id):
     """
-        Get the image of a single tile.
+    Get the image of a single tile.
     """
     test_imgs = []
 
@@ -83,7 +83,7 @@ def get_single_image_to_classify(year, tile_id):
 
 def classify_cnn(year=2020, tile_id=None, tuning=True):
     """
-        Classifying using cnn.
+    Classifying using cnn.
     """
 
     if tile_id is not None:
@@ -199,9 +199,6 @@ def classify_cnn(year=2020, tile_id=None, tuning=True):
             class_label = True
             greenery = get_greenery_percentage(test_images[count], year)
             print(greenery)
-            # if greenery < 2:
-            #     class_label = False
-            #     greenery = 0
 
         if tile_id is not None:
             try:
@@ -217,15 +214,6 @@ def classify_cnn(year=2020, tile_id=None, tuning=True):
                 "greenery_percentage": greenery,
                 "contains_greenery": class_label,
             }
-
-        # print(test_coord[i][1])
-        # print(test_coord[i][0])
-
-        # tile_id = tile_x * 75879 + tile_y
-        # Classification.objects.create(tile=Tile(tile_id, tile_x, tile_y),
-        #                               year=year, greenery_percentage=0,
-        #                               contains_greenery=class_label,
-        #                               classified_by="-1")
 
         Classification.objects.create(tile=Tile.objects.get(x_coordinate=tile_x,
                                                             y_coordinate=tile_y),
