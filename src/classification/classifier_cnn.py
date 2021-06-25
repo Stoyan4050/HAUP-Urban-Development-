@@ -81,7 +81,7 @@ def get_single_image_to_classify(year, tile_id):
     return test_imgs
 
 
-def classify_cnn(year=2020, tile_id=None, tuning=False):
+def classify_cnn(year=2020, tile_id=None, tuning=True):
     """
         Classifying using cnn.
     """
@@ -151,14 +151,14 @@ def classify_cnn(year=2020, tile_id=None, tuning=False):
         opt = Adam(lr=0.000001)
         model.compile(optimizer=opt, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                       metrics=['accuracy'])
-        history = model.fit(x_train, y_train, epochs=500, validation_data=(x_val, y_val))
+        history = model.fit(x_train, y_train, epochs=400, validation_data=(x_val, y_val))
 
         acc = history.history['accuracy']
         val_acc = history.history['val_accuracy']
         loss = history.history['loss']
         val_loss = history.history['val_loss']
 
-        epochs_range = range(500)
+        epochs_range = range(400)
 
         plt.figure(figsize=(15, 15))
         plt.subplot(2, 2, 1)
@@ -199,9 +199,9 @@ def classify_cnn(year=2020, tile_id=None, tuning=False):
             class_label = True
             greenery = get_greenery_percentage(test_images[count], year)
             print(greenery)
-            if greenery < 2:
-                class_label = False
-                greenery = 0
+            # if greenery < 2:
+            #     class_label = False
+            #     greenery = 0
 
         if tile_id is not None:
             try:
